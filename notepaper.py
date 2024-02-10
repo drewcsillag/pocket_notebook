@@ -22,7 +22,7 @@ print("""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
      id="layer1">
 """)
 
-def makea6sheet(rorg_x,org_y, left, numbers=False, box=False):
+def makea6sheet(rorg_x,org_y, left, weekday=False, weekend=False, box=False):
     org_x = rorg_x
     if not left: 
         org_x+=10
@@ -55,8 +55,12 @@ def makea6sheet(rorg_x,org_y, left, numbers=False, box=False):
                     y+dot_y_offset,
                     dot_radius, dot_radius ))
         y += 6
-        if numbers:
-            do_numbers(org_x, org_y)
+    if weekday:
+        do_numbers(org_x, org_y)
+        weekday_todo(org_x, org_y)
+    elif weekend:
+        weekend_todo(org_x, org_y)
+
 #     if box:
 #         bx = rorg_x
 #         # if not left:
@@ -68,7 +72,7 @@ def makea6sheet(rorg_x,org_y, left, numbers=False, box=False):
 # <rect style="fill:black;fill-opacity:1;stroke:0.1;stroke-width:0.05" height="148" width="0.5" x="%f" y="%f"/>
 #  """ % (bx+105, org_y))
         
-    weekday_todo(org_x, org_y)
+        
         
 def do_numbers(org_x, org_y):
     y = org_y 
@@ -122,13 +126,31 @@ def weekday_todo(org_x, org_y):
     print("""
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="%f" y="%f"/>
  """ % (org_x + 48-.12, org_y + 16))
-def makea4sheet():
-    left = 1
-    makea6sheet(0,0, left=left, numbers=True, box=False)
-    makea6sheet(105,0, left=left, numbers=True)
-    makea6sheet(105,148, left=left, numbers=True)
-    makea6sheet(0,148, left=left, numbers=True)
-makea4sheet()
+
+def weekend_todo(org_x, org_y):
+    print("""
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="108" width="0.25" x="%f" y="%f"/>
+ """ % (org_x + 6-.12, org_y + 16 + 12))
+    print("""
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="108" width="0.25" x="%f" y="%f"/>
+ """ % (org_x + 12-.12, org_y + 16 + 12))
+
+
+def makeweekdayp1and2(left):
+    makea6sheet(0,0,     left=left, weekday=True, box=False)
+    makea6sheet(105,0,   left=left, weekday=True)
+    makea6sheet(105,148, left=left, weekday=True)
+    makea6sheet(0,148,   left=left, weekday=True)
+
+def makeMixedSheet(left):
+    makea6sheet(0,0,     left=left, weekend=True, box=False)
+    makea6sheet(105,0,   left=left, weekend=True)
+    makea6sheet(105,148, left=left, weekend=True)
+    makea6sheet(0,148,   left=left, weekend=True)
+
+makeMixedSheet(1)
+
+
 
 print("""  </g>
 </svg>""")
