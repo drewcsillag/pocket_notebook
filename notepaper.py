@@ -57,13 +57,16 @@ def makea6sheet(rorg_x,org_y, left, numbers=False, box=False):
         y += 6
         if numbers:
             do_numbers(org_x, org_y)
-    if box:
-        bx = rorg_x
-        if not left:
-            bx += 7
-        print("""
-<rect style="fill:black;fill-opacity:1;stroke:0.1;stroke-width:0.05" height="148" width="0.5" x="%f" y="%f"/>
- """ % (bx, org_y))
+#     if box:
+#         bx = rorg_x
+#         # if not left:
+#         #     bx += 7
+#         print("""
+# <rect style="fill:black;fill-opacity:1;stroke:0.1;stroke-width:0.05" height="148" width="0.5" x="%f" y="%f"/>
+#  """ % (bx, org_y))
+#         print("""
+# <rect style="fill:black;fill-opacity:1;stroke:0.1;stroke-width:0.05" height="148" width="0.5" x="%f" y="%f"/>
+#  """ % (bx+105, org_y))
         
     weekday_todo(org_x, org_y)
         
@@ -111,14 +114,14 @@ def do_numbers(org_x, org_y):
 
 def weekday_todo(org_x, org_y):
     print("""
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="%f" y="16"/>
- """ % (org_x + 42-.12))
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="%f" y="%f"/>
+ """ % (org_x + 42-.12, org_y + 16))
     print("""
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="%f" y="16"/>
- """ % (org_x + 48-.12))
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="%f" y="%f"/>
+ """ % (org_x + 48-.12, org_y + 16))
 def makea4sheet():
     left = 1
-    makea6sheet(0,0, left=left, numbers=True, box=True)
+    makea6sheet(0,0, left=left, numbers=True, box=False)
     makea6sheet(105,0, left=left, numbers=True)
     makea6sheet(105,148, left=left, numbers=True)
     makea6sheet(0,148, left=left, numbers=True)
