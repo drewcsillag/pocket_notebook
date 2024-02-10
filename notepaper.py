@@ -87,11 +87,14 @@ def do_numbers(org_x, org_y):
               x="%f" y="%f">%i</text>
               </g>
               """ % (xform, x / xform, liney, val))
+        # style="font-size:4px;font-family:sans-serif;fill:#2080ff;fill-opacity:1;stroke:none"
+        # style="font-size:4px;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke-width:.2;stroke:1px #4080ff"
         print("""
               <g>
               <text
                 xml:space="preserve"
-                style="font-size:4px;font-family:sans-serif;fill:#d0d0d0;fill-opacity:1;stroke:none"
+                style="font-size:4px;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke:#1242ff;stroke-opacity:1;stroke-width:0.2;stroke-dasharray:none"
+                
                 x="%f"
                 y="%f"
                 transform="scale(.5, 1)"
@@ -103,7 +106,7 @@ def do_numbers(org_x, org_y):
               <g>
               <text
                 xml:space="preserve"
-                style="font-size:4px;font-family:sans-serif;fill:#d0d0d0;fill-opacity:1;stroke:none"
+                style="font-size:4px;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke:#1242ff;stroke-opacity:1;stroke-width:0.2;stroke-dasharray:none"
                 x="%f"
                 y="%f"
                 transform="scale(.5, 1)"
