@@ -4,9 +4,10 @@ import sys
 def makea6sheet(rorg_x,org_y, left, weekday=False, weekend=False, box=False):
     org_x = rorg_x
     if not left: 
-        org_x += 6
+        org_x += 4
         x = org_x + 4
     else:
+        org_x += 2
         x = org_x + 4
 
     y=org_y + 16
@@ -14,6 +15,7 @@ def makea6sheet(rorg_x,org_y, left, weekday=False, weekend=False, box=False):
     dot_radius = 0.2
     dot_y_offset = 0.05
     color = "#b0b0b0"
+    dotcolor = "#909090"
     for i in range(21):
         print("""<rect
         style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
@@ -27,8 +29,8 @@ def makea6sheet(rorg_x,org_y, left, weekday=False, weekend=False, box=False):
         cx="%f"
         cy="%f"
         rx="%f"
-        ry="%f" />""" % (color, color,
-                    org_x + 6 + c*6,
+        ry="%f" />""" % (dotcolor, dotcolor,
+                    x + 4 + c*6,
                     y+dot_y_offset,
                     dot_radius, dot_radius ))
         y += 6
