@@ -1,7 +1,7 @@
 import sys
 
 
-def makea6sheet(rorg_x,org_y, left, weekday=False, weekend=False, box=False):
+def makea6sheet(rorg_x,org_y, left, weekday=False, weekend=False, monthly=False):
     org_x = rorg_x
     if not left: 
         org_x += 4
@@ -16,43 +16,63 @@ def makea6sheet(rorg_x,org_y, left, weekday=False, weekend=False, box=False):
     dot_y_offset = 0.05
     color = "#b0b0b0"
     dotcolor = "#909090"
-    for i in range(21):
-        print("""<rect
-        style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
-        width="89.0"
-        height="%f"
-        x="%f"
-        y="%f" />""" % (color, color, line_thickness, x, y))
-        for c in range(15):
-            print("""<ellipse
-        style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-        cx="%f"
-        cy="%f"
-        rx="%f"
-        ry="%f" />""" % (dotcolor, dotcolor,
-                    x + 4 + c*6,
-                    y+dot_y_offset,
-                    dot_radius, dot_radius ))
-        y += 6
+
+    if monthly:
+        y-=6
+        oy = y
+
+        for i in range(8):
+            print("""<rect
+                style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+                width="89.0"
+                height="%f"
+                x="%f"
+                y="%f" />""" % (color, color, line_thickness, x, y))
+            
+
+            if i < 7:
+                dow = ['Mon','Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][6-i]
+                print("""<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                    x="%f"
+                    y="%f"
+                    transform="rotate(-90 %f %f)"
+                >%s</text>
+                """ % (x+4,y+17, x+4, y+17, dow))
+            y+=18
+
+        for i in range(5):
+            print("""<rect
+                style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+                width="%f"
+                height="%f"
+                x="%f"
+                y="%f" />""" % (color, color, line_thickness, 18*7, x+4, oy))
+            x+=18
+
+    else:
+        for i in range(21):
+            print("""<rect
+            style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+            width="89.0"
+            height="%f"
+            x="%f"
+            y="%f" />""" % (color, color, line_thickness, x, y))
+            for c in range(15):
+                print("""<ellipse
+            style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+            cx="%f"
+            cy="%f"
+            rx="%f"
+            ry="%f" />""" % (dotcolor, dotcolor,
+                        x + 4 + c*6,
+                        y+dot_y_offset,
+                        dot_radius, dot_radius ))
+            y += 6
     if weekday:
         do_numbers(org_x, org_y)
         weekday_todo(org_x, org_y)
     elif weekend:
-        weekend_todo(org_x, org_y)
-
-
-#     if box:
-#         bx = rorg_x
-#         # if not left:
-#         #     bx += 7
-#         print("""
-# <rect style="fill:black;fill-opacity:1;stroke:0.1;stroke-width:0.05" height="148" width="0.5" x="%f" y="%f"/>
-#  """ % (bx, org_y))
-#         print("""
-# <rect style="fill:black;fill-opacity:1;stroke:0.1;stroke-width:0.05" height="148" width="0.5" x="%f" y="%f"/>
-#  """ % (bx+105, org_y))
-        
-        
+        weekend_todo(org_x, org_y)       
         
 def do_numbers(org_x, org_y):
     y = org_y 
@@ -141,7 +161,7 @@ def a4pageheader():
     
 def makeweekdayp1and2(left):
     a4pageheader()
-    makea6sheet(0,0,     left=left, weekday=True, box=False)
+    makea6sheet(0,0,     left=left, weekday=True)
     makea6sheet(105,0,   left=left, weekday=True)
     makea6sheet(105,148, left=left, weekday=True)
     makea6sheet(0,148,   left=left, weekday=True)
@@ -156,10 +176,18 @@ def makeMixedSheet(left):
         makea6sheet(105,148, left=left, weekend=True)
         makea6sheet(0,148,   left=left)
     else:    
-        makea6sheet(0,0,     left=left, weekend=True, box=False)
+        makea6sheet(0,0,     left=left, weekend=True)
         makea6sheet(105,0,   left=left, weekend=True)
         makea6sheet(105,148, left=left)
         makea6sheet(0,148,   left=left, weekday=True)
+    a4pagetrailer()
+
+def makeMonthlyPages(left):
+    a4pageheader()
+    makea6sheet(0,0,     left=left, monthly=True)
+    makea6sheet(105,0,   left=left, monthly=True)
+    makea6sheet(105,148, left=left, monthly=True)
+    makea6sheet(0,148,   left=left, monthly=True)
     a4pagetrailer()
 
 sys.stdout=open('weekp1.svg','w')
@@ -172,4 +200,7 @@ sys.stdout=open('weekp4.svg', 'w')
 makeMixedSheet(1)
 
 
-
+sys.stdout=open('monthly1.svg', 'w')
+makeMonthlyPages(0)
+sys.stdout=open('monthly2.svg', 'w')
+makeMonthlyPages(1)
