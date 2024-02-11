@@ -1,32 +1,13 @@
-print("""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
+import sys
 
-<svg
-   width="210mm"
-   height="296mm"
-   viewBox="0 0 210 296"
-   version="1.1"
-   id="svg1"
-   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
-   sodipodi:docname="drawing.svg"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-      
- <defs
-     id="defs1" />
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1">
-""")
 
 def makea6sheet(rorg_x,org_y, left, weekday=False, weekend=False, box=False):
     org_x = rorg_x
     if not left: 
-        org_x+=10
-    x=org_x + 3
+        org_x += 6
+        x = org_x + 4
+    else:
+        x = org_x + 4
 
     y=org_y + 16
     line_thickness = 0.1
@@ -34,23 +15,19 @@ def makea6sheet(rorg_x,org_y, left, weekday=False, weekend=False, box=False):
     dot_y_offset = 0.05
     color = "#b0b0b0"
     for i in range(21):
-        print("""
-        <rect
+        print("""<rect
         style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
         width="89.0"
         height="%f"
         x="%f"
-        y="%f" />
-    """ % (color, color, line_thickness, x, y))
+        y="%f" />""" % (color, color, line_thickness, x, y))
         for c in range(15):
-            print("""
-        <ellipse
+            print("""<ellipse
         style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
         cx="%f"
         cy="%f"
         rx="%f"
-        ry="%f" />
-                """ % (color, color,
+        ry="%f" />""" % (color, color,
                     org_x + 6 + c*6,
                     y+dot_y_offset,
                     dot_radius, dot_radius ))
@@ -60,6 +37,7 @@ def makea6sheet(rorg_x,org_y, left, weekday=False, weekend=False, box=False):
         weekday_todo(org_x, org_y)
     elif weekend:
         weekend_todo(org_x, org_y)
+
 
 #     if box:
 #         bx = rorg_x
@@ -84,8 +62,7 @@ def do_numbers(org_x, org_y):
         xform = .5
         if val > 9:
             xform = .25
-        print("""
-        <g>
+        print("""<g>
               <text style="font-size:16px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
               transform="scale(%f,1)"
               x="%f" y="%f">%i</text>
@@ -93,8 +70,7 @@ def do_numbers(org_x, org_y):
               """ % (xform, x / xform, liney, val))
         # style="font-size:4px;font-family:sans-serif;fill:#2080ff;fill-opacity:1;stroke:none"
         # style="font-size:4px;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke-width:.2;stroke:1px #4080ff"
-        print("""
-              <g>
+        print("""<g>
               <text
                 xml:space="preserve"
                 style="font-size:4px;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke:#1242ff;stroke-opacity:1;stroke-width:0.2;stroke-dasharray:none"
@@ -102,9 +78,7 @@ def do_numbers(org_x, org_y):
                 x="%f"
                 y="%f"
                 transform="scale(.5, 1)"
-              >00</text>
-              
-              </g>
+              >00</text></g>
               """ % ((x+2) / .5, liney - 6.5))
         print("""
               <g>
@@ -114,9 +88,7 @@ def do_numbers(org_x, org_y):
                 x="%f"
                 y="%f"
                 transform="scale(.5, 1)"
-              >30</text>
-              
-              </g>
+              >30</text></g>
               """ % ((x+2) / .5, liney-1.5))
 
 def weekday_todo(org_x, org_y):
@@ -136,21 +108,66 @@ def weekend_todo(org_x, org_y):
  """ % (org_x + 12-.12, org_y + 16 + 12))
 
 
+def a4pagetrailer():
+    print("""  </g>
+</svg>""")
+    
+def a4pageheader():
+    print("""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="296mm"
+   viewBox="0 0 210 296"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   sodipodi:docname="drawing.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+      
+ <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+""")
+    
 def makeweekdayp1and2(left):
+    a4pageheader()
     makea6sheet(0,0,     left=left, weekday=True, box=False)
     makea6sheet(105,0,   left=left, weekday=True)
     makea6sheet(105,148, left=left, weekday=True)
     makea6sheet(0,148,   left=left, weekday=True)
+    a4pagetrailer()
+
 
 def makeMixedSheet(left):
-    makea6sheet(0,0,     left=left, weekend=True, box=False)
-    makea6sheet(105,0,   left=left, weekend=True)
-    makea6sheet(105,148, left=left, weekend=True)
-    makea6sheet(0,148,   left=left, weekend=True)
+    a4pageheader()
+    if left:
+        makea6sheet(0,0,     left=left, weekend=True)
+        makea6sheet(105,0,   left=left, weekday=True)
+        makea6sheet(105,148, left=left, weekend=True)
+        makea6sheet(0,148,   left=left)
+    else:    
+        makea6sheet(0,0,     left=left, weekend=True, box=False)
+        makea6sheet(105,0,   left=left, weekend=True)
+        makea6sheet(105,148, left=left)
+        makea6sheet(0,148,   left=left, weekday=True)
+    a4pagetrailer()
 
+sys.stdout=open('weekp1.svg','w')
+makeweekdayp1and2(left=0)
+sys.stdout=open('weekp2.svg', 'w')
+makeweekdayp1and2(left=1)
+sys.stdout=open('weekp3.svg', 'w')
+makeMixedSheet(0)
+sys.stdout=open('weekp4.svg', 'w')
 makeMixedSheet(1)
 
 
 
-print("""  </g>
-</svg>""")
