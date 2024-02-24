@@ -1,6 +1,6 @@
 import sys
 
-def makea6sheet(rorg_x,org_y, left, weekday=False, weekend=False, monthly=False):
+def makea6sheet(rorg_x,org_y, left, weekday=False, weekend=False, monthly=False, pitch=5):
     org_x = rorg_x
     if not left: 
         org_x += 4
@@ -17,7 +17,7 @@ def makea6sheet(rorg_x,org_y, left, weekday=False, weekend=False, monthly=False)
     dotcolor = "#909090"
 
     if monthly:
-        y-=6
+        y-=pitch
         oy = y
 
         for i in range(8):
@@ -46,10 +46,10 @@ def makea6sheet(rorg_x,org_y, left, weekday=False, weekend=False, monthly=False)
                 height="%f"
                 x="%f"
                 y="%f" />""" % (color, color, line_thickness, 18*7, x+4, oy))
-            x+=18
+            x+= (3*pitch)
 
     else:
-        for i in range(21):
+        for i in range(int(126/pitch)):
             print("""<rect
             style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
             width="89.0"
@@ -57,31 +57,36 @@ def makea6sheet(rorg_x,org_y, left, weekday=False, weekend=False, monthly=False)
             x="%f"
             y="%f" />""" % (color, color, line_thickness, x, y))
             if not weekday:
-                for c in range(15):
+                for c in range(int(90 / pitch)):
                     print("""<ellipse
                 style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
                 cx="%f" cy="%f" rx="%f" ry="%f" />""" % (dotcolor, dotcolor,
-                    x + (2.5) + c*6 + (.2 * dot_radius),
+                    x + (2.5) + c*pitch + (.2 * dot_radius),
                     y+dot_y_offset,
                     dot_radius, dot_radius ))
-            y += 6
+            y += pitch
     if weekday:
         do_day_title(org_x, org_y, weekday, left)
-        do_numbers(org_x, org_y)
-        weekday_todo(org_x, org_y)
+        do_numbers(org_x, org_y, pitch)
+        weekday_todo(org_x, org_y, pitch)
     elif weekend:
         do_day_title(org_x, org_y, weekend, left)
-        weekend_todo(org_x, org_y)       
+        weekend_todo(org_x, org_y, pitch)
+
+    do_year_stamp(org_x, org_y, left)
         
 def do_day_title(org_x, org_y, weekday, left):
     x = org_x + 16
     y = org_y + 14
-    year=2024
     print("""<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                     x="%f"
                     y="%f"
                 >%s</text>
                 """ % (x,y, weekday))
+    # do_year_stamp(org_x, org_y, left)
+
+def do_year_stamp(org_x, org_y, left):
+    year=2024
     if left:
         x = org_x + 86 
     else:
@@ -93,24 +98,31 @@ def do_day_title(org_x, org_y, weekday, left):
                 >%s</text>
                 """ % (x,y, year))
 
-def do_numbers(org_x, org_y):
+def do_numbers(org_x, org_y, pitch):
     y = org_y 
 
     #for left
     x = org_x + 3
     for ind, val in enumerate([9,10,11,12,1,2,3,4]):
-        liney = ind * 12 + 16 + 36+ y
+
+        num_lines = (126/pitch)
+        start_line = num_lines - (2*8)
+        starty = start_line * pitch + pitch # skip the top line
+
+
+        liney = ind * (pitch*2) + (10 + pitch) + starty + y
         xform = .5
         if val > 9:
             xform = .25
+
+        fs = (16*pitch) / 6
+
         print("""<g>
-              <text style="font-size:16px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+              <text style="font-size:%fpx;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
               transform="scale(%f,1)"
               x="%f" y="%f">%i</text>
               </g>
-              """ % (xform, x / xform, liney, val))
-        # style="font-size:4px;font-family:sans-serif;fill:#2080ff;fill-opacity:1;stroke:none"
-        # style="font-size:4px;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke-width:.2;stroke:1px #4080ff"
+              """ % (fs, xform, x / xform, liney, val))
         print("""<g>
               <text
                 xml:space="preserve"
@@ -120,7 +132,9 @@ def do_numbers(org_x, org_y):
                 y="%f"
                 transform="scale(.5, 1)"
               >00</text></g>
-              """ % ((x+2) / .5, liney - 6.5))
+              """ % ((x+2) / .5, liney - (pitch + .5)))
+        
+        toff = (1.5*pitch) / 6
         print("""
               <g>
               <text
@@ -130,23 +144,23 @@ def do_numbers(org_x, org_y):
                 y="%f"
                 transform="scale(.5, 1)"
               >30</text></g>
-              """ % ((x+2) / .5, liney-1.5))
+              """ % ((x+2) / .5, liney- toff))
 
-def weekday_todo(org_x, org_y):
+def weekday_todo(org_x, org_y, pitch):
     print("""
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="%f" y="%f"/>
  """ % (org_x + 42-.12, org_y + 16))
     print("""
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="%f" y="%f"/>
- """ % (org_x + 48-.12, org_y + 16))
+ """ % (org_x + (42+pitch)-.12, org_y + 16))
 
-def weekend_todo(org_x, org_y):
+def weekend_todo(org_x, org_y, pitch):
     print("""
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="108" width="0.25" x="%f" y="%f"/>
  """ % (.6 + org_x + 6-.12, org_y + 16 + 12))
     print("""
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="108" width="0.25" x="%f" y="%f"/>
- """ % (.6 + org_x + 12-.12, org_y + 16 + 12))
+ """ % (.6 + org_x + (6+pitch)-.12, org_y + 16 + 12))
 
 
 def a4pagetrailer():
