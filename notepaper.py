@@ -155,12 +155,16 @@ def weekday_todo(org_x, org_y, pitch):
  """ % (org_x + (42+pitch)-.12, org_y + 16))
 
 def weekend_todo(org_x, org_y, pitch):
+    num_lines = int((126/pitch))
+    nlm3 = num_lines-3 
+    height=nlm3 * pitch
+
     print("""
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="108" width="0.25" x="%f" y="%f"/>
- """ % (.6 + org_x + 6-.12, org_y + 16 + 12))
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="%f" width="0.25" x="%f" y="%f"/>
+ """ % (height, .6 + org_x + 6-.12, org_y + 16 + (2*pitch))) #12))
     print("""
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="108" width="0.25" x="%f" y="%f"/>
- """ % (.6 + org_x + (6+pitch)-.12, org_y + 16 + 12))
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="%f" width="0.25" x="%f" y="%f"/>
+ """ % (height, .6 + org_x + (6+pitch)-.12, org_y + 16 + (2*pitch)))#12))
 
 
 def a4pagetrailer():
