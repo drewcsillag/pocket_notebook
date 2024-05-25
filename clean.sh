@@ -1,1 +1,1 @@
-rm week*.pdf week*.svg blank*.svg monthly*.{pdf,svg} orgpages.pdf
+rm week*.pdf week*.svg blank*.{svg,pdf} monthly*.{pdf,svg} orgpages.pdf
