@@ -313,6 +313,12 @@ for p in range(num_sheets):
             makea6sheet(x,y,left=False, year=year, weekend=dayofweek, month=month, day=day, todos=todos)
         else:
             makea6sheet(x,y,left=False, year=year, weekday=dayofweek, month=month, day=day, todos=todos)
+
+    np = len(thisp)
+    for i in range(np, 4):
+        x,y = RIGHT_PAGES[i]
+        makea6sheet(x,y, left=False, year=year)
+
     a4pagetrailer()
 
     sys.stdout = open('daily%d-right.svg' % (p,), 'w')
@@ -324,6 +330,11 @@ for p in range(num_sheets):
             makea6sheet(x,y,left=True, year=year, weekend=dayofweek, month=month, day=day, todos=todos)
         else:
             makea6sheet(x,y,left=True, year=year, weekday=dayofweek, month=month, day=day, todos=todos)
+
+    np = len(thisp)
+    for i in range(np, 4):
+        x,y = LEFT_PAGES[i]
+        makea6sheet(x,y, left=False, year=year)
     a4pagetrailer()
 
     p1 = p1[4:]
