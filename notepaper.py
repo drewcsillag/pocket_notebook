@@ -72,10 +72,10 @@ def makea6sheet(rorg_x,org_y, left, year, day = None, weekday=False, weekend=Fal
     if weekday:
         do_day_title(org_x, org_y, weekday, left, month, day)
         do_numbers(org_x, org_y, pitch)
-        weekday_todo(org_x, org_y, pitch, todos[weekday])
+        weekday_todo(org_x, org_y, pitch, todos)
     elif weekend:
         do_day_title(org_x, org_y, weekend, left, month, day)
-        weekend_todo(org_x, org_y, pitch, todos[weekend])
+        weekend_todo(org_x, org_y, pitch, todos)
 
     if not monthly:
         do_year_stamp(org_x, org_y, left, year)
@@ -268,10 +268,73 @@ def makeBlankPages(left, year):
     makea6sheet(0,148,   left=left, year=year)
     a4pagetrailer()
 
-todos = json.load(open('todos.json'))
-
 import datetime
+from dateutil.relativedelta import relativedelta, MO, TU, WE, TH, FR, SA, SU
 
+def nth_weekday(the_date, nth_week, week_day):
+    temp = the_date.replace(day=1)
+    adj = (week_day - temp.weekday()) % 7
+    temp += datetime.timedelta(days=adj)
+    temp += datetime.timedelta(weeks=nth_week-1)
+    return temp
+
+DAY_TO_NUM= {
+    'Monday': MO,
+    'Tuesday': TU,
+    'Wednesday': WE,
+    'Thursday': TH,
+    'Friday': FR,
+    'Saturday': SA,
+    'Sunday': SU
+}
+
+def dateeq(d1, d2):
+    return d1.year == d2.year and d1.month == d2.month and d1.day == d2.day
+
+def addTodos(t, v):
+    t = t[:]
+    for i in v:
+        ind = t.index("")
+        t[ind] = i
+    return t
+
+
+def getDayTodos(day, month, year, dayofweek, todos, d_obj):
+    t = todos['weekly'][dayofweek]
+    m = todos['monthly']
+
+    for k, v in m.items():
+        dow, which = k.split(',')
+        which = int(which)
+
+        # print("Checking for %s for %s" % (k, d_obj))
+        if dow == 'Day':
+            #days from end of month
+            if which < 0:
+                rd = d_obj + relativedelta(day=33, days=which+1)
+                # print ("Is %s - %s" % (rd, dateeq(rd, d_obj)))
+                if dateeq(rd, d_obj):
+                    t = addTodos(t, v)
+            else: ## days from start
+                rd = d_obj + relativedelta(day=1, days=which-1)
+                # print ("Is %s - %s" % (rd, dateeq(rd, d_obj)))
+                if dateeq(rd, d_obj):
+                    t = addTodos(t, v)
+
+        else:
+            dow_n = DAY_TO_NUM[dow]
+            if which < 0: 
+                rd = d_obj + relativedelta(day=31, weekday=dow_n(which))
+            else:
+                rd = d_obj + relativedelta(day=1, weekday=dow_n(which))
+            # rd = nth_weekday(datetime.datetime(year, month, day), int(which), dow_n)
+            # print ("Is %s - %s" % (rd, dateeq(rd, d_obj)))
+            if dateeq(rd, d_obj):
+                t = addTodos(t, v)
+
+    return t
+
+todos = json.load(open('todos.json'))
 cur = datetime.date.fromisoformat(sys.argv[1])
 numdays = int(sys.argv[2])
 numsplits = numdays / 2
@@ -289,10 +352,10 @@ minipageno = 0
 p1 = []
 p2 = []
 for i in range(numsplits):
-    p1.append((RIGHT_PAGES[minipageno], DAYS[cur.weekday()], cur.day, MONTHS[cur.month], cur.year))
+    p1.append((RIGHT_PAGES[minipageno], DAYS[cur.weekday()], cur.day, MONTHS[cur.month], cur.year, cur))
     cur += ONE_DAY 
 
-    p2.append((LEFT_PAGES[minipageno], DAYS[cur.weekday()], cur.day, MONTHS[cur.month], cur.year))
+    p2.append((LEFT_PAGES[minipageno], DAYS[cur.weekday()], cur.day, MONTHS[cur.month], cur.year, cur))
     cur += ONE_DAY 
 
     minipageno += 1
@@ -308,11 +371,12 @@ for p in range(num_sheets):
     thisp = p1[:4]
     a4pageheader()
     for tp in thisp:
-        (x, y), dayofweek, day, month, year = tp
+        (x, y), dayofweek, day, month, year, d_obj = tp
+        day_todos = getDayTodos(day, month, year, dayofweek, todos, d_obj)
         if dayofweek in ('Saturday', 'Sunday'):
-            makea6sheet(x,y,left=False, year=year, weekend=dayofweek, month=month, day=day, todos=todos)
+            makea6sheet(x,y,left=False, year=year, weekend=dayofweek, month=month, day=day, todos=day_todos)
         else:
-            makea6sheet(x,y,left=False, year=year, weekday=dayofweek, month=month, day=day, todos=todos)
+            makea6sheet(x,y,left=False, year=year, weekday=dayofweek, month=month, day=day, todos=day_todos)
 
     np = len(thisp)
     for i in range(np, 4):
@@ -325,11 +389,13 @@ for p in range(num_sheets):
     thisp = p2[:4]
     a4pageheader()
     for tp in thisp:
-        (x, y), dayofweek, day, month, year = tp 
+        (x, y), dayofweek, day, month, year, d_obj = tp 
+        day_todos = getDayTodos(day, month, year, dayofweek, todos, d_obj)
+
         if dayofweek in ('Saturday', 'Sunday'):
-            makea6sheet(x,y,left=True, year=year, weekend=dayofweek, month=month, day=day, todos=todos)
+            makea6sheet(x,y,left=True, year=year, weekend=dayofweek, month=month, day=day, todos=day_todos)
         else:
-            makea6sheet(x,y,left=True, year=year, weekday=dayofweek, month=month, day=day, todos=todos)
+            makea6sheet(x,y,left=True, year=year, weekday=dayofweek, month=month, day=day, todos=day_todos)
 
     np = len(thisp)
     for i in range(np, 4):
@@ -339,31 +405,6 @@ for p in range(num_sheets):
 
     p1 = p1[4:]
     p2 = p2[4:]
-
-
-
-# month = 'September'
-# year=2024
-
-# sys.stdout=open('weekp1.svg','w')
-# makeweekdayp1and2(left=0, year=year, days = ['Monday', 'Wednesday', 'Tuesday', 'Thursday'], todos=todos, month=month)
-# sys.stdout=open('weekp2.svg', 'w')
-# makeweekdayp1and2(left=1, year=year, days=['Thursday', 'Tuesday', 'Friday', 'Wednesday'], todos=todos, month=month)
-# sys.stdout=open('weekp3.svg', 'w')
-# makeMixedSheet(0, year=year, todos=todos, month=month)
-# sys.stdout=open('weekp4.svg', 'w')
-# makeMixedSheet(1, year=year, todos=todos, month=month)
-
-
-# sys.stdout=open('weekp5.svg','w')
-# makeweekdayp1and2(left=0, year=year, days = ['Monday', 'Wednesday', 'Tuesday', 'Thursday'], todos=todos, month="")
-# sys.stdout=open('weekp6.svg', 'w')
-# makeweekdayp1and2(left=1, year=year, days=['Thursday', 'Tuesday', 'Friday', 'Wednesday'], todos=todos, month="")
-# sys.stdout=open('weekp7.svg', 'w')
-# makeMixedSheet(0, year=year, todos=todos, month="")
-# sys.stdout=open('weekp8.svg', 'w')
-# makeMixedSheet(1, year=year, todos=todos, month="")
-
 
 sys.stdout=open('monthly1.svg', 'w')
 makeMonthlyPages(0, year=year)
