@@ -340,6 +340,7 @@ def weekend_todo(org_x, org_y, pitch, todos, holidays):
             )
         )
 
+
 def a4pagetrailer():
     print(
         """  </g>
@@ -524,7 +525,7 @@ def makeDatePage(left, p, px):
 
 
 if __name__ == "__main__":
-    todos=yaml.safe_load(open("todos.yaml"))
+    todos = yaml.safe_load(open("todos.yaml"))
     holidays = yaml.safe_load(open("holidays.yaml"))
     cur = datetime.date.fromisoformat(sys.argv[1])
     numdays = int(sys.argv[2])
