@@ -228,29 +228,6 @@ def a4pageheader():
      inkscape:groupmode="layer"
      id="layer1">
 """)
-    
-# def makeweekdayp1and2(left, days, todos, month, year):
-#     a4pageheader()
-#     makea6sheet(0,0,     left=left, year=year, weekday=days[0], month=month, todos=todos)
-#     makea6sheet(105,0,   left=left, year=year, weekday=days[1], month=month, todos=todos)
-#     makea6sheet(105,148, left=left, year=year, weekday=days[2], month=month, todos=todos)
-#     makea6sheet(0,148,   left=left, year=year, weekday=days[3], month=month, todos=todos)
-#     a4pagetrailer()
-
-
-# def makeMixedSheet(left, todos, month, year):
-#     a4pageheader()
-#     if not left:
-#         makea6sheet(0,0,     month=month, year=year, left=left, weekend='Saturday', todos=todos)
-#         makea6sheet(105,0,   month=month, year=year, left=left, weekday='Friday', todos=todos)
-#         makea6sheet(105,148, month=month, year=year, left=left, weekend='Sunday', todos=todos)
-#         makea6sheet(0,148,   year=year, left=left)
-#     else:    
-#         makea6sheet(105,0,   month=month, year=year, left=left, weekend='Sunday', todos=todos)
-#         makea6sheet(0,0,     month=month, year=year, left=left, weekend='Saturday', todos=todos)
-#         makea6sheet(0,148,   month=month, year=year, left=left, weekday='Monday', todos=todos)
-#         makea6sheet(105,148, year=year, left=left)
-#     a4pagetrailer()
 
 def makeMonthlyPages(left, year):
     a4pageheader()
@@ -299,25 +276,24 @@ def addTodos(t, v):
     return t
 
 
-def getDayTodos(day, month, year, dayofweek, todos, d_obj):
+def getDayTodos(dayofweek, todos, d_obj):
     t = todos['weekly'][dayofweek]
     m = todos['monthly']
+    y = todos['yearly']
+
 
     for k, v in m.items():
         dow, which = k.split(',')
         which = int(which)
 
-        # print("Checking for %s for %s" % (k, d_obj))
         if dow == 'Day':
             #days from end of month
             if which < 0:
                 rd = d_obj + relativedelta(day=33, days=which+1)
-                # print ("Is %s - %s" % (rd, dateeq(rd, d_obj)))
                 if dateeq(rd, d_obj):
                     t = addTodos(t, v)
             else: ## days from start
                 rd = d_obj + relativedelta(day=1, days=which-1)
-                # print ("Is %s - %s" % (rd, dateeq(rd, d_obj)))
                 if dateeq(rd, d_obj):
                     t = addTodos(t, v)
 
@@ -327,91 +303,85 @@ def getDayTodos(day, month, year, dayofweek, todos, d_obj):
                 rd = d_obj + relativedelta(day=31, weekday=dow_n(which))
             else:
                 rd = d_obj + relativedelta(day=1, weekday=dow_n(which))
-            # rd = nth_weekday(datetime.datetime(year, month, day), int(which), dow_n)
-            # print ("Is %s - %s" % (rd, dateeq(rd, d_obj)))
             if dateeq(rd, d_obj):
                 t = addTodos(t, v)
 
     return t
 
-todos = json.load(open('todos.json'))
-cur = datetime.date.fromisoformat(sys.argv[1])
-numdays = int(sys.argv[2])
-numsplits = numdays / 2
-if numsplits != int(numsplits):
-    print("must specify an even number of days %s %s" % (numsplits, int(numsplits)))
-    sys.exit(1)
-numsplits = int(numsplits)
-DAYS=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-MONTHS=["X", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-ONE_DAY = datetime.timedelta(days=1)
-RIGHT_PAGES=[(0,0), (105,0), (0,148), (105,148)]
-LEFT_PAGES = [(105,0), (0,0), (105,148), (0, 148)]
-
-minipageno = 0
-p1 = []
-p2 = []
-for i in range(numsplits):
-    p1.append((RIGHT_PAGES[minipageno], DAYS[cur.weekday()], cur.day, MONTHS[cur.month], cur.year, cur))
-    cur += ONE_DAY 
-
-    p2.append((LEFT_PAGES[minipageno], DAYS[cur.weekday()], cur.day, MONTHS[cur.month], cur.year, cur))
-    cur += ONE_DAY 
-
-    minipageno += 1
-    if minipageno == 4:
-        minipageno = 0
-
-num_sheets = int(len(p1) / 4)
-if len(p1) % 4: 
-    num_sheets+=1
-
-for p in range(num_sheets):
-    sys.stdout = open('daily%d-left.svg' % (p,), 'w')
-    thisp = p1[:4]
+def makeDatePage(left, p, px):
+    side = "right"
+    if left:
+        side = "left"
+    sys.stdout = open('daily%d-%s.svg' % (p,side), 'w')
+    thisp = px[:4]
     a4pageheader()
     for tp in thisp:
         (x, y), dayofweek, day, month, year, d_obj = tp
-        day_todos = getDayTodos(day, month, year, dayofweek, todos, d_obj)
+        day_todos = getDayTodos(dayofweek, todos, d_obj)
         if dayofweek in ('Saturday', 'Sunday'):
-            makea6sheet(x,y,left=False, year=year, weekend=dayofweek, month=month, day=day, todos=day_todos)
+            makea6sheet(x,y,left=left, year=year, weekend=dayofweek, month=month, day=day, todos=day_todos)
         else:
-            makea6sheet(x,y,left=False, year=year, weekday=dayofweek, month=month, day=day, todos=day_todos)
+            makea6sheet(x,y,left=left, year=year, weekday=dayofweek, month=month, day=day, todos=day_todos)
 
     np = len(thisp)
     for i in range(np, 4):
-        x,y = RIGHT_PAGES[i]
-        makea6sheet(x,y, left=False, year=year)
-
-    a4pagetrailer()
-
-    sys.stdout = open('daily%d-right.svg' % (p,), 'w')
-    thisp = p2[:4]
-    a4pageheader()
-    for tp in thisp:
-        (x, y), dayofweek, day, month, year, d_obj = tp 
-        day_todos = getDayTodos(day, month, year, dayofweek, todos, d_obj)
-
-        if dayofweek in ('Saturday', 'Sunday'):
-            makea6sheet(x,y,left=True, year=year, weekend=dayofweek, month=month, day=day, todos=day_todos)
+        if left:
+            x,y = LEFT_PAGES[i]
         else:
-            makea6sheet(x,y,left=True, year=year, weekday=dayofweek, month=month, day=day, todos=day_todos)
-
-    np = len(thisp)
-    for i in range(np, 4):
-        x,y = LEFT_PAGES[i]
-        makea6sheet(x,y, left=False, year=year)
+            x,y = RIGHT_PAGES[i]
+        makea6sheet(x,y, left=left, year=year)
     a4pagetrailer()
 
-    p1 = p1[4:]
-    p2 = p2[4:]
 
-sys.stdout=open('monthly1.svg', 'w')
-makeMonthlyPages(0, year=year)
-sys.stdout=open('monthly2.svg', 'w')
-makeMonthlyPages(1, year=year)
+if __name__ == '__main__':
+    todos = json.load(open('todos.json'))
+    cur = datetime.date.fromisoformat(sys.argv[1])
+    numdays = int(sys.argv[2])
+    numsplits = numdays / 2
+    if numsplits != int(numsplits):
+        print("must specify an even number of days %s %s" % (numsplits, int(numsplits)))
+        sys.exit(1)
+    numsplits = int(numsplits)
+    DAYS=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    MONTHS=["X", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    ONE_DAY = datetime.timedelta(days=1)
+    RIGHT_PAGES=[(0,0), (105,0), (0,148), (105,148)]
+    LEFT_PAGES = [(105,0), (0,0), (105,148), (0, 148)]
 
-sys.stdout=open('blank1.svg', 'w')
-makeBlankPages(0, year=year)
-sys.stdout=open('blank2.svg', 'w')
-makeBlankPages(1, year=year)
+    minipageno = 0
+    p1 = []
+    p2 = []
+    for i in range(numsplits):
+        p1.append((RIGHT_PAGES[minipageno], DAYS[cur.weekday()], cur.day, MONTHS[cur.month], cur.year, cur))
+        cur += ONE_DAY 
+
+        p2.append((LEFT_PAGES[minipageno], DAYS[cur.weekday()], cur.day, MONTHS[cur.month], cur.year, cur))
+        cur += ONE_DAY 
+
+        minipageno += 1
+        if minipageno == 4:
+            minipageno = 0
+
+        # used way below
+        year = cur.year
+
+    num_sheets = int(len(p1) / 4)
+    if len(p1) % 4: 
+        num_sheets+=1
+
+    for p in range(num_sheets):
+        makeDatePage(left=False, p = p, px = p1[:4])
+        makeDatePage(left=True, p=p, px = p2[:4])
+
+        p1 = p1[4:]
+        p2 = p2[4:]
+
+    sys.stdout=open('monthly1.svg', 'w')
+    makeMonthlyPages(0, year=year)
+    sys.stdout=open('monthly2.svg', 'w')
+    makeMonthlyPages(1, year=year)
+
+    sys.stdout=open('blank1.svg', 'w')
+    makeBlankPages(0, year=year)
+    sys.stdout=open('blank2.svg', 'w')
+    makeBlankPages(1, year=year)
