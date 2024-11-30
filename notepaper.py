@@ -1,5 +1,5 @@
 import sys
-import json
+import yaml
 from typing import Dict, List
 
 DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
@@ -32,6 +32,7 @@ def makea6sheet(
     pitch=5,
     todos={},
     month=None,
+    holidays={},
 ):
     org_x = rorg_x
     if not left:
@@ -121,10 +122,10 @@ def makea6sheet(
     if weekday:
         do_day_title(org_x, org_y, weekday, left, month, day)
         do_numbers(org_x, org_y, pitch)
-        weekday_todo(org_x, org_y, pitch, todos)
+        weekday_todo(org_x, org_y, pitch, todos, holidays)
     elif weekend:
         do_day_title(org_x, org_y, weekend, left, month, day)
-        weekend_todo(org_x, org_y, pitch, todos)
+        weekend_todo(org_x, org_y, pitch, todos, holidays)
 
     if not monthly:
         do_year_stamp(org_x, org_y, left, year)
@@ -233,7 +234,7 @@ def do_numbers(org_x, org_y, pitch):
         # """ % ((x+2) / half_hours_scale + half_hours_scale * pitch, liney- toff, half_hours_scale))
 
 
-def weekday_todo(org_x, org_y, pitch, todos):
+def weekday_todo(org_x, org_y, pitch, todos, holidays):
     print(
         """
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="%f" y="%f"/>
@@ -262,8 +263,23 @@ def weekday_todo(org_x, org_y, pitch, todos):
             )
         )
 
+    for ind, t in enumerate(holidays):
+        print(
+            """<g><text xml:space="preserve"
+                style="font-size:%spx;font-family:sans-serif;fill:#444444;fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
+                x="%f"
+                y="%f"
+              >%s</text></g>"""
+            % (
+                pitch * 0.6,
+                org_x + 6,
+                org_y + 15 + ((ind + 1) * pitch),
+                t,
+            )
+        )
 
-def weekend_todo(org_x, org_y, pitch, todos):
+
+def weekend_todo(org_x, org_y, pitch, todos, holidays):
     num_lines = int((126 / pitch))
     nlm3 = num_lines - 3
     height = nlm3 * pitch
@@ -309,6 +325,20 @@ def weekend_todo(org_x, org_y, pitch, todos):
             )
         )
 
+    for ind, t in enumerate(holidays):
+        print(
+            """<g><text xml:space="preserve"
+                style="font-size:%spx;font-family:sans-serif;fill:#444444;fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
+                x="%f"
+                y="%f"
+              >%s</text></g>"""
+            % (
+                pitch * 0.6,
+                org_x + 6,
+                org_y + 15 + ((ind + 1) * pitch),
+                t,
+            )
+        )
 
 def a4pagetrailer():
     print(
@@ -457,6 +487,7 @@ def makeDatePage(left, p, px):
     for tp in thisp:
         (x, y), dayofweek, day, month, year, d_obj = tp
         day_todos = getDayTodos(dayofweek, todos, d_obj)
+        day_holidays = getDayTodos(dayofweek, holidays, d_obj)
         if dayofweek in ("Saturday", "Sunday"):
             makea6sheet(
                 x,
@@ -467,6 +498,7 @@ def makeDatePage(left, p, px):
                 month=month,
                 day=day,
                 todos=day_todos,
+                holidays=day_holidays,
             )
         else:
             makea6sheet(
@@ -478,6 +510,7 @@ def makeDatePage(left, p, px):
                 month=month,
                 day=day,
                 todos=day_todos,
+                holidays=day_holidays,
             )
 
     np = len(thisp)
@@ -491,7 +524,8 @@ def makeDatePage(left, p, px):
 
 
 if __name__ == "__main__":
-    todos = json.load(open("todos.json"))
+    todos=yaml.safe_load(open("todos.yaml"))
+    holidays = yaml.safe_load(open("holidays.yaml"))
     cur = datetime.date.fromisoformat(sys.argv[1])
     numdays = int(sys.argv[2])
     numsplits = numdays / 2
