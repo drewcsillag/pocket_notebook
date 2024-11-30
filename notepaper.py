@@ -1,6 +1,8 @@
 import sys
 import yaml
 from typing import Dict, List
+from collections import defaultdict
+
 
 DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 MONTHS = [
@@ -424,15 +426,33 @@ def dateeq(d1, d2):
 def addTodos(t, v):
     t = t[:]
     for i in v:
-        ind = t.index("")
-        t[ind] = i
+        if "" in t:
+            ind = t.index("")
+            t[ind] = i
+        else:
+            t.append(i)
     return t
 
 
+def fixupListOfLists(x):
+    if type(x) == type([]) and len(x) > 0 and type(x[0]) == type([]):
+        l = []
+        for i in x:
+            l.extend(i)
+        return l
+    elif x is None:
+        return []
+    else:
+        return x
+
+
 def getDayTodos(dayofweek: int, todos, d_obj: datetime.date):
-    t = todos["weekly"][dayofweek]
-    m = todos["monthly"]
-    y = todos["yearly"]
+    tt = todos.get("weekly", [{}])
+    # print("T", tt)
+
+    t = fixupListOfLists(tt[0].get(dayofweek))
+    m = todos["monthly"][0]
+    y = todos["yearly"][0]
 
     all_todos = t[:]
 
@@ -524,9 +544,35 @@ def makeDatePage(left, p, px):
     a4pagetrailer()
 
 
+def parse_preserving_duplicates(src):
+    # We deliberately define a fresh class inside the function,
+    # because add_constructor is a class method and we don't want to
+    # mutate pyyaml classes.
+    class PreserveDuplicatesLoader(yaml.loader.Loader):
+        pass
+
+    def map_constructor(loader, node, deep=False):
+        """Walk the mapping, recording any duplicate keys."""
+
+        mapping = defaultdict(list)
+        for key_node, value_node in node.value:
+            key = loader.construct_object(key_node, deep=deep)
+            value = loader.construct_object(value_node, deep=deep)
+
+            mapping[key].append(value)
+
+        # print("RESULT MAPPING", mapping)
+        return mapping
+
+    PreserveDuplicatesLoader.add_constructor(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, map_constructor
+    )
+    return yaml.load(src, PreserveDuplicatesLoader)
+
+
 if __name__ == "__main__":
-    todos = yaml.safe_load(open("todos.yaml"))
-    holidays = yaml.safe_load(open("holidays.yaml"))
+    todos = parse_preserving_duplicates(open("todos.yaml"))
+    holidays = parse_preserving_duplicates(open("holidays.yaml"))
     cur = datetime.date.fromisoformat(sys.argv[1])
     numdays = int(sys.argv[2])
     numsplits = numdays / 2
