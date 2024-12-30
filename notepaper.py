@@ -2,6 +2,8 @@ import sys
 import yaml
 from typing import Dict, List
 from collections import defaultdict
+import datetime
+from dateutil.relativedelta import relativedelta, MO, TU, WE, TH, FR, SA, SU
 
 
 DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
@@ -21,6 +23,22 @@ MONTHS = [
     "December",
 ]
 
+DAY_TO_NUM = {
+    "Monday": MO,
+    "Tuesday": TU,
+    "Wednesday": WE,
+    "Thursday": TH,
+    "Friday": FR,
+    "Saturday": SA,
+    "Sunday": SU,
+}
+
+ONE_DAY = datetime.timedelta(days=1)
+RIGHT_PAGES = [(0, 0), (105, 0), (0, 148), (105, 148)]
+LEFT_PAGES = [(105, 0), (0, 0), (105, 148), (0, 148)]
+
+# -3 to the left to account for printer skew
+# LEFT_PAGES = [(102, 0), (-3, 0), (102, 148), (-3, 148)]
 
 def makea6sheet(
     rorg_x,
@@ -38,9 +56,9 @@ def makea6sheet(
     frontpage=None
 ):
     org_x = rorg_x
-    if not left:
-        org_x += 4
-        x = org_x + 4
+    if False: #not left:
+        org_x += 7
+        x = org_x + 7
     else:
         org_x += 2
         x = org_x + 4
@@ -563,8 +581,68 @@ def a4pageheader():
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
-"""
-    )
+""")
+
+    ### DEBUG LINES FOLLOW
+    # print(
+    #     """<rect
+    #     style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+    #     width="0.2"
+    #     height="%f"
+    #     x="%f"
+    #     y="%f" />"""
+    #     % ("#000000", "#000000", 297, 105, 0)
+    # )
+
+    # print(
+    #     """<rect
+    #     style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+    #     width="0.1"
+    #     height="%f"
+    #     x="%f"
+    #     y="%f" />"""
+    #     % ("#000000", "#000000", 297, 95, 0)
+    # )
+
+    # print(
+    #     """<rect
+    #     style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+    #     width="0.1"
+    #     height="%f"
+    #     x="%f"
+    #     y="%f" />"""
+    #     % ("#000000", "#000000", 297, 10, 0)
+    # )
+
+    # print(
+    #     """<rect
+    #     style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+    #     width="0.1"
+    #     height="%f"
+    #     x="%f"
+    #     y="%f" />"""
+    #     % ("#000000", "#000000", 297, 200, 0)
+    # )
+
+    # print(
+    #     """<rect
+    #     style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+    #     width="0.1"
+    #     height="%f"
+    #     x="%f"
+    #     y="%f" />"""
+    #     % ("#000000", "#000000", 297, 115, 0)
+    # )
+    # print(
+    #     """<rect
+    #     style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+    #     width="0.2"
+    #     height="%f"
+    #     x="%f"
+    #     y="%f" />"""
+    #     % ("#000000", "#000000", 297, 209, 0)
+    # )    
+    
 
 
 def makeMonthlyPages(left, year):
@@ -585,8 +663,6 @@ def makeBlankPages(left, year):
     a4pagetrailer()
 
 
-import datetime
-from dateutil.relativedelta import relativedelta, MO, TU, WE, TH, FR, SA, SU
 
 
 def nth_weekday(the_date, nth_week, week_day):
@@ -597,15 +673,7 @@ def nth_weekday(the_date, nth_week, week_day):
     return temp
 
 
-DAY_TO_NUM = {
-    "Monday": MO,
-    "Tuesday": TU,
-    "Wednesday": WE,
-    "Thursday": TH,
-    "Friday": FR,
-    "Saturday": SA,
-    "Sunday": SU,
-}
+
 
 
 def dateeq(d1, d2):
@@ -703,7 +771,7 @@ def makeFrontPage(year, left = False):
 
 def makeDatePage(left, p, px):
     side = "right"
-    if left:
+    if not left:
         side = "left"
     sys.stdout = open("daily%d-%s.svg" % (p, side), "w")
     thisp = px[:4]
@@ -783,10 +851,6 @@ if __name__ == "__main__":
         sys.exit(1)
     numsplits = int(numsplits)
 
-    ONE_DAY = datetime.timedelta(days=1)
-    RIGHT_PAGES = [(0, 0), (105, 0), (0, 148), (105, 148)]
-    LEFT_PAGES = [(105, 0), (0, 0), (105, 148), (0, 148)]
-
     minipageno = 0
     p1 = []
     p2 = []
@@ -843,8 +907,8 @@ if __name__ == "__main__":
     sys.stdout = open("blank2.svg", "w")
     makeBlankPages(1, year=year)
 
-    sys.stdout=open("header_l.svg", "w")
-    makeFrontPage(year = year, left = True)
     sys.stdout=open("header_r.svg", "w")
+    makeFrontPage(year = year, left = True)
+    sys.stdout=open("header_l.svg", "w")
 
     makeFrontPage(year = year, left = False)
