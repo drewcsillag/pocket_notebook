@@ -40,6 +40,7 @@ LEFT_PAGES = [(105, 0), (0, 0), (105, 148), (0, 148)]
 # -3 to the left to account for printer skew
 # LEFT_PAGES = [(102, 0), (-3, 0), (102, 148), (-3, 148)]
 
+
 def makea6sheet(
     rorg_x,
     org_y,
@@ -53,10 +54,10 @@ def makea6sheet(
     todos={},
     month=None,
     holidays={},
-    frontpage=None
+    frontpage=None,
 ):
     org_x = rorg_x
-    if False: #not left:
+    if False:  # not left:
         org_x += 7
         x = org_x + 7
     else:
@@ -154,6 +155,7 @@ def makea6sheet(
     if frontpage is True:
         do_frontpage(org_x, org_y, year, frontpage, pitch)
 
+
 def do_frontpage(org_x, org_y, year, frontpage, pitch):
     color = "#b0b0b0"
     line_thickness = 0.1
@@ -179,7 +181,7 @@ def do_frontpage(org_x, org_y, year, frontpage, pitch):
                     y="%f"
                 >%s</text>
                 """
-        % (x, y + (5*pitch), title)
+        % (x, y + (5 * pitch), title)
     )
 
     print(
@@ -188,40 +190,39 @@ def do_frontpage(org_x, org_y, year, frontpage, pitch):
                     y="%f"
                 >%s</text>
                 """
-        % (x, y + (14*pitch), str(year+1))
+        % (x, y + (14 * pitch), str(year + 1))
     )
 
     # upper date to day grid lines
-    for cno in range(11,19):
-        print( #120 -> 6*12 = 72
-        """
+    for cno in range(11, 19):
+        print(  # 120 -> 6*12 = 72
+            """
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="105" width="0.25" x="%f" y="%f"/>
  """
-        % (org_x + (pitch*cno) +1.4, org_y + 16)
-    )
-        
-    days=["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
+            % (org_x + (pitch * cno) + 1.4, org_y + 16)
+        )
 
-    YOFF=20
+    days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
 
-    #date grid
-    for i in range(1,32):
-        col = (i-1) %7
-        row = int((i-1) / 7)
+    YOFF = 20
 
-        x = col * pitch + (11*pitch) + org_x + 3
+    # date grid
+    for i in range(1, 32):
+        col = (i - 1) % 7
+        row = int((i - 1) / 7)
+
+        x = col * pitch + (11 * pitch) + org_x + 3
         if i >= 10:
-            x -= .8
+            x -= 0.8
         y = row * pitch + YOFF + org_y
         print(
-        """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+            """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                     x="%f"
                     y="%f"
                 >%s</text>
                 """
-        % (x, y, str(i))
-
-        )   
+            % (x, y, str(i))
+        )
 
     # upper DAY Matrix
     for i in range(7):
@@ -229,80 +230,76 @@ def do_frontpage(org_x, org_y, year, frontpage, pitch):
         for day in range(7):
             daytxt = days[(row + day) % 7]
             col = day
-            x = col * pitch + (11*pitch) + org_x + 2
-            y = row * pitch + YOFF + (5*pitch) + org_y
+            x = col * pitch + (11 * pitch) + org_x + 2
+            y = row * pitch + YOFF + (5 * pitch) + org_y
             print(
-            """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                         x="%f"
                         y="%f"
                     >%s</text>
                     """
-            % (x, y, daytxt)
-
-            )  
+                % (x, y, daytxt)
+            )
     # lower DAY Matrix
     for i in range(7):
         row = i
         for day in range(7):
             daytxt = days[(row + day) % 7]
             col = day
-            x = col * pitch + (11*pitch) + org_x + 2
-            y = row * pitch + YOFF + (14*pitch) + org_y
+            x = col * pitch + (11 * pitch) + org_x + 2
+            y = row * pitch + YOFF + (14 * pitch) + org_y
             print(
-            """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                         x="%f"
                         y="%f"
                     >%s</text>
                     """
-            % (x, y, daytxt)
-
-            )   
+                % (x, y, daytxt)
+            )
 
     ## Put first year months
     mos_first_year = [[], [], [], [], [], [], []]
-    for i in range(1,13):
+    for i in range(1, 13):
         dt = datetime.date(year, i, 1)
         first_day = (dt.weekday() + 1) % 7
         l = mos_first_year[first_day]
         l.append(MONTHS[i])
 
     for index, months in enumerate(mos_first_year):
-        l = ', '.join(months)
+        l = ", ".join(months)
 
         x = org_x + 4
-        y = index * pitch + YOFF + (5*pitch) + org_y
+        y = index * pitch + YOFF + (5 * pitch) + org_y
         print(
-        """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+            """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                     x="%f"
                     y="%f"
                 >%s</text>
                 """
-        % (x, y, l)
-
-        )   
+            % (x, y, l)
+        )
 
     ## Put second year months
     mos_second_year = [[], [], [], [], [], [], []]
-    for i in range(1,13):
+    for i in range(1, 13):
         dt = datetime.date(year + 1, i, 1)
         first_day = (dt.weekday() + 1) % 7
         l = mos_second_year[first_day]
         l.append(MONTHS[i])
 
     for index, months in enumerate(mos_second_year):
-        l = ', '.join(months)
+        l = ", ".join(months)
 
         x = org_x + 4
-        y = index * pitch + YOFF + (14*pitch) + org_y
+        y = index * pitch + YOFF + (14 * pitch) + org_y
         print(
-        """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+            """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                     x="%f"
                     y="%f"
                 >%s</text>
                 """
-        % (x, y, l)
-
-        )   
+            % (x, y, l)
+        )
 
     if not frontpage:
         org_x += 4
@@ -314,17 +311,17 @@ def do_frontpage(org_x, org_y, year, frontpage, pitch):
 
     # draw lines
     for i in range(int(126 / pitch)):
-        if i == 13: 
-            y+= pitch
+        if i == 13:
+            y += pitch
             continue
         if i == 22:
             break
 
         if i <= 4:
             width = 35
-            xoff = 11*pitch - 2.5
+            xoff = 11 * pitch - 2.5
         else:
-            width = 89-1.5
+            width = 89 - 1.5
             xoff = 0
         print(
             """<rect
@@ -335,9 +332,8 @@ def do_frontpage(org_x, org_y, year, frontpage, pitch):
         y="%f" />"""
             % (color, color, width, line_thickness, x + xoff, y)
         )
-        
-        y += pitch
 
+        y += pitch
 
 
 def do_day_title(org_x, org_y, weekday, left, month, day):
@@ -581,7 +577,8 @@ def a4pageheader():
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
-""")
+"""
+    )
 
     ### DEBUG LINES FOLLOW
     # print(
@@ -641,8 +638,7 @@ def a4pageheader():
     #     x="%f"
     #     y="%f" />"""
     #     % ("#000000", "#000000", 297, 209, 0)
-    # )    
-    
+    # )
 
 
 def makeMonthlyPages(left, year):
@@ -663,8 +659,6 @@ def makeBlankPages(left, year):
     a4pagetrailer()
 
 
-
-
 def nth_weekday(the_date, nth_week, week_day):
     temp = the_date.replace(day=1)
     adj = (week_day - temp.weekday()) % 7
@@ -673,14 +667,11 @@ def nth_weekday(the_date, nth_week, week_day):
     return temp
 
 
-
-
-
 def dateeq(d1, d2):
     return d1.year == d2.year and d1.month == d2.month and d1.day == d2.day
 
 
-def addTodos(t, v):
+def addTodos(t: List[str], v: List[str]) -> List[str]:
     t = t[:]
     for i in v:
         if "" in t:
@@ -703,7 +694,9 @@ def fixupListOfLists(x):
         return x
 
 
-def getDayTodos(dayofweek: int, todos, d_obj: datetime.date):
+def getDayTodos(
+    dayofweek: int, todos: Dict[str, List[Dict]], d_obj: datetime.date
+) -> List[str]:
     tt = todos.get("weekly", [{}])
     # print("T", tt)
 
@@ -728,7 +721,9 @@ def getDayTodos(dayofweek: int, todos, d_obj: datetime.date):
     return all_todos
 
 
-def addMonthlyTodos(d_obj: datetime.date, m: Dict[str, List[str]], all_todos):
+def addMonthlyTodos(
+    d_obj: datetime.date, m: Dict[str, List[str]], all_todos: List[str]
+):
     for k, v in m.items():
         dow, which_str = k.split(",")
         which = int(which_str)
@@ -754,20 +749,22 @@ def addMonthlyTodos(d_obj: datetime.date, m: Dict[str, List[str]], all_todos):
                 all_todos = addTodos(all_todos, v)
     return all_todos
 
-def makeFrontPage(year, left = False):
+
+def makeFrontPage(year, left=False):
     a4pageheader()
     x, y = RIGHT_PAGES[0]
     if left:
         x, y = LEFT_PAGES[0]
-    makea6sheet(x,y,left=left,year=year,frontpage=left)
+    makea6sheet(x, y, left=left, year=year, frontpage=left)
 
-    for i in range(1,4):
+    for i in range(1, 4):
         x, y = RIGHT_PAGES[i]
         if left:
             x, y = LEFT_PAGES[i]
         makea6sheet(x, y, left=left, year=year)
 
     a4pagetrailer()
+
 
 def makeDatePage(left, p, px):
     side = "right"
@@ -840,6 +837,7 @@ def parse_preserving_duplicates(src):
     )
     return yaml.load(src, PreserveDuplicatesLoader)
 
+
 if __name__ == "__main__":
     todos = parse_preserving_duplicates(open("todos.yaml"))
     holidays = parse_preserving_duplicates(open("holidays.yaml"))
@@ -907,8 +905,8 @@ if __name__ == "__main__":
     sys.stdout = open("blank2.svg", "w")
     makeBlankPages(1, year=year)
 
-    sys.stdout=open("header_r.svg", "w")
-    makeFrontPage(year = year, left = True)
-    sys.stdout=open("header_l.svg", "w")
+    sys.stdout = open("header_r.svg", "w")
+    makeFrontPage(year=year, left=True)
+    sys.stdout = open("header_l.svg", "w")
 
-    makeFrontPage(year = year, left = False)
+    makeFrontPage(year=year, left=False)
