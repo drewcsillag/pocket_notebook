@@ -76,3 +76,22 @@ class TestAddingTodos(unittest.TestCase):
         self.assertEqual(
             [], p.addMonthlyTodos(datetime.date(2024, 1, 30), todo_dict, [])
         )
+
+    def testAddMonthlyAnyMonday(self):
+        todo_dict = {"Monday,*": "t"}
+
+        self.assertEqual(
+            [], p.addMonthlyTodos(datetime.date(2024, 1, 21), todo_dict, [])
+        )
+
+        self.assertEqual(
+            ["t"], p.addMonthlyTodos(datetime.date(2024, 1, 22), todo_dict, [])
+        )
+
+        self.assertEqual(
+            ["t"], p.addMonthlyTodos(datetime.date(2024, 1, 29), todo_dict, [])
+        )
+
+        self.assertEqual(
+            [], p.addMonthlyTodos(datetime.date(2024, 1, 30), todo_dict, [])
+        )

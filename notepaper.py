@@ -694,17 +694,12 @@ def fixupListOfLists(x):
         return x
 
 
-def getDayTodos(
-    dayofweek: int, todos: Dict[str, List[Dict]], d_obj: datetime.date
-) -> List[str]:
-    tt = todos.get("weekly", [{}])
-    # print("T", tt)
+def getDayTodos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[str]:
 
-    t = fixupListOfLists(tt[0].get(dayofweek))
     m = todos["monthly"][0]
     y = todos["yearly"][0]
 
-    all_todos = t[:]
+    all_todos = []
 
     all_todos = addMonthlyTodos(d_obj, m, all_todos)
 
@@ -726,6 +721,8 @@ def addMonthlyTodos(
 ):
     for k, v in m.items():
         dow, which_str = k.split(",")
+        if which_str == "*":
+            which_str = "0"
         which = int(which_str)
 
         if dow == "Day":
@@ -741,12 +738,16 @@ def addMonthlyTodos(
 
         else:
             dow_n = DAY_TO_NUM[dow]
-            if which < 0:
-                rd = d_obj + relativedelta(day=31, weekday=dow_n(which))
+            if which == 0:
+                if d_obj.weekday() == dow_n.weekday:
+                    all_todos = addTodos(all_todos, v)
             else:
-                rd = d_obj + relativedelta(day=1, weekday=dow_n(which))
-            if dateeq(rd, d_obj):
-                all_todos = addTodos(all_todos, v)
+                if which < 0:
+                    rd = d_obj + relativedelta(day=31, weekday=dow_n(which))
+                else:
+                    rd = d_obj + relativedelta(day=1, weekday=dow_n(which))
+                if dateeq(rd, d_obj):
+                    all_todos = addTodos(all_todos, v)
     return all_todos
 
 
@@ -775,8 +776,8 @@ def makeDatePage(left, p, px):
     a4pageheader()
     for tp in thisp:
         (x, y), dayofweek, day, month, year, d_obj = tp
-        day_todos = getDayTodos(dayofweek, todos, d_obj)
-        day_holidays = getDayTodos(dayofweek, holidays, d_obj)
+        day_todos = getDayTodos(todos, d_obj)
+        day_holidays = getDayTodos(holidays, d_obj)
         if dayofweek in ("Saturday", "Sunday"):
             makea6sheet(
                 x,
