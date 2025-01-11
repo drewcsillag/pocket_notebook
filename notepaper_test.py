@@ -65,7 +65,7 @@ class TestAddingTodos(unittest.TestCase):
         self.assertEqual([], p.addMonthlyTodos(datetime.date(2024, 1, 30), todos, []))
 
     def testYearlyFirstWeekday(self):
-        todos = {"yearly": [{"March,Monday,1": "t"}], "monthly": [{}]}
+        todos = {"yearly": [{"March,Monday,1": "t"}]}
 
         # monday in other month
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 1, 1)))
@@ -75,7 +75,7 @@ class TestAddingTodos(unittest.TestCase):
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 3, 11)))
 
     def testYearlyLastWeekday(self):
-        todos = {"yearly": [{"March,Monday,-1": "t"}], "monthly": [{}]}
+        todos = {"yearly": [{"March,Monday,-1": "t"}]}
 
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 1, 29)))
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 3, 24)))
@@ -84,7 +84,7 @@ class TestAddingTodos(unittest.TestCase):
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 3, 18)))
 
     def testYearlyAnyMonday(self):
-        todos = {"yearly": [{"March,Monday,*": "t"}], "monthly": [{}]}
+        todos = {"yearly": [{"March,Monday,*": "t"}]}
 
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 1, 29)))
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 3, 24)))
@@ -93,7 +93,7 @@ class TestAddingTodos(unittest.TestCase):
         self.assertEqual(["t"], p.getDayTodos(todos, datetime.date(2024, 3, 18)))
 
     def testYearlySpecificDate(self):
-        todos = {"yearly": [{"March,Day,15": "t"}], "monthly": [{}]}
+        todos = {"yearly": [{"March,Day,15": "t"}]}
 
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 1, 15)))
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 3, 14)))
@@ -101,7 +101,7 @@ class TestAddingTodos(unittest.TestCase):
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 3, 16)))
 
     def testAlternateMonthlyAnyMonday(self):
-        todos = {"yearly": [{"*,Monday,*": "t"}], "monthly": [{}]}
+        todos = {"yearly": [{"*,Monday,*": "t"}]}
 
         self.assertEqual(["t"], p.getDayTodos(todos, datetime.date(2024, 1, 29)))
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 3, 24)))
@@ -110,14 +110,25 @@ class TestAddingTodos(unittest.TestCase):
         self.assertEqual(["t"], p.getDayTodos(todos, datetime.date(2024, 3, 18)))
 
     def testAlternateMonthlyLastMonday(self):
-        todos = {"yearly": [{"*,Monday,-1": "t"}], "monthly": [{}]}
+        todos = {"yearly": [{"*,Monday,-1": "t"}]}
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 1, 22)))
         self.assertEqual(["t"], p.getDayTodos(todos, datetime.date(2024, 1, 29)))
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 1, 30)))
 
     def testAlternateMonthlyFirstMonday(self):
-        todos = {"yearly": [{"*,Monday,1": "t"}], "monthly": [{}]}
+        todos = {"yearly": [{"*,Monday,1": "t"}]}
         self.assertEqual(["t"], p.getDayTodos(todos, datetime.date(2024, 1, 1)))
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2023, 12, 31)))
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 1, 2)))
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 1, 8)))
+
+    def testMixing(self):
+        todos = {
+            "yearly": [
+                {"*,Saturday,*": ["Chess"], "March,Saturday,*": ["Check MCTP F28R32"]}
+            ]
+        }
+        self.assertEqual(
+            ["Chess", "Check MCTP F28R32"],
+            p.getDayTodos(todos, datetime.date(2024, 3, 2)),
+        )
