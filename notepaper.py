@@ -696,19 +696,16 @@ def fixupListOfLists(x):
 
 def getDayTodos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[str]:
 
-    m = todos["monthly"][0]
     y = todos["yearly"][0]
 
     all_todos: List[str] = []
-
-    all_todos = addMonthlyTodos(d_obj, m, all_todos)
 
     # filter/transform yearly into monthly
 
     m_y = {}
     for k, v in y.items():
         month, dow, which = k.split(",")
-        if MONTHS.index(month) != d_obj.month:
+        if month != "*" and MONTHS.index(month) != d_obj.month:
             continue
         m_y["%s,%s" % (dow, which)] = v
     all_todos = addMonthlyTodos(d_obj, m_y, all_todos)
