@@ -699,7 +699,7 @@ def getDayTodos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[str]
     m = todos["monthly"][0]
     y = todos["yearly"][0]
 
-    all_todos = []
+    all_todos: List[str] = []
 
     all_todos = addMonthlyTodos(d_obj, m, all_todos)
 
