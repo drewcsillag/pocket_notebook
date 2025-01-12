@@ -73,9 +73,9 @@ def make_a6_sheet(
         do_monthly_sheet(x, y, pitch, line_thickness, color)
 
     elif frontpage is not True:
-        dots = False
+        dots = True
         if weekday:
-            dots = True
+            dots = False
         do_lined_sheet(
             dots,
             pitch,
