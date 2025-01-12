@@ -659,18 +659,6 @@ def makeBlankPages(left, year):
     a4pagetrailer()
 
 
-def nth_weekday(the_date, nth_week, week_day):
-    temp = the_date.replace(day=1)
-    adj = (week_day - temp.weekday()) % 7
-    temp += datetime.timedelta(days=adj)
-    temp += datetime.timedelta(weeks=nth_week - 1)
-    return temp
-
-
-def dateeq(d1, d2):
-    return d1.year == d2.year and d1.month == d2.month and d1.day == d2.day
-
-
 def addTodos(t: List[str], v: List[str]) -> List[str]:
     t = t[:]
     for i in v:
@@ -734,11 +722,11 @@ def addMonthlyTodos(
             # days from end of month
             if which < 0:
                 rd = d_obj + relativedelta(day=33, days=which + 1)
-                if dateeq(rd, d_obj):
+                if rd == d_obj:
                     all_todos = addTodos(all_todos, v)
             else:  ## days from start
                 rd = d_obj + relativedelta(day=1, days=which - 1)
-                if dateeq(rd, d_obj):
+                if rd == d_obj:
                     all_todos = addTodos(all_todos, v)
 
         else:
@@ -751,7 +739,7 @@ def addMonthlyTodos(
                     rd = d_obj + relativedelta(day=31, weekday=dow_n(which))
                 else:
                     rd = d_obj + relativedelta(day=1, weekday=dow_n(which))
-                if dateeq(rd, d_obj):
+                if rd == d_obj:
                     all_todos = addTodos(all_todos, v)
     return all_todos
 
