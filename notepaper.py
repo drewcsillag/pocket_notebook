@@ -1,6 +1,6 @@
 import sys
 import yaml
-from typing import Dict, List
+from typing import Dict, List, Tuple, Optional
 from collections import defaultdict
 import datetime
 from dateutil.relativedelta import relativedelta, MO, TU, WE, TH, FR, SA, SU
@@ -40,21 +40,22 @@ LEFT_PAGES = [(105, 0), (0, 0), (105, 148), (0, 148)]
 # -3 to the left to account for printer skew
 # LEFT_PAGES = [(102, 0), (-3, 0), (102, 148), (-3, 148)]
 
+
 def make_a6_sheet(
-    rorg_x,
-    org_y,
-    left,
-    year,
-    day=None,
-    weekday=False,
-    weekend=False,
-    monthly=False,
-    pitch=5,
-    todos={},
-    month=None,
-    holidays={},
-    frontpage=None,
-):
+    rorg_x: int,
+    org_y: int,
+    left: bool,
+    year: int,
+    day: int = None,
+    weekday: Optional[str] = None,
+    weekend: Optional[str] = None,
+    monthly: bool = False,
+    pitch: int = 5,
+    todos: Dict[str, List[Dict]]={},
+    month: Optional[int]=None,
+    holidays: Dict[str, List[Dict]]={},
+    frontpage: bool = None,
+) -> None:
     org_x = rorg_x
 
     org_x += 2
@@ -69,10 +70,23 @@ def make_a6_sheet(
 
     if monthly:
         do_monthly_sheet(x, y, pitch, line_thickness, color)
-        
+
     elif frontpage is not True:
-        do_lined_sheet(weekday, pitch, x, y, line_thickness, dot_radius, dot_y_offset, color, dotcolor)
-        
+        dots = False
+        if weekday:
+            dots = True
+        do_lined_sheet(
+            dots,
+            pitch,
+            x,
+            y,
+            line_thickness,
+            dot_radius,
+            dot_y_offset,
+            color,
+            dotcolor,
+        )
+
     if weekday:
         do_day_title(org_x, org_y, weekday, left, month, day)
         do_numbers(org_x, org_y, pitch)
@@ -88,7 +102,7 @@ def make_a6_sheet(
         do_frontpage(org_x, org_y, year, frontpage, pitch)
 
 
-def do_monthly_sheet(x, y, pitch, line_thickness, color):
+def do_monthly_sheet(x:int, y:int, pitch:int, line_thickness:float, color:str) -> None:
     y -= pitch
     oy = y
 
@@ -131,36 +145,39 @@ def do_monthly_sheet(x, y, pitch, line_thickness, color):
         )
         x += 3 * pitch
 
-def do_lined_sheet(weekday, pitch, x, y, line_thickness, dot_radius, dot_y_offset, color, dotcolor):
+
+def do_lined_sheet(
+    dots: bool, pitch:int, x:int, y:int, line_thickness:int, dot_radius:int, dot_y_offset:int, color:str, dotcolor:str
+) -> None:
     for i in range(int(126 / pitch)):
         print(
-                """<rect
+            """<rect
             style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
             width="89.0"
             height="%f"
             x="%f"
             y="%f" />"""
-                % (color, color, line_thickness, x, y)
-            )
-        if not weekday:
+            % (color, color, line_thickness, x, y)
+        )
+        if dots:
             for c in range(int(90 / pitch)):
                 print(
-                        """<ellipse
+                    """<ellipse
                 style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
                 cx="%f" cy="%f" rx="%f" ry="%f" />"""
-                        % (
-                            dotcolor,
-                            dotcolor,
-                            x + (2.5) + c * pitch + (0.2 * dot_radius),
-                            y + dot_y_offset,
-                            dot_radius,
-                            dot_radius,
-                        )
+                    % (
+                        dotcolor,
+                        dotcolor,
+                        x + (2.5) + c * pitch + (0.2 * dot_radius),
+                        y + dot_y_offset,
+                        dot_radius,
+                        dot_radius,
                     )
+                )
         y += pitch
 
 
-def do_frontpage(org_x, org_y, year, frontpage, pitch):
+def do_frontpage(org_x:int, org_y:int, year:int, frontpage:bool, pitch:int):
     color = "#b0b0b0"
     line_thickness = 0.1
 
@@ -356,7 +373,7 @@ def do_day_title(org_x, org_y, weekday, left, month, day):
     )
 
 
-def do_year_stamp(org_x, org_y, left, year):
+def do_year_stamp(org_x:int, org_y:int, left:bool, year:int):
     if left:
         x = org_x + 86
     else:
@@ -372,7 +389,7 @@ def do_year_stamp(org_x, org_y, left, year):
     )
 
 
-def do_numbers(org_x, org_y, pitch):
+def do_numbers(org_x:int, org_y:int, pitch:int):
     y = org_y
 
     # for left
@@ -443,7 +460,7 @@ def do_numbers(org_x, org_y, pitch):
         # """ % ((x+2) / half_hours_scale + half_hours_scale * pitch, liney- toff, half_hours_scale))
 
 
-def weekday_todo(org_x, org_y, pitch, todos, holidays):
+def weekday_todo(org_x:int, org_y:int, pitch, todos:Dict[str, List[Dict]], holidays:Dict[str, List[Dict]]):
     print(
         """
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="%f" y="%f"/>
@@ -488,7 +505,7 @@ def weekday_todo(org_x, org_y, pitch, todos, holidays):
         )
 
 
-def weekend_todo(org_x, org_y, pitch, todos, holidays):
+def weekend_todo(org_x:int, org_y:int, pitch:int, todos:Dict[str, List[Dict]], holidays:Dict[str, List[Dict]]):
     num_lines = int((126 / pitch))
     nlm3 = num_lines - 3
     height = nlm3 * pitch
@@ -645,7 +662,7 @@ def a4_page_header():
     # )
 
 
-def make_monthly_pages(left, year):
+def make_monthly_pages(left:bool, year:int):
     a4_page_header()
     make_a6_sheet(0, 0, left=left, year=year, monthly=True)
     make_a6_sheet(105, 0, left=left, year=year, monthly=True)
@@ -654,7 +671,7 @@ def make_monthly_pages(left, year):
     a4_page_trailer()
 
 
-def make_blank_pages(left, year):
+def make_blank_pages(left:bool, year:int):
     a4_page_header()
     make_a6_sheet(0, 0, left=left, year=year)
     make_a6_sheet(105, 0, left=left, year=year)
@@ -691,7 +708,7 @@ def get_day_todos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[st
 
     all_todos: List[str] = []
 
-    m_y = {}
+    m_y: Dict[str, List[str]] = {}
     for k, v in y.items():
         bits = k.split(",")
         if len(bits) == 3:
@@ -748,7 +765,7 @@ def add_monthly_todos(
     return all_todos
 
 
-def make_front_page(year, left=False):
+def make_front_page(year:int, left=False):
     a4_page_header()
     x, y = RIGHT_PAGES[0]
     if left:
@@ -764,7 +781,7 @@ def make_front_page(year, left=False):
     a4_page_trailer()
 
 
-def make_date_page(left, p, px):
+def make_date_page(left:bool, p:int, px:List[Tuple[Tuple[int, int], str, int, str, int, datetime.date]]):
     side = "right"
     if not left:
         side = "left"
@@ -894,14 +911,14 @@ if __name__ == "__main__":
         p2 = p2[4:]
 
     sys.stdout = open("monthly1.svg", "w")
-    make_monthly_pages(0, year=year)
+    make_monthly_pages(False, year=year)
     sys.stdout = open("monthly2.svg", "w")
-    make_monthly_pages(1, year=year)
+    make_monthly_pages(True, year=year)
 
     sys.stdout = open("blank1.svg", "w")
-    make_blank_pages(0, year=year)
+    make_blank_pages(False, year=year)
     sys.stdout = open("blank2.svg", "w")
-    make_blank_pages(1, year=year)
+    make_blank_pages(True, year=year)
 
     sys.stdout = open("header_r.svg", "w")
     make_front_page(year=year, left=True)

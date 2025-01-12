@@ -38,14 +38,20 @@ class TestAddingTodos(unittest.TestCase):
         todos = {"Day,1": "t"}
 
         self.assertEqual([], p.add_monthly_todos(datetime.date(2024, 1, 31), todos, []))
-        self.assertEqual(["t"], p.add_monthly_todos(datetime.date(2024, 2, 1), todos, []))
+        self.assertEqual(
+            ["t"], p.add_monthly_todos(datetime.date(2024, 2, 1), todos, [])
+        )
         self.assertEqual([], p.add_monthly_todos(datetime.date(2024, 2, 2), todos, []))
 
     def test_add_monthly_first_monday(self):
         todos = {"Monday,1": "t"}
 
-        self.assertEqual([], p.add_monthly_todos(datetime.date(2023, 12, 31), todos, []))
-        self.assertEqual(["t"], p.add_monthly_todos(datetime.date(2024, 1, 1), todos, []))
+        self.assertEqual(
+            [], p.add_monthly_todos(datetime.date(2023, 12, 31), todos, [])
+        )
+        self.assertEqual(
+            ["t"], p.add_monthly_todos(datetime.date(2024, 1, 1), todos, [])
+        )
         self.assertEqual([], p.add_monthly_todos(datetime.date(2024, 1, 2), todos, []))
 
     def test_add_monthly_last_monday(self):
