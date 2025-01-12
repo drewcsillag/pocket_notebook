@@ -1,6 +1,7 @@
+import io
 import sys
 import yaml
-from typing import Dict, List, Tuple, Optional
+from typing import Any, Dict, List, TextIO, Tuple, Optional
 from collections import defaultdict
 import datetime
 from dateutil.relativedelta import relativedelta, MO, TU, WE, TH, FR, SA, SU
@@ -51,9 +52,9 @@ def make_a6_sheet(
     weekend: Optional[str] = None,
     monthly: bool = False,
     pitch: int = 5,
-    todos: Dict[str, List[Dict]]={},
-    month: Optional[int]=None,
-    holidays: Dict[str, List[Dict]]={},
+    todos: List[str] = [],
+    month: Optional[str] = None,
+    holidays: List[str] = [],
     frontpage: bool = None,
 ) -> None:
     org_x = rorg_x
@@ -87,12 +88,12 @@ def make_a6_sheet(
             dotcolor,
         )
 
-    if weekday:
-        do_day_title(org_x, org_y, weekday, left, month, day)
+    if weekday and month:  # month should always be true in said case, placating mypy
+        do_day_title(org_x, org_y, weekday, month, day)
         do_numbers(org_x, org_y, pitch)
         weekday_todo(org_x, org_y, pitch, todos, holidays)
-    elif weekend:
-        do_day_title(org_x, org_y, weekend, left, month, day)
+    elif weekend and month:  # month should always be true in said case, placating mypy
+        do_day_title(org_x, org_y, weekend, month, day)
         weekend_todo(org_x, org_y, pitch, todos, holidays)
 
     if not monthly:
@@ -102,7 +103,9 @@ def make_a6_sheet(
         do_frontpage(org_x, org_y, year, frontpage, pitch)
 
 
-def do_monthly_sheet(x:int, y:int, pitch:int, line_thickness:float, color:str) -> None:
+def do_monthly_sheet(
+    x: int, y: int, pitch: int, line_thickness: float, color: str
+) -> None:
     y -= pitch
     oy = y
 
@@ -147,7 +150,15 @@ def do_monthly_sheet(x:int, y:int, pitch:int, line_thickness:float, color:str) -
 
 
 def do_lined_sheet(
-    dots: bool, pitch:int, x:int, y:int, line_thickness:int, dot_radius:int, dot_y_offset:int, color:str, dotcolor:str
+    dots: bool,
+    pitch: int,
+    x: int,
+    y: int,
+    line_thickness: float,
+    dot_radius: float,
+    dot_y_offset: float,
+    color: str,
+    dotcolor: str,
 ) -> None:
     for i in range(int(126 / pitch)):
         print(
@@ -177,11 +188,13 @@ def do_lined_sheet(
         y += pitch
 
 
-def do_frontpage(org_x:int, org_y:int, year:int, frontpage:bool, pitch:int):
+def do_frontpage(
+    org_x: int, org_y: int, year: int, frontpage: bool, pitch: int
+) -> None:
     color = "#b0b0b0"
     line_thickness = 0.1
 
-    x = org_x + 25
+    x: float = org_x + 25
     y = org_y + 14
     title = "Yearly Calendars"
     print(
@@ -279,7 +292,7 @@ def do_frontpage(org_x:int, org_y:int, year:int, frontpage:bool, pitch:int):
             )
 
     ## Put first year months
-    mos_first_year = [[], [], [], [], [], [], []]
+    mos_first_year: List[List[str]] = [[], [], [], [], [], [], []]
     for i in range(1, 13):
         dt = datetime.date(year, i, 1)
         first_day = (dt.weekday() + 1) % 7
@@ -287,7 +300,7 @@ def do_frontpage(org_x:int, org_y:int, year:int, frontpage:bool, pitch:int):
         l.append(MONTHS[i])
 
     for index, months in enumerate(mos_first_year):
-        l = ", ".join(months)
+        ls = ", ".join(months)
 
         x = org_x + 4
         y = index * pitch + YOFF + (5 * pitch) + org_y
@@ -297,11 +310,11 @@ def do_frontpage(org_x:int, org_y:int, year:int, frontpage:bool, pitch:int):
                     y="%f"
                 >%s</text>
                 """
-            % (x, y, l)
+            % (x, y, ls)
         )
 
     ## Put second year months
-    mos_second_year = [[], [], [], [], [], [], []]
+    mos_second_year: List[List[str]] = [[], [], [], [], [], [], []]
     for i in range(1, 13):
         dt = datetime.date(year + 1, i, 1)
         first_day = (dt.weekday() + 1) % 7
@@ -309,7 +322,7 @@ def do_frontpage(org_x:int, org_y:int, year:int, frontpage:bool, pitch:int):
         l.append(MONTHS[i])
 
     for index, months in enumerate(mos_second_year):
-        l = ", ".join(months)
+        ls = ", ".join(months)
 
         x = org_x + 4
         y = index * pitch + YOFF + (14 * pitch) + org_y
@@ -319,7 +332,7 @@ def do_frontpage(org_x:int, org_y:int, year:int, frontpage:bool, pitch:int):
                     y="%f"
                 >%s</text>
                 """
-            % (x, y, l)
+            % (x, y, ls)
         )
 
     if not frontpage:
@@ -339,7 +352,7 @@ def do_frontpage(org_x:int, org_y:int, year:int, frontpage:bool, pitch:int):
             break
 
         if i <= 4:
-            width = 35
+            width = 35.0
             xoff = 11 * pitch - 2.5
         else:
             width = 89 - 1.5
@@ -357,7 +370,9 @@ def do_frontpage(org_x:int, org_y:int, year:int, frontpage:bool, pitch:int):
         y += pitch
 
 
-def do_day_title(org_x, org_y, weekday, left, month, day):
+def do_day_title(
+    org_x: int, org_y: int, weekday: str, month: str, day: Optional[int]
+) -> None:
     x = org_x + 16
     y = org_y + 14
     title = weekday + ", " + month
@@ -373,7 +388,7 @@ def do_day_title(org_x, org_y, weekday, left, month, day):
     )
 
 
-def do_year_stamp(org_x:int, org_y:int, left:bool, year:int):
+def do_year_stamp(org_x: int, org_y: int, left: bool, year: int) -> None:
     if left:
         x = org_x + 86
     else:
@@ -389,7 +404,7 @@ def do_year_stamp(org_x:int, org_y:int, left:bool, year:int):
     )
 
 
-def do_numbers(org_x:int, org_y:int, pitch:int):
+def do_numbers(org_x: int, org_y: int, pitch: int) -> None:
     y = org_y
 
     # for left
@@ -460,7 +475,9 @@ def do_numbers(org_x:int, org_y:int, pitch:int):
         # """ % ((x+2) / half_hours_scale + half_hours_scale * pitch, liney- toff, half_hours_scale))
 
 
-def weekday_todo(org_x:int, org_y:int, pitch, todos:Dict[str, List[Dict]], holidays:Dict[str, List[Dict]]):
+def weekday_todo(
+    org_x: int, org_y: int, pitch: int, todos: List[str], holidays: List[str]
+) -> None:
     print(
         """
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="%f" y="%f"/>
@@ -505,7 +522,9 @@ def weekday_todo(org_x:int, org_y:int, pitch, todos:Dict[str, List[Dict]], holid
         )
 
 
-def weekend_todo(org_x:int, org_y:int, pitch:int, todos:Dict[str, List[Dict]], holidays:Dict[str, List[Dict]]):
+def weekend_todo(
+    org_x: int, org_y: int, pitch: int, todos: List[str], holidays: List[str]
+) -> None:
     num_lines = int((126 / pitch))
     nlm3 = num_lines - 3
     height = nlm3 * pitch
@@ -567,14 +586,14 @@ def weekend_todo(org_x:int, org_y:int, pitch:int, todos:Dict[str, List[Dict]], h
         )
 
 
-def a4_page_trailer():
+def a4_page_trailer() -> None:
     print(
         """  </g>
 </svg>"""
     )
 
 
-def a4_page_header():
+def a4_page_header() -> None:
     print(
         """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
@@ -662,7 +681,7 @@ def a4_page_header():
     # )
 
 
-def make_monthly_pages(left:bool, year:int):
+def make_monthly_pages(left: bool, year: int) -> None:
     a4_page_header()
     make_a6_sheet(0, 0, left=left, year=year, monthly=True)
     make_a6_sheet(105, 0, left=left, year=year, monthly=True)
@@ -671,7 +690,7 @@ def make_monthly_pages(left:bool, year:int):
     a4_page_trailer()
 
 
-def make_blank_pages(left:bool, year:int):
+def make_blank_pages(left: bool, year: int) -> None:
     a4_page_header()
     make_a6_sheet(0, 0, left=left, year=year)
     make_a6_sheet(105, 0, left=left, year=year)
@@ -689,18 +708,6 @@ def add_todos(t: List[str], v: List[str]) -> List[str]:
         else:
             t.append(i)
     return t
-
-
-def fixup_list_of_lists(x):
-    if type(x) == type([]) and len(x) > 0 and type(x[0]) == type([]):
-        l = []
-        for i in x:
-            l.extend(i)
-        return l
-    elif x is None:
-        return []
-    else:
-        return x
 
 
 def get_day_todos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[str]:
@@ -732,7 +739,7 @@ def get_day_todos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[st
 
 def add_monthly_todos(
     d_obj: datetime.date, m: Dict[str, List[str]], all_todos: List[str]
-):
+) -> List[str]:
     for k, v in m.items():
         dow, which_str = k.split(",")
         if which_str == "*":
@@ -765,7 +772,7 @@ def add_monthly_todos(
     return all_todos
 
 
-def make_front_page(year:int, left=False):
+def make_front_page(year: int, left: bool = False) -> None:
     a4_page_header()
     x, y = RIGHT_PAGES[0]
     if left:
@@ -781,7 +788,11 @@ def make_front_page(year:int, left=False):
     a4_page_trailer()
 
 
-def make_date_page(left:bool, p:int, px:List[Tuple[Tuple[int, int], str, int, str, int, datetime.date]]):
+def make_date_page(
+    left: bool,
+    p: int,
+    px: List[Tuple[Tuple[int, int], str, int, str, int, datetime.date]],
+) -> None:
     side = "right"
     if not left:
         side = "left"
@@ -827,14 +838,14 @@ def make_date_page(left:bool, p:int, px:List[Tuple[Tuple[int, int], str, int, st
     a4_page_trailer()
 
 
-def parse_preserving_duplicates(src):
+def parse_preserving_duplicates(src: TextIO) -> Dict:
     # We deliberately define a fresh class inside the function,
     # because add_constructor is a class method and we don't want to
     # mutate pyyaml classes.
     class PreserveDuplicatesLoader(yaml.loader.Loader):
         pass
 
-    def map_constructor(loader, node, deep=False):
+    def map_constructor(loader: Any, node: Any, deep: Any = False) -> Any:
         """Walk the mapping, recording any duplicate keys."""
 
         mapping = defaultdict(list)
@@ -849,7 +860,7 @@ def parse_preserving_duplicates(src):
 
     PreserveDuplicatesLoader.add_constructor(
         yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, map_constructor
-    )
+    )  # type: ignore
     return yaml.load(src, PreserveDuplicatesLoader)
 
 

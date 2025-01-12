@@ -4,12 +4,6 @@ import datetime
 
 
 class TestAddingTodos(unittest.TestCase):
-    def testFixupListOfLists(self):
-        a = [["foo"], [], ["bar"]]
-        self.assertEqual(["foo", "bar"], p.fixup_list_of_lists(a))
-        self.assertEqual([], p.fixup_list_of_lists(None))
-        self.assertEqual(["a", "b"], p.fixup_list_of_lists(["a", "b"]))
-
     def test_add_todos(self):
         orig = ["1", "2"]
         v = ["3", "4"]
