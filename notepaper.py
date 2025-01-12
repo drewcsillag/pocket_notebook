@@ -40,7 +40,6 @@ LEFT_PAGES = [(105, 0), (0, 0), (105, 148), (0, 148)]
 # -3 to the left to account for printer skew
 # LEFT_PAGES = [(102, 0), (-3, 0), (102, 148), (-3, 148)]
 
-
 def make_a6_sheet(
     rorg_x,
     org_y,
@@ -69,75 +68,11 @@ def make_a6_sheet(
     dotcolor = "#909090"
 
     if monthly:
-        y -= pitch
-        oy = y
-
-        for i in range(8):
-            lt = line_thickness
-            if i == 2:
-                lt *= 3
-            print(
-                """<rect
-                style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
-                width="89.0"
-                height="%f"
-                x="%f"
-                y="%f" />"""
-                % (color, color, lt, x, y)
-            )
-
-            if i < 7:
-                dow = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][6 - i]
-                print(
-                    """<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                    x="%f"
-                    y="%f"
-                    transform="rotate(-90 %f %f)"
-                >%s</text>
-                """
-                    % (x + 4, y + 17, x + 4, y + 17, dow)
-                )
-            y += 18
-
-        for i in range(6):
-            print(
-                """<rect
-                style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
-                width="%f"
-                height="%f"
-                x="%f"
-                y="%f" />"""
-                % (color, color, line_thickness, 18 * 7, x + 4, oy)
-            )
-            x += 3 * pitch
-
+        do_monthly_sheet(x, y, pitch, line_thickness, color)
+        
     elif frontpage is not True:
-        for i in range(int(126 / pitch)):
-            print(
-                """<rect
-            style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
-            width="89.0"
-            height="%f"
-            x="%f"
-            y="%f" />"""
-                % (color, color, line_thickness, x, y)
-            )
-            if not weekday:
-                for c in range(int(90 / pitch)):
-                    print(
-                        """<ellipse
-                style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-                cx="%f" cy="%f" rx="%f" ry="%f" />"""
-                        % (
-                            dotcolor,
-                            dotcolor,
-                            x + (2.5) + c * pitch + (0.2 * dot_radius),
-                            y + dot_y_offset,
-                            dot_radius,
-                            dot_radius,
-                        )
-                    )
-            y += pitch
+        do_lined_sheet(weekday, pitch, x, y, line_thickness, dot_radius, dot_y_offset, color, dotcolor)
+        
     if weekday:
         do_day_title(org_x, org_y, weekday, left, month, day)
         do_numbers(org_x, org_y, pitch)
@@ -151,6 +86,78 @@ def make_a6_sheet(
 
     if frontpage is True:
         do_frontpage(org_x, org_y, year, frontpage, pitch)
+
+
+def do_monthly_sheet(x, y, pitch, line_thickness, color):
+    y -= pitch
+    oy = y
+
+    for i in range(8):
+        lt = line_thickness
+        if i == 2:
+            lt *= 3
+        print(
+            """<rect
+            style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+            width="89.0"
+            height="%f"
+            x="%f"
+            y="%f" />"""
+            % (color, color, lt, x, y)
+        )
+
+        if i < 7:
+            dow = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][6 - i]
+            print(
+                """<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                x="%f"
+                y="%f"
+                transform="rotate(-90 %f %f)"
+            >%s</text>
+            """
+                % (x + 4, y + 17, x + 4, y + 17, dow)
+            )
+        y += 18
+
+    for i in range(6):
+        print(
+            """<rect
+            style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+            width="%f"
+            height="%f"
+            x="%f"
+            y="%f" />"""
+            % (color, color, line_thickness, 18 * 7, x + 4, oy)
+        )
+        x += 3 * pitch
+
+def do_lined_sheet(weekday, pitch, x, y, line_thickness, dot_radius, dot_y_offset, color, dotcolor):
+    for i in range(int(126 / pitch)):
+        print(
+                """<rect
+            style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+            width="89.0"
+            height="%f"
+            x="%f"
+            y="%f" />"""
+                % (color, color, line_thickness, x, y)
+            )
+        if not weekday:
+            for c in range(int(90 / pitch)):
+                print(
+                        """<ellipse
+                style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+                cx="%f" cy="%f" rx="%f" ry="%f" />"""
+                        % (
+                            dotcolor,
+                            dotcolor,
+                            x + (2.5) + c * pitch + (0.2 * dot_radius),
+                            y + dot_y_offset,
+                            dot_radius,
+                            dot_radius,
+                        )
+                    )
+        y += pitch
 
 
 def do_frontpage(org_x, org_y, year, frontpage, pitch):
