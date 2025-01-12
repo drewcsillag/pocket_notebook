@@ -122,6 +122,13 @@ class TestAddingTodos(unittest.TestCase):
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 1, 2)))
         self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 1, 8)))
 
+    def testAbbreviatedMonthlyFirstMonday(self):
+        todos = {"yearly": [{"Monday,1": "t"}]}
+        self.assertEqual(["t"], p.getDayTodos(todos, datetime.date(2024, 1, 1)))
+        self.assertEqual([], p.getDayTodos(todos, datetime.date(2023, 12, 31)))
+        self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 1, 2)))
+        self.assertEqual([], p.getDayTodos(todos, datetime.date(2024, 1, 8)))
+
     def testMixing(self):
         todos = {
             "yearly": [

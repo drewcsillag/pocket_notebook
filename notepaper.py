@@ -701,7 +701,12 @@ def getDayTodos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[str]
 
     m_y = {}
     for k, v in y.items():
-        month, dow, which = k.split(",")
+        bits = k.split(",")
+        if len(bits) == 3:
+            month, dow, which = bits
+        elif len(bits) == 2:
+            month = "*"
+            dow, which = bits
         if month != "*" and MONTHS.index(month) != d_obj.month:
             continue
         k = "%s,%s" % (dow, which)
