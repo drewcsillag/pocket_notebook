@@ -41,7 +41,7 @@ LEFT_PAGES = [(105, 0), (0, 0), (105, 148), (0, 148)]
 # LEFT_PAGES = [(102, 0), (-3, 0), (102, 148), (-3, 148)]
 
 
-def makea6sheet(
+def make_a6_sheet(
     rorg_x,
     org_y,
     left,
@@ -546,14 +546,14 @@ def weekend_todo(org_x, org_y, pitch, todos, holidays):
         )
 
 
-def a4pagetrailer():
+def a4_page_trailer():
     print(
         """  </g>
 </svg>"""
     )
 
 
-def a4pageheader():
+def a4_page_header():
     print(
         """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
@@ -641,25 +641,25 @@ def a4pageheader():
     # )
 
 
-def makeMonthlyPages(left, year):
-    a4pageheader()
-    makea6sheet(0, 0, left=left, year=year, monthly=True)
-    makea6sheet(105, 0, left=left, year=year, monthly=True)
-    makea6sheet(105, 148, left=left, year=year, monthly=True)
-    makea6sheet(0, 148, left=left, year=year, monthly=True)
-    a4pagetrailer()
+def make_monthly_pages(left, year):
+    a4_page_header()
+    make_a6_sheet(0, 0, left=left, year=year, monthly=True)
+    make_a6_sheet(105, 0, left=left, year=year, monthly=True)
+    make_a6_sheet(105, 148, left=left, year=year, monthly=True)
+    make_a6_sheet(0, 148, left=left, year=year, monthly=True)
+    a4_page_trailer()
 
 
-def makeBlankPages(left, year):
-    a4pageheader()
-    makea6sheet(0, 0, left=left, year=year)
-    makea6sheet(105, 0, left=left, year=year)
-    makea6sheet(105, 148, left=left, year=year)
-    makea6sheet(0, 148, left=left, year=year)
-    a4pagetrailer()
+def make_blank_pages(left, year):
+    a4_page_header()
+    make_a6_sheet(0, 0, left=left, year=year)
+    make_a6_sheet(105, 0, left=left, year=year)
+    make_a6_sheet(105, 148, left=left, year=year)
+    make_a6_sheet(0, 148, left=left, year=year)
+    a4_page_trailer()
 
 
-def addTodos(t: List[str], v: List[str]) -> List[str]:
+def add_todos(t: List[str], v: List[str]) -> List[str]:
     t = t[:]
     for i in v:
         if "" in t:
@@ -670,7 +670,7 @@ def addTodos(t: List[str], v: List[str]) -> List[str]:
     return t
 
 
-def fixupListOfLists(x):
+def fixup_list_of_lists(x):
     if type(x) == type([]) and len(x) > 0 and type(x[0]) == type([]):
         l = []
         for i in x:
@@ -682,7 +682,7 @@ def fixupListOfLists(x):
         return x
 
 
-def getDayTodos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[str]:
+def get_day_todos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[str]:
     y = todos["yearly"][0]
 
     all_todos: List[str] = []
@@ -704,12 +704,12 @@ def getDayTodos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[str]
             m_y[k] = l
         else:
             m_y["%s,%s" % (dow, which)] = v
-    all_todos = addMonthlyTodos(d_obj, m_y, all_todos)
+    all_todos = add_monthly_todos(d_obj, m_y, all_todos)
 
     return all_todos
 
 
-def addMonthlyTodos(
+def add_monthly_todos(
     d_obj: datetime.date, m: Dict[str, List[str]], all_todos: List[str]
 ):
     for k, v in m.items():
@@ -723,56 +723,56 @@ def addMonthlyTodos(
             if which < 0:
                 rd = d_obj + relativedelta(day=33, days=which + 1)
                 if rd == d_obj:
-                    all_todos = addTodos(all_todos, v)
+                    all_todos = add_todos(all_todos, v)
             else:  ## days from start
                 rd = d_obj + relativedelta(day=1, days=which - 1)
                 if rd == d_obj:
-                    all_todos = addTodos(all_todos, v)
+                    all_todos = add_todos(all_todos, v)
 
         else:
             dow_n = DAY_TO_NUM[dow]
             if which == 0:
                 if d_obj.weekday() == dow_n.weekday:
-                    all_todos = addTodos(all_todos, v)
+                    all_todos = add_todos(all_todos, v)
             else:
                 if which < 0:
                     rd = d_obj + relativedelta(day=31, weekday=dow_n(which))
                 else:
                     rd = d_obj + relativedelta(day=1, weekday=dow_n(which))
                 if rd == d_obj:
-                    all_todos = addTodos(all_todos, v)
+                    all_todos = add_todos(all_todos, v)
     return all_todos
 
 
-def makeFrontPage(year, left=False):
-    a4pageheader()
+def make_front_page(year, left=False):
+    a4_page_header()
     x, y = RIGHT_PAGES[0]
     if left:
         x, y = LEFT_PAGES[0]
-    makea6sheet(x, y, left=left, year=year, frontpage=left)
+    make_a6_sheet(x, y, left=left, year=year, frontpage=left)
 
     for i in range(1, 4):
         x, y = RIGHT_PAGES[i]
         if left:
             x, y = LEFT_PAGES[i]
-        makea6sheet(x, y, left=left, year=year)
+        make_a6_sheet(x, y, left=left, year=year)
 
-    a4pagetrailer()
+    a4_page_trailer()
 
 
-def makeDatePage(left, p, px):
+def make_date_page(left, p, px):
     side = "right"
     if not left:
         side = "left"
     sys.stdout = open("daily%d-%s.svg" % (p, side), "w")
     thisp = px[:4]
-    a4pageheader()
+    a4_page_header()
     for tp in thisp:
         (x, y), dayofweek, day, month, year, d_obj = tp
-        day_todos = getDayTodos(todos, d_obj)
-        day_holidays = getDayTodos(holidays, d_obj)
+        day_todos = get_day_todos(todos, d_obj)
+        day_holidays = get_day_todos(holidays, d_obj)
         if dayofweek in ("Saturday", "Sunday"):
-            makea6sheet(
+            make_a6_sheet(
                 x,
                 y,
                 left=left,
@@ -784,7 +784,7 @@ def makeDatePage(left, p, px):
                 holidays=day_holidays,
             )
         else:
-            makea6sheet(
+            make_a6_sheet(
                 x,
                 y,
                 left=left,
@@ -802,8 +802,8 @@ def makeDatePage(left, p, px):
             x, y = LEFT_PAGES[i]
         else:
             x, y = RIGHT_PAGES[i]
-        makea6sheet(x, y, left=left, year=year)
-    a4pagetrailer()
+        make_a6_sheet(x, y, left=left, year=year)
+    a4_page_trailer()
 
 
 def parse_preserving_duplicates(src):
@@ -883,24 +883,24 @@ if __name__ == "__main__":
         num_sheets += 1
 
     for p in range(num_sheets):
-        makeDatePage(left=False, p=p, px=p1[:4])
-        makeDatePage(left=True, p=p, px=p2[:4])
+        make_date_page(left=False, p=p, px=p1[:4])
+        make_date_page(left=True, p=p, px=p2[:4])
 
         p1 = p1[4:]
         p2 = p2[4:]
 
     sys.stdout = open("monthly1.svg", "w")
-    makeMonthlyPages(0, year=year)
+    make_monthly_pages(0, year=year)
     sys.stdout = open("monthly2.svg", "w")
-    makeMonthlyPages(1, year=year)
+    make_monthly_pages(1, year=year)
 
     sys.stdout = open("blank1.svg", "w")
-    makeBlankPages(0, year=year)
+    make_blank_pages(0, year=year)
     sys.stdout = open("blank2.svg", "w")
-    makeBlankPages(1, year=year)
+    make_blank_pages(1, year=year)
 
     sys.stdout = open("header_r.svg", "w")
-    makeFrontPage(year=year, left=True)
+    make_front_page(year=year, left=True)
     sys.stdout = open("header_l.svg", "w")
 
-    makeFrontPage(year=year, left=False)
+    make_front_page(year=year, left=False)
