@@ -57,12 +57,9 @@ def make_a6_sheet(
     frontpage=None,
 ):
     org_x = rorg_x
-    if False:  # not left:
-        org_x += 7
-        x = org_x + 7
-    else:
-        org_x += 2
-        x = org_x + 4
+
+    org_x += 2
+    x = org_x + 4
 
     y = org_y + 16
     line_thickness = 0.1
