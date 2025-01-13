@@ -865,8 +865,8 @@ def parse_preserving_duplicates(src: TextIO) -> Dict:
 
 
 if __name__ == "__main__":
-    todos = parse_preserving_duplicates(open("todos.yaml"))
-    holidays = parse_preserving_duplicates(open("holidays.yaml"))
+    todos = parse_preserving_duplicates(open("todo_holidays/todos.yaml"))
+    holidays = parse_preserving_duplicates(open("todo_holidays/holidays.yaml"))
     cur = datetime.date.fromisoformat(sys.argv[1])
     numdays = int(sys.argv[2])
     numsplits = numdays / 2
