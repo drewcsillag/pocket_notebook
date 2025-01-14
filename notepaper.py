@@ -63,7 +63,7 @@ def make_header_sheet(org_x: int, org_y: int, year: int, left: bool = False) -> 
         do_lined_sheet(dots=True, x=x, y=y)
     do_year_stamp(org_x, org_y, left, year)
     if left:
-        do_frontpage(org_x, org_y, year, left, PITCH)
+        do_frontpage(org_x, org_y, year, left)
 
 
 def make_a6_sheet(
@@ -172,9 +172,7 @@ def do_lined_sheet(dots: bool, x: int, y: int) -> None:
         y += PITCH
 
 
-def do_frontpage(
-    org_x: int, org_y: int, year: int, frontpage: bool, pitch: int
-) -> None:
+def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
     color = "#b0b0b0"
     line_thickness = 0.1
 
@@ -199,7 +197,7 @@ def do_frontpage(
                     y="%f"
                 >%s</text>
                 """
-        % (x, y + (5 * pitch), title)
+        % (x, y + (5 * PITCH), title)
     )
 
     print(
@@ -208,7 +206,7 @@ def do_frontpage(
                     y="%f"
                 >%s</text>
                 """
-        % (x, y + (14 * pitch), str(year + 1))
+        % (x, y + (14 * PITCH), str(year + 1))
     )
 
     # upper date to day grid lines
@@ -217,7 +215,7 @@ def do_frontpage(
             """
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="105" width="0.25" x="%f" y="%f"/>
  """
-            % (org_x + (pitch * cno) + 1.4, org_y + 16)
+            % (org_x + (PITCH * cno) + 1.4, org_y + 16)
         )
 
     days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
@@ -229,10 +227,10 @@ def do_frontpage(
         col = (i - 1) % 7
         row = int((i - 1) / 7)
 
-        x = col * pitch + (11 * pitch) + org_x + 3
+        x = col * PITCH + (11 * PITCH) + org_x + 3
         if i >= 10:
             x -= 0.8
-        y = row * pitch + YOFF + org_y
+        y = row * PITCH + YOFF + org_y
         print(
             """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                     x="%f"
@@ -248,8 +246,8 @@ def do_frontpage(
         for day in range(7):
             daytxt = days[(row + day) % 7]
             col = day
-            x = col * pitch + (11 * pitch) + org_x + 2
-            y = row * pitch + YOFF + (5 * pitch) + org_y
+            x = col * PITCH + (11 * PITCH) + org_x + 2
+            y = row * PITCH + YOFF + (5 * PITCH) + org_y
             print(
                 """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                         x="%f"
@@ -264,8 +262,8 @@ def do_frontpage(
         for day in range(7):
             daytxt = days[(row + day) % 7]
             col = day
-            x = col * pitch + (11 * pitch) + org_x + 2
-            y = row * pitch + YOFF + (14 * pitch) + org_y
+            x = col * PITCH + (11 * PITCH) + org_x + 2
+            y = row * PITCH + YOFF + (14 * PITCH) + org_y
             print(
                 """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                         x="%f"
@@ -287,7 +285,7 @@ def do_frontpage(
         ls = ", ".join(months)
 
         x = org_x + 4
-        y = index * pitch + YOFF + (5 * pitch) + org_y
+        y = index * PITCH + YOFF + (5 * PITCH) + org_y
         print(
             """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                     x="%f"
@@ -309,7 +307,7 @@ def do_frontpage(
         ls = ", ".join(months)
 
         x = org_x + 4
-        y = index * pitch + YOFF + (14 * pitch) + org_y
+        y = index * PITCH + YOFF + (14 * PITCH) + org_y
         print(
             """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                     x="%f"
@@ -328,16 +326,16 @@ def do_frontpage(
     y = org_y + 16
 
     # draw lines
-    for i in range(int(126 / pitch)):
+    for i in range(int(126 / PITCH)):
         if i == 13:
-            y += pitch
+            y += PITCH
             continue
         if i == 22:
             break
 
         if i <= 4:
             width = 35.0
-            xoff = 11 * pitch - 2.5
+            xoff = 11 * PITCH - 2.5
         else:
             width = 89 - 1.5
             xoff = 0
@@ -351,7 +349,7 @@ def do_frontpage(
             % (color, color, width, line_thickness, x + xoff, y)
         )
 
-        y += pitch
+        y += PITCH
 
 
 def do_day_title(
@@ -661,7 +659,7 @@ def a4_page_header() -> None:
     # )
 
 
-def make_monthly_pages(left: bool, year: int) -> None:
+def make_monthly_pages() -> None:
     a4_page_header()
     make_monthly_sheet(0, 0)
     make_monthly_sheet(105, 0)
@@ -902,9 +900,9 @@ if __name__ == "__main__":
         p2 = p2[4:]
 
     sys.stdout = open("monthly1.svg", "w")
-    make_monthly_pages(False, year=year)
+    make_monthly_pages()
     sys.stdout = open("monthly2.svg", "w")
-    make_monthly_pages(True, year=year)
+    make_monthly_pages()
 
     sys.stdout = open("blank1.svg", "w")
     make_blank_pages(False, year=year)
