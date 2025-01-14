@@ -37,15 +37,12 @@ DAY_TO_NUM = {
 ONE_DAY = datetime.timedelta(days=1)
 RIGHT_PAGES = [(0, 0), (105, 0), (0, 148), (105, 148)]
 LEFT_PAGES = [(105, 0), (0, 0), (105, 148), (0, 148)]
-
 PITCH = 5
 LINE_THICKNESS = 0.1
 COLOR = "#b0b0b0"
 DOT_COLOR = "#909090"
 DOT_RADIUS = 0.2
 DOT_Y_OFFSET = 0.05
-# -3 to the left to account for printer skew
-# LEFT_PAGES = [(102, 0), (-3, 0), (102, 148), (-3, 148)]
 
 
 def make_monthly_sheet(org_x: int, org_y: int) -> None:
@@ -60,7 +57,7 @@ def make_header_sheet(org_x: int, org_y: int, year: int, left: bool = False) -> 
     x = org_x + 4
     y = org_y + 16
     if not left:
-        do_lined_sheet(dots=True, x=x, y=y)
+        do_lined_sheet(x, y, dots=True)
     do_year_stamp(org_x, org_y, left, year)
     if left:
         do_frontpage(org_x, org_y, year, left)
@@ -82,25 +79,24 @@ def make_weekday_sheet(
     x = org_x + 4
     y = org_y + 16
 
-    do_lined_sheet(False, x, y)
+    do_lined_sheet(x, y, dots=False)
 
-    if month:  # month should always be true in said case, placating mypy
-        do_day_title(org_x, org_y, weekday, month, day)
-        do_numbers(org_x, org_y)
-        weekday_todo(org_x, org_y, todos, holidays)
+    do_day_title(org_x, org_y, weekday, month, day)
+    do_numbers(org_x, org_y)
+    weekday_todo(org_x, org_y, todos, holidays)
 
     do_year_stamp(org_x, org_y, left, year)
 
 
-def make_a6_sheet(
+def make_weekend_sheet(
     rorg_x: int,
     org_y: int,
     left: bool,
     year: int,
-    day: int = None,
-    weekend: Optional[str] = None,
+    day: int,
+    weekend: str,
+    month: str,
     todos: List[str] = [],
-    month: Optional[str] = None,
     holidays: List[str] = [],
 ) -> None:
     org_x = rorg_x
@@ -108,11 +104,26 @@ def make_a6_sheet(
     x = org_x + 4
     y = org_y + 16
 
-    do_lined_sheet(True, x, y)
+    do_lined_sheet(x, y, dots=True)
 
-    if weekend and month:  # month should always be true in said case, placating mypy
-        do_day_title(org_x, org_y, weekend, month, day)
-        weekend_todo(org_x, org_y, todos, holidays)
+    do_day_title(org_x, org_y, weekend, month, day)
+    weekend_todo(org_x, org_y, todos, holidays)
+
+    do_year_stamp(org_x, org_y, left, year)
+
+
+def make_lined_sheet(
+    rorg_x: int,
+    org_y: int,
+    left: bool,
+    year: int,
+) -> None:
+    org_x = rorg_x
+    org_x += 2
+    x = org_x + 4
+    y = org_y + 16
+
+    do_lined_sheet(x, y, dots=True)
 
     do_year_stamp(org_x, org_y, left, year)
 
@@ -161,7 +172,7 @@ def do_monthly_sheet(x: int, y: int) -> None:
         x += 3 * PITCH
 
 
-def do_lined_sheet(dots: bool, x: int, y: int) -> None:
+def do_lined_sheet(x: int, y: int, dots: bool) -> None:
     for i in range(int(126 / PITCH)):
         print(
             """<rect
@@ -688,10 +699,10 @@ def make_monthly_pages() -> None:
 
 def make_blank_pages(left: bool, year: int) -> None:
     a4_page_header()
-    make_a6_sheet(0, 0, left=left, year=year)
-    make_a6_sheet(105, 0, left=left, year=year)
-    make_a6_sheet(105, 148, left=left, year=year)
-    make_a6_sheet(0, 148, left=left, year=year)
+    make_lined_sheet(0, 0, left=left, year=year)
+    make_lined_sheet(105, 0, left=left, year=year)
+    make_lined_sheet(105, 148, left=left, year=year)
+    make_lined_sheet(0, 148, left=left, year=year)
     a4_page_trailer()
 
 
@@ -779,7 +790,7 @@ def make_front_page(year: int, left: bool = False) -> None:
         x, y = RIGHT_PAGES[i]
         if left:
             x, y = LEFT_PAGES[i]
-        make_a6_sheet(x, y, left=left, year=year)
+        make_lined_sheet(x, y, left=left, year=year)
 
     a4_page_trailer()
 
@@ -800,16 +811,8 @@ def make_date_page(
         day_todos = get_day_todos(todos, d_obj)
         day_holidays = get_day_todos(holidays, d_obj)
         if dayofweek in ("Saturday", "Sunday"):
-            make_a6_sheet(
-                x,
-                y,
-                left=left,
-                year=year,
-                weekend=dayofweek,
-                month=month,
-                day=day,
-                todos=day_todos,
-                holidays=day_holidays,
+            make_weekend_sheet(
+                x, y, left, year, day, dayofweek, month, day_todos, day_holidays
             )
         else:
             make_weekday_sheet(
@@ -822,7 +825,7 @@ def make_date_page(
             x, y = LEFT_PAGES[i]
         else:
             x, y = RIGHT_PAGES[i]
-        make_a6_sheet(x, y, left=left, year=year)
+        make_lined_sheet(x, y, left=left, year=year)
     a4_page_trailer()
 
 
