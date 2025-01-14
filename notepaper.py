@@ -41,17 +41,39 @@ LEFT_PAGES = [(105, 0), (0, 0), (105, 148), (0, 148)]
 PITCH = 5
 LINE_THICKNESS = 0.1
 COLOR = "#b0b0b0"
+DOT_COLOR = "#909090"
+DOT_RADIUS = 0.2
+DOT_Y_OFFSET = 0.05
 # -3 to the left to account for printer skew
 # LEFT_PAGES = [(102, 0), (-3, 0), (102, 148), (-3, 148)]
 
 
-def make_monthly_sheet(
-    org_x: int, org_y: int, pitch: int = PITCH, color: str = COLOR
-) -> None:
+def make_monthly_sheet(org_x: int, org_y: int, color: str = COLOR) -> None:
     org_x += 2
     x = org_x + 4
     y = org_y + 16
-    do_monthly_sheet(x, y, pitch, LINE_THICKNESS, color)
+    do_monthly_sheet(x, y, PITCH, LINE_THICKNESS, color)
+
+
+def make_header_sheet(org_x: int, org_y: int, year: int, left: bool = False) -> None:
+    org_x += 2
+    x = org_x + 4
+    y = org_y + 16
+    if not left:
+        do_lined_sheet(
+            dots=True,
+            pitch=PITCH,
+            x=x,
+            y=y,
+            line_thickness=LINE_THICKNESS,
+            dot_radius=DOT_RADIUS,
+            dot_y_offset=DOT_Y_OFFSET,
+            color=COLOR,
+            dotcolor=DOT_COLOR,
+        )
+    do_year_stamp(org_x, org_y, left, year)
+    if left:
+        do_frontpage(org_x, org_y, year, left, PITCH)
 
 
 def make_a6_sheet(
@@ -75,10 +97,10 @@ def make_a6_sheet(
 
     y = org_y + 16
     line_thickness = LINE_THICKNESS
-    dot_radius = 0.2
-    dot_y_offset = 0.05
+    dot_radius = DOT_RADIUS
+    dot_y_offset = DOT_Y_OFFSET
     color = COLOR
-    dotcolor = "#909090"
+    dotcolor = DOT_COLOR
 
     if frontpage is not True:
         dots = True
@@ -784,7 +806,7 @@ def make_front_page(year: int, left: bool = False) -> None:
     x, y = RIGHT_PAGES[0]
     if left:
         x, y = LEFT_PAGES[0]
-    make_a6_sheet(x, y, left=left, year=year, frontpage=left)
+    make_header_sheet(x, y, left=left, year=year)
 
     for i in range(1, 4):
         x, y = RIGHT_PAGES[i]
