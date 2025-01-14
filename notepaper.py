@@ -38,8 +38,20 @@ ONE_DAY = datetime.timedelta(days=1)
 RIGHT_PAGES = [(0, 0), (105, 0), (0, 148), (105, 148)]
 LEFT_PAGES = [(105, 0), (0, 0), (105, 148), (0, 148)]
 
+PITCH = 5
+LINE_THICKNESS = 0.1
+COLOR = "#b0b0b0"
 # -3 to the left to account for printer skew
 # LEFT_PAGES = [(102, 0), (-3, 0), (102, 148), (-3, 148)]
+
+
+def make_monthly_sheet(
+    org_x: int, org_y: int, pitch: int = PITCH, color: str = COLOR
+) -> None:
+    org_x += 2
+    x = org_x + 4
+    y = org_y + 16
+    do_monthly_sheet(x, y, pitch, LINE_THICKNESS, color)
 
 
 def make_a6_sheet(
@@ -50,8 +62,7 @@ def make_a6_sheet(
     day: int = None,
     weekday: Optional[str] = None,
     weekend: Optional[str] = None,
-    monthly: bool = False,
-    pitch: int = 5,
+    pitch: int = PITCH,
     todos: List[str] = [],
     month: Optional[str] = None,
     holidays: List[str] = [],
@@ -63,16 +74,13 @@ def make_a6_sheet(
     x = org_x + 4
 
     y = org_y + 16
-    line_thickness = 0.1
+    line_thickness = LINE_THICKNESS
     dot_radius = 0.2
     dot_y_offset = 0.05
-    color = "#b0b0b0"
+    color = COLOR
     dotcolor = "#909090"
 
-    if monthly:
-        do_monthly_sheet(x, y, pitch, line_thickness, color)
-
-    elif frontpage is not True:
+    if frontpage is not True:
         dots = True
         if weekday:
             dots = False
@@ -96,8 +104,7 @@ def make_a6_sheet(
         do_day_title(org_x, org_y, weekend, month, day)
         weekend_todo(org_x, org_y, pitch, todos, holidays)
 
-    if not monthly:
-        do_year_stamp(org_x, org_y, left, year)
+    do_year_stamp(org_x, org_y, left, year)
 
     if frontpage is True:
         do_frontpage(org_x, org_y, year, frontpage, pitch)
@@ -683,10 +690,10 @@ def a4_page_header() -> None:
 
 def make_monthly_pages(left: bool, year: int) -> None:
     a4_page_header()
-    make_a6_sheet(0, 0, left=left, year=year, monthly=True)
-    make_a6_sheet(105, 0, left=left, year=year, monthly=True)
-    make_a6_sheet(105, 148, left=left, year=year, monthly=True)
-    make_a6_sheet(0, 148, left=left, year=year, monthly=True)
+    make_monthly_sheet(0, 0)
+    make_monthly_sheet(105, 0)
+    make_monthly_sheet(105, 148)
+    make_monthly_sheet(0, 148)
     a4_page_trailer()
 
 
