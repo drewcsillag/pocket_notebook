@@ -87,8 +87,7 @@ def make_a6_sheet(
     pitch: int = PITCH,
     todos: List[str] = [],
     month: Optional[str] = None,
-    holidays: List[str] = [],
-    frontpage: bool = None,
+    holidays: List[str] = []
 ) -> None:
     org_x = rorg_x
 
@@ -102,21 +101,20 @@ def make_a6_sheet(
     color = COLOR
     dotcolor = DOT_COLOR
 
-    if frontpage is not True:
-        dots = True
-        if weekday:
-            dots = False
-        do_lined_sheet(
-            dots,
-            pitch,
-            x,
-            y,
-            line_thickness,
-            dot_radius,
-            dot_y_offset,
-            color,
-            dotcolor,
-        )
+    dots = True
+    if weekday:
+        dots = False
+    do_lined_sheet(
+        dots,
+        pitch,
+        x,
+        y,
+        line_thickness,
+        dot_radius,
+        dot_y_offset,
+        color,
+        dotcolor,
+    )
 
     if weekday and month:  # month should always be true in said case, placating mypy
         do_day_title(org_x, org_y, weekday, month, day)
@@ -127,9 +125,6 @@ def make_a6_sheet(
         weekend_todo(org_x, org_y, pitch, todos, holidays)
 
     do_year_stamp(org_x, org_y, left, year)
-
-    if frontpage is True:
-        do_frontpage(org_x, org_y, year, frontpage, pitch)
 
 
 def do_monthly_sheet(
