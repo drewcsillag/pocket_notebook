@@ -60,17 +60,7 @@ def make_header_sheet(org_x: int, org_y: int, year: int, left: bool = False) -> 
     x = org_x + 4
     y = org_y + 16
     if not left:
-        do_lined_sheet(
-            dots=True,
-            pitch=PITCH,
-            x=x,
-            y=y,
-            line_thickness=LINE_THICKNESS,
-            dot_radius=DOT_RADIUS,
-            dot_y_offset=DOT_Y_OFFSET,
-            color=COLOR,
-            dotcolor=DOT_COLOR,
-        )
+        do_lined_sheet(dots=True, x=x, y=y)
     do_year_stamp(org_x, org_y, left, year)
     if left:
         do_frontpage(org_x, org_y, year, left, PITCH)
@@ -87,42 +77,25 @@ def make_a6_sheet(
     pitch: int = PITCH,
     todos: List[str] = [],
     month: Optional[str] = None,
-    holidays: List[str] = []
+    holidays: List[str] = [],
 ) -> None:
     org_x = rorg_x
-
     org_x += 2
     x = org_x + 4
-
     y = org_y + 16
-    line_thickness = LINE_THICKNESS
-    dot_radius = DOT_RADIUS
-    dot_y_offset = DOT_Y_OFFSET
-    color = COLOR
-    dotcolor = DOT_COLOR
 
     dots = True
     if weekday:
         dots = False
-    do_lined_sheet(
-        dots,
-        pitch,
-        x,
-        y,
-        line_thickness,
-        dot_radius,
-        dot_y_offset,
-        color,
-        dotcolor,
-    )
+    do_lined_sheet(dots, x, y)
 
     if weekday and month:  # month should always be true in said case, placating mypy
         do_day_title(org_x, org_y, weekday, month, day)
-        do_numbers(org_x, org_y, pitch)
-        weekday_todo(org_x, org_y, pitch, todos, holidays)
+        do_numbers(org_x, org_y)
+        weekday_todo(org_x, org_y, todos, holidays)
     elif weekend and month:  # month should always be true in said case, placating mypy
         do_day_title(org_x, org_y, weekend, month, day)
-        weekend_todo(org_x, org_y, pitch, todos, holidays)
+        weekend_todo(org_x, org_y, todos, holidays)
 
     do_year_stamp(org_x, org_y, left, year)
 
@@ -173,18 +146,8 @@ def do_monthly_sheet(
         x += 3 * pitch
 
 
-def do_lined_sheet(
-    dots: bool,
-    pitch: int,
-    x: int,
-    y: int,
-    line_thickness: float,
-    dot_radius: float,
-    dot_y_offset: float,
-    color: str,
-    dotcolor: str,
-) -> None:
-    for i in range(int(126 / pitch)):
+def do_lined_sheet(dots: bool, x: int, y: int) -> None:
+    for i in range(int(126 / PITCH)):
         print(
             """<rect
             style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
@@ -192,24 +155,24 @@ def do_lined_sheet(
             height="%f"
             x="%f"
             y="%f" />"""
-            % (color, color, line_thickness, x, y)
+            % (COLOR, COLOR, LINE_THICKNESS, x, y)
         )
         if dots:
-            for c in range(int(90 / pitch)):
+            for c in range(int(90 / PITCH)):
                 print(
                     """<ellipse
                 style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
                 cx="%f" cy="%f" rx="%f" ry="%f" />"""
                     % (
-                        dotcolor,
-                        dotcolor,
-                        x + (2.5) + c * pitch + (0.2 * dot_radius),
-                        y + dot_y_offset,
-                        dot_radius,
-                        dot_radius,
+                        DOT_COLOR,
+                        DOT_COLOR,
+                        x + (2.5) + c * PITCH + (0.2 * DOT_RADIUS),
+                        y + DOT_Y_OFFSET,
+                        DOT_RADIUS,
+                        DOT_RADIUS,
                     )
                 )
-        y += pitch
+        y += PITCH
 
 
 def do_frontpage(
@@ -428,23 +391,23 @@ def do_year_stamp(org_x: int, org_y: int, left: bool, year: int) -> None:
     )
 
 
-def do_numbers(org_x: int, org_y: int, pitch: int) -> None:
+def do_numbers(org_x: int, org_y: int) -> None:
     y = org_y
 
     # for left
     x = org_x + 3
     for ind, val in enumerate([9, 10, 11, 12, 1, 2, 3, 4]):
 
-        num_lines = 126 / pitch
+        num_lines = 126 / PITCH
         start_line = num_lines - (2 * 8)
-        starty = start_line * pitch + pitch  # skip the top line
+        starty = start_line * PITCH + PITCH  # skip the top line
 
-        liney = ind * (pitch * 2) + (10 + pitch) + starty + y
+        liney = ind * (PITCH * 2) + (10 + PITCH) + starty + y
         xform = 0.5
         if val > 9:
             xform = 0.25
 
-        fs = (16 * pitch) / 6
+        fs = (16 * PITCH) / 6
 
         print(
             """<g>
@@ -471,13 +434,13 @@ def do_numbers(org_x: int, org_y: int, pitch: int) -> None:
               >0</text></g>
               """
             % (
-                (x + 2) / half_hours_scale + half_hours_scale * pitch,
-                liney - (pitch + 0.5),
+                (x + 2) / half_hours_scale + half_hours_scale * PITCH,
+                liney - (PITCH + 0.5),
                 half_hours_scale,
             )
         )
 
-        toff = (1.5 * pitch) / 6
+        toff = (1.5 * PITCH) / 6
 
         print(
             """
@@ -491,7 +454,7 @@ def do_numbers(org_x: int, org_y: int, pitch: int) -> None:
               >3</text></g>
               """
             % (
-                (x + 2) / half_hours_scale + half_hours_scale * pitch,
+                (x + 2) / half_hours_scale + half_hours_scale * PITCH,
                 liney - toff,
                 half_hours_scale,
             )
@@ -499,9 +462,7 @@ def do_numbers(org_x: int, org_y: int, pitch: int) -> None:
         # """ % ((x+2) / half_hours_scale + half_hours_scale * pitch, liney- toff, half_hours_scale))
 
 
-def weekday_todo(
-    org_x: int, org_y: int, pitch: int, todos: List[str], holidays: List[str]
-) -> None:
+def weekday_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) -> None:
     print(
         """
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="%f" y="%f"/>
@@ -512,7 +473,7 @@ def weekday_todo(
         """
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="%f" y="%f"/>
  """
-        % (org_x + (42 + pitch) - 0.12, org_y + 16)
+        % (org_x + (42 + PITCH) - 0.12, org_y + 16)
     )
 
     for ind, t in enumerate(todos):
@@ -523,9 +484,9 @@ def weekday_todo(
                 y="%f"
               >%s</text></g>"""
             % (
-                pitch * 0.6,
-                org_x + 42 + (1.25 * pitch),
-                org_y + 15 + ((ind + 1) * pitch),
+                PITCH * 0.6,
+                org_x + 42 + (1.25 * PITCH),
+                org_y + 15 + ((ind + 1) * PITCH),
                 t,
             )
         )
@@ -538,45 +499,43 @@ def weekday_todo(
                 y="%f"
               >%s</text></g>"""
             % (
-                pitch * 0.6,
+                PITCH * 0.6,
                 org_x + 6,
-                org_y + 15 + ((ind + 1) * pitch),
+                org_y + 15 + ((ind + 1) * PITCH),
                 t,
             )
         )
 
 
-def weekend_todo(
-    org_x: int, org_y: int, pitch: int, todos: List[str], holidays: List[str]
-) -> None:
-    num_lines = int((126 / pitch))
+def weekend_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) -> None:
+    num_lines = int((126 / PITCH))
     nlm3 = num_lines - 3
-    height = nlm3 * pitch
+    height = nlm3 * PITCH
 
     print(
         """
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="%f" width="0.25" x="%f" y="%f"/>
  """
-        % (height, 0.6 + org_x + 6 - 0.12, org_y + 16 + (2 * pitch))
+        % (height, 0.6 + org_x + 6 - 0.12, org_y + 16 + (2 * PITCH))
     )
     print(
         """
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="%f" width="0.25" x="%f" y="%f"/>
  """
-        % (height, 0.6 + org_x + (6 + pitch) - 0.12, org_y + 16 + (2 * pitch))
+        % (height, 0.6 + org_x + (6 + PITCH) - 0.12, org_y + 16 + (2 * PITCH))
     )
 
     print(
         """
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="%f" width="0.25" x="%f" y="%f"/>
  """
-        % (height, 0.6 + org_x + 6 + (9 * pitch) - 0.12, org_y + 16 + (2 * pitch))
+        % (height, 0.6 + org_x + 6 + (9 * PITCH) - 0.12, org_y + 16 + (2 * PITCH))
     )
     print(
         """
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="%f" width="0.25" x="%f" y="%f"/>
  """
-        % (height, 0.6 + org_x + (6 + (10 * pitch)) - 0.12, org_y + 16 + (2 * pitch))
+        % (height, 0.6 + org_x + (6 + (10 * PITCH)) - 0.12, org_y + 16 + (2 * PITCH))
     )
 
     for ind, t in enumerate(todos):
@@ -587,9 +546,9 @@ def weekend_todo(
                 y="%f"
               >%s</text></g>"""
             % (
-                pitch * 0.6,
-                org_x + 6 + (1.25 * pitch),
-                org_y + 15 + (2 * pitch) + ((ind + 1) * pitch),
+                PITCH * 0.6,
+                org_x + 6 + (1.25 * PITCH),
+                org_y + 15 + (2 * PITCH) + ((ind + 1) * PITCH),
                 t,
             )
         )
@@ -602,9 +561,9 @@ def weekend_todo(
                 y="%f"
               >%s</text></g>"""
             % (
-                pitch * 0.6,
+                PITCH * 0.6,
                 org_x + 6,
-                org_y + 15 + ((ind + 1) * pitch),
+                org_y + 15 + ((ind + 1) * PITCH),
                 t,
             )
         )
