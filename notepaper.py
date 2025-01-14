@@ -66,13 +66,38 @@ def make_header_sheet(org_x: int, org_y: int, year: int, left: bool = False) -> 
         do_frontpage(org_x, org_y, year, left)
 
 
+def make_weekday_sheet(
+    rorg_x: int,
+    org_y: int,
+    left: bool,
+    year: int,
+    day: int,
+    weekday: str,
+    month: str,
+    todos: List[str] = [],
+    holidays: List[str] = [],
+) -> None:
+    org_x = rorg_x
+    org_x += 2
+    x = org_x + 4
+    y = org_y + 16
+
+    do_lined_sheet(False, x, y)
+
+    if month:  # month should always be true in said case, placating mypy
+        do_day_title(org_x, org_y, weekday, month, day)
+        do_numbers(org_x, org_y)
+        weekday_todo(org_x, org_y, todos, holidays)
+
+    do_year_stamp(org_x, org_y, left, year)
+
+
 def make_a6_sheet(
     rorg_x: int,
     org_y: int,
     left: bool,
     year: int,
     day: int = None,
-    weekday: Optional[str] = None,
     weekend: Optional[str] = None,
     todos: List[str] = [],
     month: Optional[str] = None,
@@ -83,16 +108,9 @@ def make_a6_sheet(
     x = org_x + 4
     y = org_y + 16
 
-    dots = True
-    if weekday:
-        dots = False
-    do_lined_sheet(dots, x, y)
+    do_lined_sheet(True, x, y)
 
-    if weekday and month:  # month should always be true in said case, placating mypy
-        do_day_title(org_x, org_y, weekday, month, day)
-        do_numbers(org_x, org_y)
-        weekday_todo(org_x, org_y, todos, holidays)
-    elif weekend and month:  # month should always be true in said case, placating mypy
+    if weekend and month:  # month should always be true in said case, placating mypy
         do_day_title(org_x, org_y, weekend, month, day)
         weekend_todo(org_x, org_y, todos, holidays)
 
@@ -794,16 +812,8 @@ def make_date_page(
                 holidays=day_holidays,
             )
         else:
-            make_a6_sheet(
-                x,
-                y,
-                left=left,
-                year=year,
-                weekday=dayofweek,
-                month=month,
-                day=day,
-                todos=day_todos,
-                holidays=day_holidays,
+            make_weekday_sheet(
+                x, y, left, year, day, dayofweek, month, day_todos, day_holidays
             )
 
     np = len(thisp)
