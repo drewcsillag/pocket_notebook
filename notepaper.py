@@ -48,11 +48,11 @@ DOT_Y_OFFSET = 0.05
 # LEFT_PAGES = [(102, 0), (-3, 0), (102, 148), (-3, 148)]
 
 
-def make_monthly_sheet(org_x: int, org_y: int, color: str = COLOR) -> None:
+def make_monthly_sheet(org_x: int, org_y: int) -> None:
     org_x += 2
     x = org_x + 4
     y = org_y + 16
-    do_monthly_sheet(x, y, PITCH, LINE_THICKNESS, color)
+    do_monthly_sheet(x, y)
 
 
 def make_header_sheet(org_x: int, org_y: int, year: int, left: bool = False) -> None:
@@ -74,7 +74,6 @@ def make_a6_sheet(
     day: int = None,
     weekday: Optional[str] = None,
     weekend: Optional[str] = None,
-    pitch: int = PITCH,
     todos: List[str] = [],
     month: Optional[str] = None,
     holidays: List[str] = [],
@@ -100,14 +99,12 @@ def make_a6_sheet(
     do_year_stamp(org_x, org_y, left, year)
 
 
-def do_monthly_sheet(
-    x: int, y: int, pitch: int, line_thickness: float, color: str
-) -> None:
-    y -= pitch
+def do_monthly_sheet(x: int, y: int) -> None:
+    y -= PITCH
     oy = y
 
     for i in range(8):
-        lt = line_thickness
+        lt = LINE_THICKNESS
         if i == 2:
             lt *= 3
         print(
@@ -117,7 +114,7 @@ def do_monthly_sheet(
             height="%f"
             x="%f"
             y="%f" />"""
-            % (color, color, lt, x, y)
+            % (COLOR, COLOR, lt, x, y)
         )
 
         if i < 7:
@@ -141,9 +138,9 @@ def do_monthly_sheet(
             height="%f"
             x="%f"
             y="%f" />"""
-            % (color, color, line_thickness, 18 * 7, x + 4, oy)
+            % (COLOR, COLOR, LINE_THICKNESS, 18 * 7, x + 4, oy)
         )
-        x += 3 * pitch
+        x += 3 * PITCH
 
 
 def do_lined_sheet(dots: bool, x: int, y: int) -> None:
