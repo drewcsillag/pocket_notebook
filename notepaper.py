@@ -52,6 +52,23 @@ def make_monthly_sheet(org_x: int, org_y: int) -> None:
     do_monthly_sheet(x, y)
 
 
+def make_dated_monthly_sheet(org_x: int, org_y: int, m: datetime.date) -> None:
+    org_x += 2
+    x = org_x + 4
+    y = org_y + 16
+    do_monthly_sheet(x, y)
+    month_name = MONTHS[m.month]
+    do_month_year_title(org_x, org_y, month_name, str(m.year))
+    org_month = m.month
+    cur = m + relativedelta(day = 1, days=0)
+    dow = cur.weekday() # 0 == Monday
+    while cur.month == org_month:
+
+        sys.stderr.write("Date %r\n" % (cur))
+
+        cur += ONE_DAY
+
+
 def make_header_sheet(org_x: int, org_y: int, year: int, left: bool = False) -> None:
     org_x += 2
     x = org_x + 4
@@ -134,8 +151,10 @@ def do_monthly_sheet(x: int, y: int) -> None:
 
     for i in range(8):
         lt = LINE_THICKNESS
+        # thicker line between weekdays and weekend
         if i == 2:
             lt *= 3
+
         print(
             """<rect
             style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
@@ -146,7 +165,7 @@ def do_monthly_sheet(x: int, y: int) -> None:
             % (COLOR, COLOR, lt, x, y)
         )
 
-        if i < 7:
+        if True:#i < 7:
             dow = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][6 - i]
             print(
                 """<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
@@ -389,6 +408,22 @@ def do_day_title(
     title = weekday + ", " + month
     if day is not None:
         title += " " + str(day)
+    print(
+        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                    x="%f"
+                    y="%f"
+                >%s</text>
+                """
+        % (x, y, title)
+    )
+
+
+def do_month_year_title(
+    org_x: int, org_y: int, month: str, year: str) -> None:
+    x = org_x + 32
+    y = org_y + 8
+    title = month + " " + year
+
     print(
         """<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                     x="%f"
@@ -697,6 +732,15 @@ def make_monthly_pages() -> None:
     a4_page_trailer()
 
 
+def make_dated_monthly_pages() -> None:
+    a4_page_header()
+    make_dated_monthly_sheet(0, 0, datetime.date(2025,1,1))
+    make_dated_monthly_sheet(105, 0, datetime.date(2025,3,1))
+    make_dated_monthly_sheet(105, 148, datetime.date(2025,5,1))
+    make_dated_monthly_sheet(0, 148, datetime.date(2025,7,1))
+    a4_page_trailer()
+
+
 def make_blank_pages(left: bool, year: int) -> None:
     a4_page_header()
     make_lined_sheet(0, 0, left=left, year=year)
@@ -916,6 +960,9 @@ if __name__ == "__main__":
     make_monthly_pages()
     sys.stdout = open("monthly2.svg", "w")
     make_monthly_pages()
+
+    sys.stdout = open("monthly_dated1.svg", "w")
+    make_dated_monthly_pages()
 
     sys.stdout = open("blank1.svg", "w")
     make_blank_pages(False, year=year)
