@@ -60,12 +60,25 @@ def make_dated_monthly_sheet(org_x: int, org_y: int, m: datetime.date) -> None:
     month_name = MONTHS[m.month]
     do_month_year_title(org_x, org_y, month_name, str(m.year))
     org_month = m.month
-    cur = m + relativedelta(day = 1, days=0)
-    dow = cur.weekday() # 0 == Monday
+    cur = m + relativedelta(day=1, days=0)
+    horizontal_slot = 1
     while cur.month == org_month:
+        dow = cur.weekday()  # 0 == Monday
 
-        sys.stderr.write("Date %r\n" % (cur))
+        vertical_slot = 7 - dow
+        text_y = (y - PITCH) + (vertical_slot * 18) - 1
+        text_x = x + (3 * PITCH * horizontal_slot) - 7
+        print(
+            """<text style="font-size:4px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                x="%f"
+                y="%f"
+                transform="rotate(-90 %f %f)"
+                >%d</text>"""
+            % (text_x, text_y, text_x, text_y, cur.day)
+        )
 
+        if dow == 6:  ##sunday
+            horizontal_slot += 1
         cur += ONE_DAY
 
 
@@ -165,7 +178,7 @@ def do_monthly_sheet(x: int, y: int) -> None:
             % (COLOR, COLOR, lt, x, y)
         )
 
-        if True:#i < 7:
+        if i < 7:
             dow = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][6 - i]
             print(
                 """<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
@@ -418,8 +431,7 @@ def do_day_title(
     )
 
 
-def do_month_year_title(
-    org_x: int, org_y: int, month: str, year: str) -> None:
+def do_month_year_title(org_x: int, org_y: int, month: str, year: str) -> None:
     x = org_x + 32
     y = org_y + 8
     title = month + " " + year
@@ -732,12 +744,40 @@ def make_monthly_pages() -> None:
     a4_page_trailer()
 
 
-def make_dated_monthly_pages() -> None:
+def make_dated_monthly_pages_p1(year: int) -> None:
     a4_page_header()
-    make_dated_monthly_sheet(0, 0, datetime.date(2025,1,1))
-    make_dated_monthly_sheet(105, 0, datetime.date(2025,3,1))
-    make_dated_monthly_sheet(105, 148, datetime.date(2025,5,1))
-    make_dated_monthly_sheet(0, 148, datetime.date(2025,7,1))
+    make_dated_monthly_sheet(0, 0, datetime.date(year, 1, 1))
+    make_dated_monthly_sheet(105, 0, datetime.date(year, 3, 1))
+    make_dated_monthly_sheet(105, 148, datetime.date(year, 5, 1))
+    make_dated_monthly_sheet(0, 148, datetime.date(year, 7, 1))
+    a4_page_trailer()
+
+
+def make_dated_monthly_pages_p2(year: int) -> None:
+    a4_page_header()
+    make_dated_monthly_sheet(0, 0, datetime.date(year, 4, 1))
+    make_dated_monthly_sheet(105, 0, datetime.date(year, 2, 1))
+    make_dated_monthly_sheet(105, 148, datetime.date(year, 8, 1))
+    make_dated_monthly_sheet(0, 148, datetime.date(year, 6, 1))
+    a4_page_trailer()
+
+
+def make_dated_monthly_pages_p3(year: int) -> None:
+    a4_page_header()
+    make_dated_monthly_sheet(0, 0, datetime.date(year, 9, 1))
+    make_dated_monthly_sheet(105, 0, datetime.date(year, 11, 1))
+
+    make_lined_sheet(105, 148, left=False, year=year)
+    make_lined_sheet(0, 148, left=False, year=year)
+    a4_page_trailer()
+
+
+def make_dated_monthly_pages_p4(year: int) -> None:
+    a4_page_header()
+    make_dated_monthly_sheet(0, 0, datetime.date(year, 12, 1))
+    make_dated_monthly_sheet(105, 0, datetime.date(year, 10, 1))
+    make_lined_sheet(105, 148, left=True, year=year)
+    make_lined_sheet(0, 148, left=True, year=year)
     a4_page_trailer()
 
 
@@ -903,6 +943,7 @@ if __name__ == "__main__":
     todos = parse_preserving_duplicates(open("todo_holidays/todos.yaml"))
     holidays = parse_preserving_duplicates(open("todo_holidays/holidays.yaml"))
     cur = datetime.date.fromisoformat(sys.argv[1])
+    orig_year = cur.year
     numdays = int(sys.argv[2])
     numsplits = numdays / 2
     if numsplits != int(numsplits):
@@ -962,7 +1003,13 @@ if __name__ == "__main__":
     make_monthly_pages()
 
     sys.stdout = open("monthly_dated1.svg", "w")
-    make_dated_monthly_pages()
+    make_dated_monthly_pages_p1(orig_year)
+    sys.stdout = open("monthly_dated2.svg", "w")
+    make_dated_monthly_pages_p2(orig_year)
+    sys.stdout = open("monthly_dated3.svg", "w")
+    make_dated_monthly_pages_p3(orig_year)
+    sys.stdout = open("monthly_dated4.svg", "w")
+    make_dated_monthly_pages_p4(orig_year)
 
     sys.stdout = open("blank1.svg", "w")
     make_blank_pages(False, year=year)
