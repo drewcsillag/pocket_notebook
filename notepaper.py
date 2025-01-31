@@ -849,17 +849,20 @@ def add_monthly_todos(
                     all_todos = add_todos(all_todos, v)
 
         else:
-            dow_n = DAY_TO_NUM[dow]
-            if which == 0:
-                if d_obj.weekday() == dow_n.weekday:
-                    all_todos = add_todos(all_todos, v)
+            if dow == "*":
+                all_todos = add_todos(all_todos, v)
             else:
-                if which < 0:
-                    rd = d_obj + relativedelta(day=31, weekday=dow_n(which))
+                dow_n = DAY_TO_NUM[dow]
+                if which == 0:
+                    if d_obj.weekday() == dow_n.weekday:
+                        all_todos = add_todos(all_todos, v)
                 else:
-                    rd = d_obj + relativedelta(day=1, weekday=dow_n(which))
-                if rd == d_obj:
-                    all_todos = add_todos(all_todos, v)
+                    if which < 0:
+                        rd = d_obj + relativedelta(day=31, weekday=dow_n(which))
+                    else:
+                        rd = d_obj + relativedelta(day=1, weekday=dow_n(which))
+                    if rd == d_obj:
+                        all_todos = add_todos(all_todos, v)
     return all_todos
 
 

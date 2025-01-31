@@ -135,6 +135,13 @@ class TestAddingTodos(unittest.TestCase):
         self.assertEqual([], p.get_day_todos(todos, datetime.date(2024, 1, 2)))
         self.assertEqual([], p.get_day_todos(todos, datetime.date(2024, 1, 8)))
 
+    def test_every_day_in_month(self) -> None:
+        todos = {"yearly": [{"February,*,*": "t"}]}
+        self.assertEqual([], p.get_day_todos(todos, datetime.date(2024, 1, 8)))
+        self.assertEqual([], p.get_day_todos(todos, datetime.date(2024, 3, 8)))
+        self.assertEqual(["t"], p.get_day_todos(todos, datetime.date(2024, 2, 8)))
+        self.assertEqual(["t"], p.get_day_todos(todos, datetime.date(2024, 2, 14)))
+
     def test_mixing(self) -> None:
         todos = {
             "yearly": [
