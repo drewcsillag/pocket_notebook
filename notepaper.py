@@ -133,7 +133,7 @@ def make_weekend_sheet(
     x = org_x + 4
     y = org_y + 16
 
-    do_lined_sheet(x, y, dots=True)
+    do_lined_sheet(x, y, dots=False)
 
     do_day_title(org_x, org_y, weekend, month, day)
     weekend_todo(org_x, org_y, todos, holidays)
