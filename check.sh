@@ -1,3 +1,3 @@
 black notepaper*.py
-mypy notepaper*.py
+ruff check notepaper*.py
 python -m unittest notepaper_test

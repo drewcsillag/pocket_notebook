@@ -1,4 +1,3 @@
-import io
 import sys
 import yaml
 from typing import Any, Dict, List, TextIO, Tuple, Optional
@@ -339,8 +338,8 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
     for i in range(1, 13):
         dt = datetime.date(year, i, 1)
         first_day = (dt.weekday() + 1) % 7
-        l = mos_first_year[first_day]
-        l.append(MONTHS[i])
+        month_l = mos_first_year[first_day]
+        month_l.append(MONTHS[i])
 
     for index, months in enumerate(mos_first_year):
         ls = ", ".join(months)
@@ -361,8 +360,8 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
     for i in range(1, 13):
         dt = datetime.date(year + 1, i, 1)
         first_day = (dt.weekday() + 1) % 7
-        l = mos_second_year[first_day]
-        l.append(MONTHS[i])
+        month_l = mos_second_year[first_day]
+        month_l.append(MONTHS[i])
 
     for index, months in enumerate(mos_second_year):
         ls = ", ".join(months)
@@ -818,9 +817,9 @@ def get_day_todos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[st
             continue
         k = "%s,%s" % (dow, which)
         if k in m_y:
-            l = m_y[k][:]
-            l.extend(v)
-            m_y[k] = l
+            todo_l = m_y[k][:]
+            todo_l.extend(v)
+            m_y[k] = todo_l
         else:
             m_y["%s,%s" % (dow, which)] = v
     all_todos = add_monthly_todos(d_obj, m_y, all_todos)
