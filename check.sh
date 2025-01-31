@@ -7,3 +7,4 @@ do
   diff -u $i exemplar/$i
 
 done
+bash clean.sh
