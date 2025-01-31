@@ -432,7 +432,7 @@ def do_day_title(
 
 def do_month_year_title(org_x: int, org_y: int, month: str, year: str) -> None:
     x = org_x + 32
-    y = org_y + 8
+    y = org_y + 9
     title = month + " " + year
 
     print(
