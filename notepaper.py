@@ -581,7 +581,7 @@ def weekend_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) 
     num_lines = int((126 / PITCH))
     nlm3 = num_lines - 3
     height = nlm3 * PITCH
-
+    org_x -= 2.5
     print(
         """
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="%f" width="0.25" x="%f" y="%f"/>
