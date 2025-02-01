@@ -152,3 +152,12 @@ class TestAddingTodos(unittest.TestCase):
             ["Chess", "Check MCTP F28R32"],
             p.get_day_todos(todos, datetime.date(2024, 3, 2)),
         )
+
+    def test_interval(self) -> None:
+        # Every two weeks starting on 2025-01-01
+        todos = {"yearly": [{"2024-01-01,week,2": "t"}]}
+        self.assertEqual(["t"], p.get_day_todos(todos, datetime.date(2024, 1, 1)))
+        self.assertEqual([], p.get_day_todos(todos, datetime.date(2024, 1, 8)))
+        self.assertEqual(["t"], p.get_day_todos(todos, datetime.date(2024, 1, 15)))
+        self.assertEqual([], p.get_day_todos(todos, datetime.date(2024, 2, 8)))
+        self.assertEqual([], p.get_day_todos(todos, datetime.date(2024, 2, 14)))

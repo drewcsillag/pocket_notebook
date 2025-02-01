@@ -813,7 +813,17 @@ def get_day_todos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[st
         elif len(bits) == 2:
             month = "*"
             dow, which = bits
-        if month != "*" and MONTHS.index(month) != d_obj.month:
+
+        if month[0] in "0123456789":
+            date, unit, interval = month, dow, which
+            start_date = datetime.datetime.strptime(date, "%Y-%m-%d")
+            numdays = {"week": 7, "day": 1}[unit]
+            datediff_days = (d_obj - start_date.date()).days
+            if datediff_days % (int(interval) * numdays) == 0:
+                all_todos.extend(v)
+
+            continue
+        elif month != "*" and MONTHS.index(month) != d_obj.month:
             continue
         k = "%s,%s" % (dow, which)
         if k in m_y:
