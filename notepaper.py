@@ -801,40 +801,58 @@ def add_todos(t: List[str], v: List[str]) -> List[str]:
 
 
 def get_day_todos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[str]:
-    y = todos["yearly"][0]
+    """Get todos for a specific date from yearly todo configurations.
 
+    Args:
+        todos: Dictionary of todo configurations
+        d_obj: Date to get todos for
+
+    Returns:
+        List of todo strings for the given date
+    """
+    yearly_todos = todos["yearly"][0]
     all_todos: List[str] = []
+    monthly_todos: Dict[str, List[str]] = {}
 
-    m_y: Dict[str, List[str]] = {}
-    for k, v in y.items():
-        bits = k.split(",")
-        if len(bits) == 3:
-            month, dow, which = bits
-        elif len(bits) == 2:
-            month = "*"
-            dow, which = bits
-
-        if month[0] in "0123456789":
-            date, unit, interval = month, dow, which
-            start_date = datetime.datetime.strptime(date, "%Y-%m-%d")
-            numdays = {"week": 7, "day": 1}[unit]
-            datediff_days = (d_obj - start_date.date()).days
-            if datediff_days % (int(interval) * numdays) == 0:
-                all_todos.extend(v)
-
+    # Process each todo configuration
+    for pattern, todo_items in yearly_todos.items():
+        if is_recurring_interval(pattern):
+            if should_add_recurring_todo(pattern, d_obj):
+                all_todos.extend(todo_items)
             continue
-        elif month != "*" and MONTHS.index(month) != d_obj.month:
-            continue
-        k = "%s,%s" % (dow, which)
-        if k in m_y:
-            todo_l = m_y[k][:]
-            todo_l.extend(v)
-            m_y[k] = todo_l
+
+        # Parse month,weekday,occurrence pattern
+        parts = pattern.split(",")
+        if len(parts) == 2:
+            month, rest = "*", pattern
         else:
-            m_y["%s,%s" % (dow, which)] = v
-    all_todos = add_monthly_todos(d_obj, m_y, all_todos)
+            month, rest = parts[0], ",".join(parts[1:])
 
-    return all_todos
+        # Only process if month matches
+        if month == "*" or MONTHS.index(month) == d_obj.month:
+            # Accumulate todos for this pattern
+            if rest in monthly_todos:
+                monthly_todos[rest].extend(todo_items)
+            else:
+                monthly_todos[rest] = todo_items
+
+    return add_monthly_todos(d_obj, monthly_todos, all_todos)
+
+
+def is_recurring_interval(pattern: str) -> bool:
+    """Check if pattern is a recurring interval (e.g. '2025-01-01,week,3')"""
+    return pattern.split(",")[0][0] in "0123456789"
+
+
+def should_add_recurring_todo(pattern: str, d_obj: datetime.date) -> bool:
+    """Check if recurring todo should be added for given date"""
+    date, unit, interval = pattern.split(",")
+    start_date = datetime.datetime.strptime(date, "%Y-%m-%d")
+
+    numdays = {"week": 7, "day": 1}[unit]
+
+    datediff_days = (d_obj - start_date.date()).days
+    return datediff_days % (int(interval) * numdays) == 0
 
 
 def add_monthly_todos(
@@ -842,37 +860,44 @@ def add_monthly_todos(
 ) -> List[str]:
     for k, v in m.items():
         dow, which_str = k.split(",")
-        if which_str == "*":
-            which_str = "0"
-        which = int(which_str)
+        which = int(which_str) if which_str != "*" else 0
 
+        # Handle "Day" type todos (specific days of month)
         if dow == "Day":
-            # days from end of month
-            if which < 0:
-                rd = d_obj + relativedelta(day=33, days=which + 1)
-                if rd == d_obj:
-                    all_todos = add_todos(all_todos, v)
-            else:  ## days from start
-                rd = d_obj + relativedelta(day=1, days=which - 1)
-                if rd == d_obj:
-                    all_todos = add_todos(all_todos, v)
-
-        else:
-            if dow == "*":
+            if should_add_day_todo(d_obj, which):
                 all_todos = add_todos(all_todos, v)
-            else:
-                dow_n = DAY_TO_NUM[dow]
-                if which == 0:
-                    if d_obj.weekday() == dow_n.weekday:
-                        all_todos = add_todos(all_todos, v)
-                else:
-                    if which < 0:
-                        rd = d_obj + relativedelta(day=31, weekday=dow_n(which))
-                    else:
-                        rd = d_obj + relativedelta(day=1, weekday=dow_n(which))
-                    if rd == d_obj:
-                        all_todos = add_todos(all_todos, v)
+
+        # Handle weekday-based todos
+        elif dow == "*":  # Every day
+            all_todos = add_todos(all_todos, v)
+
+        # Specific weekday
+        elif should_add_weekday_todo(d_obj, dow, which):
+            all_todos = add_todos(all_todos, v)
+
     return all_todos
+
+
+def should_add_day_todo(d_obj: datetime.date, which: int) -> bool:
+    """Determine if a day-based todo should be added for this date."""
+    if which < 0:  # Days from end of month
+        return d_obj == d_obj + relativedelta(day=33, days=which + 1)
+
+    # Days from start of month
+    return d_obj == d_obj + relativedelta(day=1, days=which - 1)
+
+
+def should_add_weekday_todo(d_obj: datetime.date, dow: str, which: int) -> bool:
+    """Determine if a weekday-based todo should be added for this date."""
+    if which == 0:  # Every occurrence of this weekday
+        return d_obj.weekday() == DAY_TO_NUM[dow].weekday
+
+    # Specific occurrence of weekday (e.g., 1st Monday, last Friday)
+    if which < 0:  # Count from end of month
+        return d_obj == d_obj + relativedelta(day=31, weekday=DAY_TO_NUM[dow](which))
+
+    # Count from start of month
+    return d_obj == d_obj + relativedelta(day=1, weekday=DAY_TO_NUM[dow](which))
 
 
 def make_front_page(year: int, left: bool = False) -> None:
