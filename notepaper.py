@@ -834,7 +834,7 @@ def get_day_todos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[st
             if rest in monthly_todos:
                 monthly_todos[rest].extend(todo_items)
             else:
-                monthly_todos[rest] = todo_items
+                monthly_todos[rest] = todo_items[:]
 
     return add_monthly_todos(d_obj, monthly_todos, all_todos)
 

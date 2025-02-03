@@ -153,6 +153,21 @@ class TestAddingTodos(unittest.TestCase):
             p.get_day_todos(todos, datetime.date(2024, 3, 2)),
         )
 
+    def test_dont_mess_the_orgiginals(self):
+        todos = {
+            "yearly": [
+                {
+                    "February,Saturday,4": ["u"],  # ac
+                    "Saturday,4": ["w"],  # endo
+                }
+            ]
+        }
+        cur = datetime.date(2025, 2, 1)
+        for i in range(28):
+            p.get_day_todos(todos, cur)
+            cur += p.ONE_DAY
+        self.assertEqual(["u"], todos["yearly"][0]["February,Saturday,4"])
+
     def test_interval(self) -> None:
         # Every two weeks starting on 2025-01-01
         todos = {"yearly": [{"2024-01-01,week,2": "t"}]}
