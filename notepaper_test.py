@@ -176,3 +176,82 @@ class TestAddingTodos(unittest.TestCase):
         self.assertEqual(["t"], p.get_day_todos(todos, datetime.date(2024, 1, 15)))
         self.assertEqual([], p.get_day_todos(todos, datetime.date(2024, 2, 8)))
         self.assertEqual([], p.get_day_todos(todos, datetime.date(2024, 2, 14)))
+
+    ### NEW
+    def test_get_day_todos_recurring_weekly(self) -> None:
+        todos = {"yearly": [{"2024-01-01,week,2": ["Biweekly meeting"]}]}
+
+        # Should occur on start date
+        self.assertEqual(
+            ["Biweekly meeting"], p.get_day_todos(todos, datetime.date(2024, 1, 1))
+        )
+        # Should not occur one week later
+        self.assertEqual([], p.get_day_todos(todos, datetime.date(2024, 1, 8)))
+        # Should occur two weeks later
+        self.assertEqual(
+            ["Biweekly meeting"], p.get_day_todos(todos, datetime.date(2024, 1, 15))
+        )
+
+    def test_get_day_todos_recurring_daily(self) -> None:
+        todos = {"yearly": [{"2024-01-01,day,3": ["Every 3 days"]}]}
+
+        self.assertEqual(
+            ["Every 3 days"], p.get_day_todos(todos, datetime.date(2024, 1, 1))
+        )
+        self.assertEqual([], p.get_day_todos(todos, datetime.date(2024, 1, 2)))
+        self.assertEqual(
+            ["Every 3 days"], p.get_day_todos(todos, datetime.date(2024, 1, 4))
+        )
+
+    def test_get_todos_last_day_of_month(self) -> None:
+        todos = {"yearly": [{"Day,-1": ["Last day of month"]}]}
+        self.assertEqual(
+            ["Last day of month"], p.get_day_todos(todos, datetime.date(2024, 1, 31))
+        )
+        self.assertEqual([], p.get_day_todos(todos, datetime.date(2024, 1, 30)))
+
+    def test_saturday_of_month(self) -> None:
+        todos = {"yearly": [{"Saturday,2": ["Second Saturday of month"]}]}
+        self.assertEqual(
+            ["Second Saturday of month"],
+            p.get_day_todos(todos, datetime.date(2024, 2, 10)),
+        )
+        todos = {"yearly": [{"Saturday,3": ["Third Saturday of month"]}]}
+        self.assertEqual(
+            ["Third Saturday of month"],
+            p.get_day_todos(todos, datetime.date(2024, 2, 17)),
+        )
+
+    def test_get_day_todos_empty_slots(self) -> None:
+        todos = {"yearly": [{"March,Monday,1": ["First", "", "Third"]}]}
+
+        result = p.get_day_todos(todos, datetime.date(2024, 3, 4))
+        self.assertEqual(["First", "Third"], result)
+
+    def test_get_day_todos_month_weekday_star(self) -> None:
+        todos = {"yearly": [{"March,Saturday,*": ["Weekend in March"]}]}
+
+        # Should not occur in February
+        self.assertEqual(
+            [],
+            p.get_day_todos(todos, datetime.date(2024, 2, 3)),  # A Saturday in February
+        )
+
+        # Should occur on all Saturdays in March
+        self.assertEqual(
+            ["Weekend in March"],
+            p.get_day_todos(
+                todos, datetime.date(2024, 3, 2)
+            ),  # First Saturday in March
+        )
+        self.assertEqual(
+            ["Weekend in March"],
+            p.get_day_todos(
+                todos, datetime.date(2024, 3, 9)
+            ),  # Second Saturday in March
+        )
+
+        # Should not occur in April
+        self.assertEqual(
+            [], p.get_day_todos(todos, datetime.date(2024, 4, 6))  # A Saturday in April
+        )

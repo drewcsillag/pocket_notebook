@@ -2,3 +2,5 @@ holidays.yaml
 old/
 __pycache__
 todos.yaml
+bin
+lib

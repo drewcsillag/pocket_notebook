@@ -800,7 +800,135 @@ def add_todos(t: List[str], v: List[str]) -> List[str]:
     return t
 
 
-def get_day_todos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[str]:
+def get_day_todos(todos: dict, date: datetime.date) -> list[str]:
+    """Get todos for a specific date from yearly todo configurations.
+
+    Args:
+        todos: Dictionary of todo configurations
+        date: Date to get todos for
+
+    Returns:
+        List of todo strings for the given date
+    """
+    result = []
+
+    if "yearly" not in todos:
+        return result
+
+    for pattern_dict in todos["yearly"]:
+        for pattern, tasks in pattern_dict.items():
+            if not tasks:  # Skip empty tasks
+                continue
+
+            if pattern[0].isdigit():
+                result.extend(get_recurring_todos(pattern, tasks, date))
+            else:
+                result.extend(get_pattern_todos(pattern, tasks, date))
+
+    return result
+
+
+def get_recurring_todos(
+    pattern: str, tasks: list[str] | str, date: datetime.date
+) -> list[str]:
+    """Handle recurring interval patterns like '2024-01-01,week,2'"""
+    start_date_str, unit, interval = pattern.split(",")
+    start_date = datetime.datetime.strptime(start_date_str, "%Y-%m-%d").date()
+    interval = int(interval)
+
+    days_since_start = (date - start_date).days
+    if days_since_start < 0:
+        return []
+
+    if unit == "week" and days_since_start % (7 * interval) == 0:
+        return _normalize_tasks(tasks)
+    elif unit == "day" and days_since_start % interval == 0:
+        return _normalize_tasks(tasks)
+
+    return []
+
+
+def get_pattern_todos(
+    pattern: str, tasks: list[str] | str, date: datetime.date
+) -> list[str]:
+    """Handle patterns like 'January,Monday,1' or 'Monday,1'"""
+    parts = pattern.split(",")
+
+    # Handle abbreviated patterns (e.g. "Monday,1")
+    if len(parts) == 2:
+        parts = ["*", parts[0], parts[1]]  # Prepend "*" for any month
+
+    month_pattern, day_type, occurrence = parts
+
+    # Check if month matches
+    if not _is_matching_month(month_pattern, date):
+        return []
+
+    if day_type == "Day":
+        if _is_matching_day(int(occurrence), date):
+            return _normalize_tasks(tasks)
+    elif day_type in DAYS:
+        if _is_matching_weekday(day_type, occurrence, date):
+            return _normalize_tasks(tasks)
+    elif day_type == "*" and occurrence == "*":
+        return _normalize_tasks(tasks)
+
+    return []
+
+
+def _normalize_tasks(tasks: list[str] | str) -> list[str]:
+    """Convert tasks to list format and filter empty strings"""
+    if isinstance(tasks, list):
+        return [t for t in tasks if t]
+    return [tasks] if tasks else []
+
+
+def _is_matching_month(month_pattern: str, date: datetime.date) -> bool:
+    """Check if date's month matches the pattern"""
+    return month_pattern == "*" or month_pattern == MONTHS[date.month]
+
+
+def _is_matching_day(target_day: int, date: datetime.date) -> bool:
+    """Check if date matches the target day of month"""
+    if target_day < 0:  # Handle negative day numbers (counting from end)
+        next_month = date + relativedelta(months=1, day=1)
+        last_day = (next_month - ONE_DAY).day
+        return date.day == (last_day + target_day + 1)
+    return date.day == target_day
+
+
+def _is_matching_weekday(day_type: str, occurrence: str, date: datetime.date) -> bool:
+    """Check if date matches the weekday pattern"""
+    if date.strftime("%A") != day_type:
+        return False
+
+    if occurrence == "*":  # Any occurrence
+        return True
+
+    # Find nth occurrence of this weekday in the month
+    occurrence_num = int(occurrence)
+    first_day = date.replace(day=1)
+    weekday_occurrences = []
+
+    current = first_day
+    while current.month == date.month:
+        if current.strftime("%A") == day_type:
+            weekday_occurrences.append(current.day)
+        current += ONE_DAY
+
+    if occurrence_num > 0:  # Counting from start
+        return (
+            occurrence_num <= len(weekday_occurrences)
+            and date.day == weekday_occurrences[occurrence_num - 1]
+        )
+    else:  # Counting from end
+        return (
+            abs(occurrence_num) <= len(weekday_occurrences)
+            and date.day == weekday_occurrences[occurrence_num]
+        )
+
+
+def xget_day_todos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[str]:
     """Get todos for a specific date from yearly todo configurations.
 
     Args:
