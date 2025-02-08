@@ -928,45 +928,6 @@ def _is_matching_weekday(day_type: str, occurrence: str, date: datetime.date) ->
         )
 
 
-def xget_day_todos(todos: Dict[str, List[Dict]], d_obj: datetime.date) -> List[str]:
-    """Get todos for a specific date from yearly todo configurations.
-
-    Args:
-        todos: Dictionary of todo configurations
-        d_obj: Date to get todos for
-
-    Returns:
-        List of todo strings for the given date
-    """
-    yearly_todos = todos["yearly"][0]
-    all_todos: List[str] = []
-    monthly_todos: Dict[str, List[str]] = {}
-
-    # Process each todo configuration
-    for pattern, todo_items in yearly_todos.items():
-        if is_recurring_interval(pattern):
-            if should_add_recurring_todo(pattern, d_obj):
-                all_todos.extend(todo_items)
-            continue
-
-        # Parse month,weekday,occurrence pattern
-        parts = pattern.split(",")
-        if len(parts) == 2:
-            month, rest = "*", pattern
-        else:
-            month, rest = parts[0], ",".join(parts[1:])
-
-        # Only process if month matches
-        if month == "*" or MONTHS.index(month) == d_obj.month:
-            # Accumulate todos for this pattern
-            if rest in monthly_todos:
-                monthly_todos[rest].extend(todo_items)
-            else:
-                monthly_todos[rest] = todo_items[:]
-
-    return add_monthly_todos(d_obj, monthly_todos, all_todos)
-
-
 def is_recurring_interval(pattern: str) -> bool:
     """Check if pattern is a recurring interval (e.g. '2025-01-01,week,3')"""
     return pattern.split(",")[0][0] in "0123456789"
@@ -981,51 +942,6 @@ def should_add_recurring_todo(pattern: str, d_obj: datetime.date) -> bool:
 
     datediff_days = (d_obj - start_date.date()).days
     return datediff_days % (int(interval) * numdays) == 0
-
-
-def add_monthly_todos(
-    d_obj: datetime.date, m: Dict[str, List[str]], all_todos: List[str]
-) -> List[str]:
-    for k, v in m.items():
-        dow, which_str = k.split(",")
-        which = int(which_str) if which_str != "*" else 0
-
-        # Handle "Day" type todos (specific days of month)
-        if dow == "Day":
-            if should_add_day_todo(d_obj, which):
-                all_todos = add_todos(all_todos, v)
-
-        # Handle weekday-based todos
-        elif dow == "*":  # Every day
-            all_todos = add_todos(all_todos, v)
-
-        # Specific weekday
-        elif should_add_weekday_todo(d_obj, dow, which):
-            all_todos = add_todos(all_todos, v)
-
-    return all_todos
-
-
-def should_add_day_todo(d_obj: datetime.date, which: int) -> bool:
-    """Determine if a day-based todo should be added for this date."""
-    if which < 0:  # Days from end of month
-        return d_obj == d_obj + relativedelta(day=33, days=which + 1)
-
-    # Days from start of month
-    return d_obj == d_obj + relativedelta(day=1, days=which - 1)
-
-
-def should_add_weekday_todo(d_obj: datetime.date, dow: str, which: int) -> bool:
-    """Determine if a weekday-based todo should be added for this date."""
-    if which == 0:  # Every occurrence of this weekday
-        return d_obj.weekday() == DAY_TO_NUM[dow].weekday
-
-    # Specific occurrence of weekday (e.g., 1st Monday, last Friday)
-    if which < 0:  # Count from end of month
-        return d_obj == d_obj + relativedelta(day=31, weekday=DAY_TO_NUM[dow](which))
-
-    # Count from start of month
-    return d_obj == d_obj + relativedelta(day=1, weekday=DAY_TO_NUM[dow](which))
 
 
 def make_front_page(year: int, left: bool = False) -> None:
