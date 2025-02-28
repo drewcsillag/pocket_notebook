@@ -118,6 +118,7 @@ def make_weekday_sheet(
     do_year_stamp(org_x, org_y, left, year)
     do_week_stamp(org_x, org_y, left, date)
 
+
 def make_weekend_sheet(
     rorg_x: int,
     org_y: int,
@@ -142,6 +143,7 @@ def make_weekend_sheet(
 
     do_year_stamp(org_x, org_y, left, year)
     do_week_stamp(org_x, org_y, left, date, is_weekend=True)
+
 
 def make_lined_sheet(
     rorg_x: int,
@@ -462,10 +464,13 @@ def do_year_stamp(org_x: int, org_y: int, left: bool, year: int) -> None:
         % (x, y, year)
     )
 
-def do_week_stamp(org_x: int, org_y: int, left: bool, date: datetime.date, is_weekend: bool = False) -> None:
+
+def do_week_stamp(
+    org_x: int, org_y: int, left: bool, date: datetime.date, is_weekend: bool = False
+) -> None:
     x = org_x + 37
     if is_weekend:
-        x+=7
+        x += 7
     y = org_y + 140
     week_info = get_week_info(date)
     week_of_year = week_info["week_of_year"]

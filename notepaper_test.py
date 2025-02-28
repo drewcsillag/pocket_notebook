@@ -204,24 +204,23 @@ class TestAddingTodos(unittest.TestCase):
         )
 
     def test_start_of_year(self):
-        date = datetime.datetime(2024, 1, 1)
+        date = datetime.date(2024, 1, 1)
         result = p.get_week_info(date)
         self.assertEqual(result["week_of_year"], 1)
         self.assertEqual(result["quarter"], 1)
         self.assertEqual(result["week_of_quarter"], 1)
 
     def test_middle_of_year(self):
-        date = datetime.datetime(2024, 6, 15)
+        date = datetime.date(2024, 6, 15)
         result = p.get_week_info(date)
         self.assertEqual(result["quarter"], 2)
 
     def test_end_of_year(self):
-        date = datetime.datetime(2024, 12, 31)
+        date = datetime.date(2024, 12, 31)
         result = p.get_week_info(date)
         self.assertEqual(result["quarter"], 4)
 
     def test_week_in_quarter(self):
-        date = datetime.datetime(2024, 4, 10)
+        date = datetime.date(2024, 4, 10)
         result = p.get_week_info(date)
         self.assertEqual(result["week_of_quarter"], 2)
-
