@@ -224,3 +224,4 @@ class TestAddingTodos(unittest.TestCase):
         date = datetime.datetime(2024, 4, 10)
         result = p.get_week_info(date)
         self.assertEqual(result["week_of_quarter"], 2)
+

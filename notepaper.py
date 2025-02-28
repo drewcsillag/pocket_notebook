@@ -100,6 +100,7 @@ def make_weekday_sheet(
     day: int,
     weekday: str,
     month: str,
+    date: datetime.date,
     todos: List[str] = [],
     holidays: List[str] = [],
 ) -> None:
@@ -115,7 +116,7 @@ def make_weekday_sheet(
     weekday_todo(org_x, org_y, todos, holidays)
 
     do_year_stamp(org_x, org_y, left, year)
-
+    do_week_stamp(org_x, org_y, left, date)
 
 def make_weekend_sheet(
     rorg_x: int,
@@ -125,6 +126,7 @@ def make_weekend_sheet(
     day: int,
     weekend: str,
     month: str,
+    date: datetime.date,
     todos: List[str] = [],
     holidays: List[str] = [],
 ) -> None:
@@ -139,7 +141,7 @@ def make_weekend_sheet(
     weekend_todo(org_x, org_y, todos, holidays)
 
     do_year_stamp(org_x, org_y, left, year)
-
+    do_week_stamp(org_x, org_y, left, date, is_weekend=True)
 
 def make_lined_sheet(
     rorg_x: int,
@@ -458,6 +460,25 @@ def do_year_stamp(org_x: int, org_y: int, left: bool, year: int) -> None:
                 >%s</text>
                 """
         % (x, y, year)
+    )
+
+def do_week_stamp(org_x: int, org_y: int, left: bool, date: datetime.date, is_weekend: bool = False) -> None:
+    x = org_x + 37
+    if is_weekend:
+        x+=7
+    y = org_y + 140
+    week_info = get_week_info(date)
+    week_of_year = week_info["week_of_year"]
+    quarter = week_info["quarter"]
+    week_of_quarter = week_info["week_of_quarter"]
+
+    print(
+        """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                    x="%f"
+                    y="%f"
+                >W%s Q%s/W%s</text>
+                """
+        % (x, y, week_of_year, quarter, week_of_quarter)
     )
 
 
@@ -797,7 +818,7 @@ def get_week_info(date):
     quarter = (date.month - 1) // 3 + 1
 
     # Get the first day of the quarter
-    first_day_of_quarter = datetime.datetime(date.year, (quarter - 1) * 3 + 1, 1)
+    first_day_of_quarter = datetime.datetime(date.year, (quarter - 1) * 3 + 1, 1).date()
 
     # Get the week number within the quarter
     week_of_quarter = (date - first_day_of_quarter).days // 7 + 1
@@ -1006,11 +1027,11 @@ def make_date_page(
         day_holidays = get_day_todos(holidays, d_obj)
         if dayofweek in ("Saturday", "Sunday"):
             make_weekend_sheet(
-                x, y, left, year, day, dayofweek, month, day_todos, day_holidays
+                x, y, left, year, day, dayofweek, month, d_obj, day_todos, day_holidays
             )
         else:
             make_weekday_sheet(
-                x, y, left, year, day, dayofweek, month, day_todos, day_holidays
+                x, y, left, year, day, dayofweek, month, d_obj, day_todos, day_holidays
             )
 
     np = len(thisp)
