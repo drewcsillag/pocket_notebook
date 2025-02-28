@@ -789,6 +789,26 @@ def make_blank_pages(left: bool, year: int) -> None:
     a4_page_trailer()
 
 
+def get_week_info(date):
+    # Get the week number of the year
+    week_of_year = date.isocalendar()[1]
+
+    # Determine the quarter
+    quarter = (date.month - 1) // 3 + 1
+
+    # Get the first day of the quarter
+    first_day_of_quarter = datetime.datetime(date.year, (quarter - 1) * 3 + 1, 1)
+
+    # Get the week number within the quarter
+    week_of_quarter = (date - first_day_of_quarter).days // 7 + 1
+
+    return {
+        "week_of_year": week_of_year,
+        "quarter": quarter,
+        "week_of_quarter": week_of_quarter,
+    }
+
+
 def add_todos(t: List[str], v: List[str]) -> List[str]:
     t = t[:]
     for i in v:
@@ -898,34 +918,43 @@ def _is_matching_day(target_day: int, date: datetime.date) -> bool:
 
 
 def _is_matching_weekday(day_type: str, occurrence: str, date: datetime.date) -> bool:
-    """Check if date matches the weekday pattern"""
+    """Check if a date matches a weekday pattern like 'Monday,2' (2nd Monday) or 'Friday,-1' (last Friday).
+
+    Args:
+        day_type: Name of weekday (e.g., "Monday", "Tuesday")
+        occurrence: Which occurrence to match ("*" for any, or number like "2" or "-1")
+        date: The date to check
+    """
+    # First check if it's the right day of the week
     if date.strftime("%A") != day_type:
         return False
 
-    if occurrence == "*":  # Any occurrence
+    # "*" means match any occurrence of this weekday
+    if occurrence == "*":
         return True
 
-    # Find nth occurrence of this weekday in the month
-    occurrence_num = int(occurrence)
-    first_day = date.replace(day=1)
-    weekday_occurrences = []
+    # Find the date of the first occurrence of this weekday in the month
+    first_of_month = date.replace(day=1)
+    days_to_first = (DAYS.index(day_type) - first_of_month.weekday()) % 7
+    first_occurrence_date = days_to_first + 1
 
-    current = first_day
-    while current.month == date.month:
-        if current.strftime("%A") == day_type:
-            weekday_occurrences.append(current.day)
-        current += ONE_DAY
+    # Find which occurrence number this date represents (1st, 2nd, 3rd, etc.)
+    if date.day < first_occurrence_date:
+        return False
+    this_occurrence = ((date.day - first_occurrence_date) // 7) + 1
 
-    if occurrence_num > 0:  # Counting from start
-        return (
-            occurrence_num <= len(weekday_occurrences)
-            and date.day == weekday_occurrences[occurrence_num - 1]
-        )
-    else:  # Counting from end
-        return (
-            abs(occurrence_num) <= len(weekday_occurrences)
-            and date.day == weekday_occurrences[occurrence_num]
-        )
+    # For negative occurrences (like -1 for last), we need total occurrences in month
+    target = int(occurrence)
+    if target > 0:
+        return this_occurrence == target
+    else:
+        # Calculate how many times this weekday occurs in the month
+        last_of_month = (first_of_month + relativedelta(months=1, days=-1)).day
+        total_occurrences = (last_of_month - first_occurrence_date + 7) // 7
+
+        # Convert negative occurrence (-1 means last, -2 means second-to-last, etc.)
+        target_from_end = total_occurrences + target + 1
+        return this_occurrence == target_from_end
 
 
 def is_recurring_interval(pattern: str) -> bool:
