@@ -1076,8 +1076,12 @@ def parse_preserving_duplicates(src: TextIO) -> Dict:
 
 
 if __name__ == "__main__":
-    todos = parse_preserving_duplicates(open("todo_holidays/todos.yaml"))
-    holidays = parse_preserving_duplicates(open("todo_holidays/holidays.yaml"))
+    todos_file = "todo_holidays/todos.yaml"
+    holidays_file = "todo_holidays/holidays.yaml"
+    if len(sys.argv) == 5:
+        todos_file, holidays_file = sys.argv[-2:]
+    todos = parse_preserving_duplicates(open(todos_file))
+    holidays = parse_preserving_duplicates(open(holidays_file))
     cur = datetime.date.fromisoformat(sys.argv[1])
     orig_year = cur.year
     numdays = int(sys.argv[2])

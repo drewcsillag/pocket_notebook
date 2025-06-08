@@ -2,7 +2,7 @@ bash clean.sh
 black notepaper*.py
 ruff check notepaper*.py
 python -m unittest notepaper_test
-python notepaper.py 2025-01-01 8
+python notepaper.py 2025-01-01 8 todos.yaml holidays.yaml
 for i in *.svg
 do
   diff -u $i exemplar/$i
