@@ -18,7 +18,7 @@ First, strap-in, it's not been made easy, but it also shouldn't be terribly hard
 * You'll need pdfunite installed (part of poppler-utils)
 * If you're not on a mac, you'll need to fix makepdfs.sh to alter the path to inkscape
   
-That should get the stuff working. Now you'll want to create a todo_holidays subdirectory with two files: `holidays.yaml` and `todos.yaml`. The format for both is the same. The difference is that with holidays, it's assumed there's only one or two per given day, whereby with todos, the assumption is that there will be less than 24 per day. With holidays showing up at the top left in the lined area of the pages, and todos showing up next to the checkboxes.
+That should get the stuff working. Now you'll want to create a `todo_holidays` subdirectory with two files: `holidays.yaml` and `todos.yaml`. The format for both is the same. The difference is that with holidays, it's assumed there's only one or two per given day, whereby with todos, the assumption is that there will be less than 24 per day. With holidays showing up at the top left in the lined area of the pages, and todos showing up next to the checkboxes.
 
 The format of the yaml files is:
 ```
