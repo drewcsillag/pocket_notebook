@@ -84,8 +84,10 @@ def make_dated_monthly_sheet(org_x: int, org_y: int, m: datetime.date) -> None:
         text_y = (y - PITCH) + (vertical_slot * 18) - 1
         text_x = x + (3 * PITCH * horizontal_slot) - 7
         print(
-            f"""<text style="font-size:4px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                x="{text_x:f}"
+            """<text style="font-size:4px;font-family:sans-serif;fill:#808080;"""
+            """fill-opacity:1;stroke:none"
+                """
+            f"""x="{text_x:f}"
                 y="{text_y:f}"
                 transform="rotate(-90 {text_x:f} {text_y:f})"
                 >{cur.day}</text>"""
@@ -204,7 +206,9 @@ def do_monthly_sheet(x: int, y: int) -> None:
 
         print(
             f"""<rect
-            style="fill:{COLOR};fill-opacity:1;stroke:{COLOR};stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+            """
+            f"""style="fill:{COLOR};fill-opacity:1;stroke:{COLOR};stroke-width:0.0688316;"""
+            f"""stroke-dasharray:none;stroke-opacity:1"
             width="89.0"
             height="{lt:f}"
             x="{x:f}"
@@ -214,7 +218,8 @@ def do_monthly_sheet(x: int, y: int) -> None:
         if i < 7:
             dow = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][6 - i]
             print(
-                f"""<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                """<text style="font-size:6px;font-family:sans-serif;fill:#808080;"""
+                f"""fill-opacity:1;stroke:none"
                 x="{x+4:f}"
                 y="{y+17:f}"
                 transform="rotate(-90 {x+4:f} {y+17:f})"
@@ -226,7 +231,8 @@ def do_monthly_sheet(x: int, y: int) -> None:
     for i in range(6):
         print(
             f"""<rect
-            style="fill:{COLOR};fill-opacity:1;stroke:{COLOR};stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+            style="fill:{COLOR};fill-opacity:1;stroke:{COLOR};stroke-width:0.0688316;"""
+            f"""stroke-dasharray:none;stroke-opacity:1"
             width="{LINE_THICKNESS:f}"
             height="{18*7:f}"
             x="{x+4:f}"
@@ -242,7 +248,8 @@ def do_lined_sheet(x: int, y: int, dots: bool) -> None:
     for _ in range(int(126 / PITCH)):
         print(
             f"""<rect
-            style="fill:{COLOR};fill-opacity:1;stroke:{COLOR};stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+            style="fill:{COLOR};fill-opacity:1;stroke:{COLOR};stroke-width:0.0688316;"""
+            f"""stroke-dasharray:none;stroke-opacity:1"
             width="89.0"
             height="{LINE_THICKNESS:f}"
             x="{x:f}"
@@ -252,8 +259,10 @@ def do_lined_sheet(x: int, y: int, dots: bool) -> None:
             for c in range(int(90 / PITCH)):
                 print(
                     f"""<ellipse
-                style="fill:{DOT_COLOR};fill-opacity:1;stroke:{DOT_COLOR};stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-                cx="{x + (2.5) + c * PITCH + (0.2 * DOT_RADIUS):f}" cy="{y+DOT_Y_OFFSET:f}" rx="{DOT_RADIUS:f}" ry="{DOT_RADIUS:f}" />"""
+                style="fill:{DOT_COLOR};fill-opacity:1;stroke:{DOT_COLOR};stroke-width:0;"""
+                    f"""stroke-dasharray:none;stroke-opacity:1"
+                cx="{x + (2.5) + c * PITCH + (0.2 * DOT_RADIUS):f}" cy="{y+DOT_Y_OFFSET:f}" """
+                    f"""rx="{DOT_RADIUS:f}" ry="{DOT_RADIUS:f}" />"""
                 )
         y += PITCH
 
@@ -269,7 +278,8 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
     y = org_y + 14
     title = "Yearly Calendars"
     print(
-        f"""<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;"""
+        f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
                 >{title}</text>
@@ -280,7 +290,8 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
     y = org_y + 14
     title = str(year)
     print(
-        f"""<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;"""
+        f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y + (5 * PITCH):f}"
                 >{title}</text>
@@ -288,7 +299,8 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
     )
 
     print(
-        f"""<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;"""
+        f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y + (14 * PITCH):f}"
                 >{str(year + 1)}</text>
@@ -298,8 +310,9 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
     # upper date to day grid lines
     for cno in range(11, 19):
         print(  # 120 -> 6*12 = 72
-            f"""
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="105" width="0.25" x="{org_x + (PITCH * cno) + 1.4:f}" y="{org_y + 16:f}"/>
+            """
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="105" """
+            f"""width="0.25" x="{org_x + (PITCH * cno) + 1.4:f}" y="{org_y + 16:f}"/>
  """
         )
 
@@ -317,7 +330,8 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
             x -= 0.8
         y = row * PITCH + yoff + org_y
         print(
-            f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+            """<text style="font-size:3px;font-family:sans-serif;fill:#808080;"""
+            f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
                 >{str(i)}</text>
@@ -333,7 +347,8 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
             x = col * PITCH + (11 * PITCH) + org_x + 2
             y = row * PITCH + yoff + (5 * PITCH) + org_y
             print(
-                f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                """<text style="font-size:3px;font-family:sans-serif;fill:#808080;"""
+                f"""fill-opacity:1;stroke:none"
                         x="{x:f}"
                         y="{y:f}"
                     >{daytxt}</text>
@@ -348,7 +363,8 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
             x = col * PITCH + (11 * PITCH) + org_x + 2
             y = row * PITCH + yoff + (14 * PITCH) + org_y
             print(
-                f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                """<text style="font-size:3px;font-family:sans-serif;fill:#808080;"""
+                f"""fill-opacity:1;stroke:none"
                         x="{x:f}"
                         y="{y:f}"
                     >{daytxt}</text>
@@ -369,7 +385,8 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
         x = org_x + 4
         y = index * PITCH + yoff + (5 * PITCH) + org_y
         print(
-            f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+            """<text style="font-size:3px;font-family:sans-serif;fill:#808080;"""
+            f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
                 >{ls}</text>
@@ -390,7 +407,8 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
         x = org_x + 4
         y = index * PITCH + yoff + (14 * PITCH) + org_y
         print(
-            f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+            """<text style="font-size:3px;font-family:sans-serif;fill:#808080;"""
+            f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
                 >{ls}</text>
@@ -421,7 +439,8 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
             xoff = 0
         print(
             f"""<rect
-        style="fill:{color};fill-opacity:1;stroke:{color};stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+        style="fill:{color};fill-opacity:1;stroke:{color};stroke-width:0.0688316;"""
+            f"""stroke-dasharray:none;stroke-opacity:1"
         width="{width:f}"
         height="{line_thickness:f}"
         x="{x+xoff:f}"
@@ -441,7 +460,8 @@ def do_day_title(
     if day is not None:
         title += " " + str(day)
     print(
-        f"""<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;"""
+        f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
                 >{title}</text>
@@ -456,7 +476,8 @@ def do_month_year_title(org_x: int, org_y: int, month: str, year: str) -> None:
     title = month + " " + year
 
     print(
-        f"""<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;"""
+        f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
                 >{title}</text>
@@ -474,7 +495,8 @@ def do_year_stamp(org_x: int, org_y: int, left: bool, year: int) -> None:
         x = org_x + 4
     y = org_y + 140
     print(
-        f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+        """<text style="font-size:3px;font-family:sans-serif;fill:#808080;"""
+        f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
                 >{year}</text>
@@ -496,7 +518,8 @@ def do_week_stamp(
     week_of_quarter = week_info["week_of_quarter"]
 
     print(
-        f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+        """<text style="font-size:3px;font-family:sans-serif;fill:#808080;"""
+        f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
                 >W{week_of_year} Q{quarter}/W{week_of_quarter}</text>
@@ -525,7 +548,8 @@ def do_numbers(org_x: int, org_y: int) -> None:
 
         print(
             f"""<g>
-              <text style="font-size:{fs:f}px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+              <text style="font-size:{fs:f}px;font-family:sans-serif;fill:#808080;"""
+            f"""fill-opacity:1;stroke:none"
               transform="scale({xform:f},1)"
               x="{x / xform:f}" y="{liney:f}">{val}</text>
               </g>
@@ -536,10 +560,11 @@ def do_numbers(org_x: int, org_y: int) -> None:
         half_hours_scale = 0.6
 
         print(
-            f"""<g>
+            """<g>
               <text
                 xml:space="preserve"
-                style="font-size:4px;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke:#1242ff;stroke-opacity:1;stroke-width:0.2;stroke-dasharray:none"
+                style="font-size:4px;font-family:sans-serif;fill:#ffffff;fill-opacity:1;"""
+            f"""stroke:#1242ff;stroke-opacity:1;stroke-width:0.2;stroke-dasharray:none"
                 
                 x="{(x + 2) / half_hours_scale + half_hours_scale * PITCH:f}"
                 y="{liney - (PITCH + 0.5):f}"
@@ -551,11 +576,12 @@ def do_numbers(org_x: int, org_y: int) -> None:
         toff = (1.5 * PITCH) / 6
 
         print(
-            f"""
+            """
               <g>
               <text
                 xml:space="preserve"
-                style="font-size:4px;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke:#1242ff;stroke-opacity:1;stroke-width:0.2;stroke-dasharray:none"
+                style="font-size:4px;font-family:sans-serif;fill:#ffffff;fill-opacity:1;"""
+            f"""stroke:#1242ff;stroke-opacity:1;stroke-width:0.2;stroke-dasharray:none"
                 x="{(x + 2) / half_hours_scale + half_hours_scale * PITCH:f}"
                 y="{liney - toff:f}"
                 transform="scale({half_hours_scale:f}, 1)"
@@ -569,20 +595,23 @@ def weekday_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) 
     Draw the todos on the weekday daily sheets
     """
     print(
-        f"""
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="{org_x + 42 - 0.12:f}" y="{org_y + 16:f}"/>
+        """
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" """
+        f"""x="{org_x + 42 - 0.12:f}" y="{org_y + 16:f}"/>
  """
     )
     print(
-        f"""
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="{org_x + (42 + PITCH) - 0.12:f}" y="{org_y + 16:f}"/>
+        """
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" """
+        f"""x="{org_x + (42 + PITCH) - 0.12:f}" y="{org_y + 16:f}"/>
  """
     )
 
     for ind, t in enumerate(todos):
         print(
             f"""<g><text xml:space="preserve"
-                style="font-size:{PITCH * 0.6}px;font-family:sans-serif;fill:#444444;fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
+                style="font-size:{PITCH * 0.6}px;font-family:sans-serif;fill:#444444;"""
+            f"""fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
                 x="{org_x + 42 + (1.25 * PITCH):f}"
                 y="{org_y + 15 + ((ind + 1) * PITCH):f}"
               >{t}</text></g>"""
@@ -591,7 +620,8 @@ def weekday_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) 
     for ind, t in enumerate(holidays):
         print(
             f"""<g><text xml:space="preserve"
-                style="font-size:{PITCH * 0.6}px;font-family:sans-serif;fill:#444444;fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
+                style="font-size:{PITCH * 0.6}px;font-family:sans-serif;fill:#444444;"""
+            f"""fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
                 x="{org_x + 6:f}"
                 y="{org_y + 15 + ((ind + 1) * PITCH):f}"
               >{t}</text></g>"""
@@ -608,30 +638,39 @@ def weekend_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) 
     org_x -= 2.5
     print(
         f"""
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="{height:f}" width="0.25" x="{0.6 + org_x + 6 - 0.12:f}" y="{org_y + 16 + (2 * PITCH):f}"/>
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="{height:f}" """
+        f"""width="0.25" x="{0.6 + org_x + 6 - 0.12:f}" y="{org_y + 16 + (2 * PITCH):f}"/>
  """
     )
     print(
         f"""
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="{height:f}" width="0.25" x="{0.6 + org_x + (6 + PITCH) - 0.12:f}" y="{org_y + 16 + (2 * PITCH):f}"/>
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="{height:f}" """
+        f"""width="0.25" x="{0.6 + org_x + (6 + PITCH) - 0.12:f}" y="{org_y + 16 + (2 * PITCH):f}"/>
  """
     )
 
     print(
-        f"""
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="{height:f}" width="0.25" x="{0.6 + org_x + 6 + (9 * PITCH) - 0.12:f}" y="{org_y + 16 + (2 * PITCH):f}"/>
+        """
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" """
+        f"""height="{height:f}" """
+        f"""width="0.25" x="{0.6 + org_x + 6 + (9 * PITCH) - 0.12:f}" """
+        f"""y="{org_y + 16 + (2 * PITCH):f}"/>
  """
     )
     print(
         f"""
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="{height:f}" width="0.25" x="{0.6 + org_x + (6 + (10 * PITCH)) - 0.12:f}" y="{org_y + 16 + (2 * PITCH):f}"/>
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" """
+        f"""height="{height:f}" """
+        f"""width="0.25" x="{0.6 + org_x + (6 + (10 * PITCH)) - 0.12:f}" """
+        f"""y="{org_y + 16 + (2 * PITCH):f}"/>
  """
     )
 
     for ind, t in enumerate(todos):
         print(
             f"""<g><text xml:space="preserve"
-                style="font-size:{PITCH * 0.6}px;font-family:sans-serif;fill:#444444;fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
+                style="font-size:{PITCH * 0.6}px;font-family:sans-serif;fill:#444444;"""
+            f"""fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
                 x="{org_x + 6 + (1.25 * PITCH):f}"
                 y="{org_y + 15 + (2 * PITCH) + ((ind + 1) * PITCH):f}"
               >{t}</text></g>"""
@@ -640,7 +679,8 @@ def weekend_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) 
     for ind, t in enumerate(holidays):
         print(
             f"""<g><text xml:space="preserve"
-                style="font-size:{PITCH*0.6:f}px;font-family:sans-serif;fill:#444444;fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
+                style="font-size:{PITCH*0.6:f}px;font-family:sans-serif;fill:#444444;"""
+            f"""fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
                 x="{org_x + 6:f}"
                 y="{org_y + 15 + ((ind + 1) * PITCH):f}"
               >{t}</text></g>"""
@@ -682,66 +722,6 @@ def a4_page_header() -> None:
      id="layer1">
 """
     )
-
-    ### DEBUG LINES FOLLOW
-    # print(
-    #     """<rect
-    #     style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
-    #     width="0.2"
-    #     height="%f"
-    #     x="%f"
-    #     y="%f" />"""
-    #     % ("#000000", "#000000", 297, 105, 0)
-    # )
-
-    # print(
-    #     """<rect
-    #     style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
-    #     width="0.1"
-    #     height="%f"
-    #     x="%f"
-    #     y="%f" />"""
-    #     % ("#000000", "#000000", 297, 95, 0)
-    # )
-
-    # print(
-    #     """<rect
-    #     style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
-    #     width="0.1"
-    #     height="%f"
-    #     x="%f"
-    #     y="%f" />"""
-    #     % ("#000000", "#000000", 297, 10, 0)
-    # )
-
-    # print(
-    #     """<rect
-    #     style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
-    #     width="0.1"
-    #     height="%f"
-    #     x="%f"
-    #     y="%f" />"""
-    #     % ("#000000", "#000000", 297, 200, 0)
-    # )
-
-    # print(
-    #     """<rect
-    #     style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
-    #     width="0.1"
-    #     height="%f"
-    #     x="%f"
-    #     y="%f" />"""
-    #     % ("#000000", "#000000", 297, 115, 0)
-    # )
-    # print(
-    #     """<rect
-    #     style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
-    #     width="0.2"
-    #     height="%f"
-    #     x="%f"
-    #     y="%f" />"""
-    #     % ("#000000", "#000000", 297, 209, 0)
-    # )
 
 
 def make_monthly_pages() -> None:
@@ -939,7 +919,8 @@ def _is_matching_day(target_day: int, date: datetime.date) -> bool:
 
 
 def _is_matching_weekday(day_type: str, occurrence: str, date: datetime.date) -> bool:
-    """Check if a date matches a weekday pattern like 'Monday,2' (2nd Monday) or 'Friday,-1' (last Friday).
+    """Check if a date matches a weekday pattern like 'Monday,2' (2nd Monday)
+    or 'Friday,-1' (last Friday).
 
     Args:
         day_type: Name of weekday (e.g., "Monday", "Tuesday")
@@ -1049,7 +1030,8 @@ def make_date_page(
 
 
 def parse_preserving_duplicates(src: TextIO) -> Dict:
-    """Parse yaml, but handle duplicate keys by having the values be lists instead of whatever they would be"""
+    """Parse yaml, but handle duplicate keys by having the values be lists instead
+    of whatever they would be"""
 
     # We deliberately define a fresh class inside the function,
     # because add_constructor is a class method and we don't want to
