@@ -1,5 +1,7 @@
 For a few years, I've been carrying a Lihit Labs A6 notebook as a pocket mini-organizer. At first I hand lined the pages. But being a tech guy, I started generating the pages and refining them. This is the code that generates the pages.
 
+WARNING: this code is in no way a paragon of good software engineering. It started off as a hack and has grown/congealed into what it is. I could use mustache templates, I could commonize a bunch of stuff. I could put in constants for the magic values that are sprinkled througout. At some point I might bother cleaning all this up. But hey! I've got unit tests though for the date logic around holidays and todos. But most importantly, it's fit for purpose, for me. If it works for you, fantastic! Let me know, and that might inspire me to clean all this up.
+
 There are a few different page types:
 * daily calendar pages, with checkboxes on the right for todos, and timed
   items on the left for meetings and such from 9am-5pm
