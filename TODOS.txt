@@ -1,0 +1,5 @@
+* fixup pylint warnings
+* use mustache templates?
+* clean up magic values
+* make it so I'm not doing 0,0, 105,0, 0,148, 105,148 over and over
+
