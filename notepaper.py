@@ -305,7 +305,7 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
 
     days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
 
-    YOFF = 20
+    yoff = 20
 
     # date grid
     for i in range(1, 32):
@@ -315,7 +315,7 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
         x = col * PITCH + (11 * PITCH) + org_x + 3
         if i >= 10:
             x -= 0.8
-        y = row * PITCH + YOFF + org_y
+        y = row * PITCH + yoff + org_y
         print(
             f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                     x="{x:f}"
@@ -331,7 +331,7 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
             daytxt = days[(row + day) % 7]
             col = day
             x = col * PITCH + (11 * PITCH) + org_x + 2
-            y = row * PITCH + YOFF + (5 * PITCH) + org_y
+            y = row * PITCH + yoff + (5 * PITCH) + org_y
             print(
                 f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                         x="{x:f}"
@@ -346,7 +346,7 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
             daytxt = days[(row + day) % 7]
             col = day
             x = col * PITCH + (11 * PITCH) + org_x + 2
-            y = row * PITCH + YOFF + (14 * PITCH) + org_y
+            y = row * PITCH + yoff + (14 * PITCH) + org_y
             print(
                 f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                         x="{x:f}"
@@ -367,7 +367,7 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
         ls = ", ".join(months)
 
         x = org_x + 4
-        y = index * PITCH + YOFF + (5 * PITCH) + org_y
+        y = index * PITCH + yoff + (5 * PITCH) + org_y
         print(
             f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                     x="{x:f}"
@@ -388,7 +388,7 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
         ls = ", ".join(months)
 
         x = org_x + 4
-        y = index * PITCH + YOFF + (14 * PITCH) + org_y
+        y = index * PITCH + yoff + (14 * PITCH) + org_y
         print(
             f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
                     x="{x:f}"
@@ -1057,8 +1057,6 @@ def parse_preserving_duplicates(src: TextIO) -> Dict:
     class PreserveDuplicatesLoader(yaml.loader.Loader):
         """Loader that preserves duplicate key values"""
 
-        pass
-
     def map_constructor(loader: Any, node: Any, deep: Any = False) -> Any:
         """Walk the mapping, recording any duplicate keys."""
 
@@ -1091,7 +1089,7 @@ def main():
     numdays = int(sys.argv[2])
     numsplits = numdays / 2
     if numsplits != int(numsplits):
-        print("must specify an even number of days %s %s" % (numsplits, int(numsplits)))
+        print("must specify an even number of days {numsplits} {numsplits:i}")
         sys.exit(1)
     numsplits = int(numsplits)
 
