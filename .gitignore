@@ -1,6 +1,6 @@
-holidays.yaml
-old/
-__pycache__
-todos.yaml
+*.pdf
+*.svg
 bin
+include
 lib
+__pycache__
