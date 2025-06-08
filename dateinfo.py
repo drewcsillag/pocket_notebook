@@ -1,11 +1,17 @@
-from notepaper import parse_preserving_duplicates, get_day_todos, ONE_DAY, DAYS
+"""test to load ing todos and holidays and do what's what"""
 import sys
 import datetime
 
+from notepaper import parse_preserving_duplicates
+from constants import ONE_DAY, DAYS
+from svg_gen import get_day_todos
+
 
 if __name__ == "__main__":
-    todos = parse_preserving_duplicates(open("todo_holidays/todos.yaml"))
-    holidays = parse_preserving_duplicates(open("todo_holidays/holidays.yaml"))
+    with open("todo_holidays/todos.yaml", encoding="utf-8") as file:
+        todos = parse_preserving_duplicates(file)
+    with open("todo_holidays/holidays.yaml", encoding="utf-8") as file:
+        holidays = parse_preserving_duplicates(file)
     cur = datetime.date.fromisoformat(sys.argv[1])
     numdays = int(sys.argv[2])
 
