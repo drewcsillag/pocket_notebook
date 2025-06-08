@@ -84,12 +84,11 @@ def make_dated_monthly_sheet(org_x: int, org_y: int, m: datetime.date) -> None:
         text_y = (y - PITCH) + (vertical_slot * 18) - 1
         text_x = x + (3 * PITCH * horizontal_slot) - 7
         print(
-            """<text style="font-size:4px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                x="%f"
-                y="%f"
-                transform="rotate(-90 %f %f)"
-                >%d</text>"""
-            % (text_x, text_y, text_x, text_y, cur.day)
+            f"""<text style="font-size:4px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                x="{text_x:f}"
+                y="{text_y:f}"
+                transform="rotate(-90 {text_x:f} {text_y:f})"
+                >{cur.day}</text>"""
         )
 
         if dow == 6:  ##sunday
@@ -204,37 +203,34 @@ def do_monthly_sheet(x: int, y: int) -> None:
             lt *= 3
 
         print(
-            """<rect
-            style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+            f"""<rect
+            style="fill:{COLOR};fill-opacity:1;stroke:{COLOR};stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
             width="89.0"
-            height="%f"
-            x="%f"
-            y="%f" />"""
-            % (COLOR, COLOR, lt, x, y)
+            height="{lt:f}"
+            x="{x:f}"
+            y="{y:f}" />"""
         )
 
         if i < 7:
             dow = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][6 - i]
             print(
-                """<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                x="%f"
-                y="%f"
-                transform="rotate(-90 %f %f)"
-            >%s</text>
+                f"""<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                x="{x+4:f}"
+                y="{y+17:f}"
+                transform="rotate(-90 {x+4:f} {y+17:f})"
+            >{dow}</text>
             """
-                % (x + 4, y + 17, x + 4, y + 17, dow)
             )
         y += 18
 
     for i in range(6):
         print(
-            """<rect
-            style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
-            width="%f"
-            height="%f"
-            x="%f"
-            y="%f" />"""
-            % (COLOR, COLOR, LINE_THICKNESS, 18 * 7, x + 4, oy)
+            f"""<rect
+            style="fill:{COLOR};fill-opacity:1;stroke:{COLOR};stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+            width="{LINE_THICKNESS:f}"
+            height="{18*7:f}"
+            x="{x+4:f}"
+            y="{oy:f}" />"""
         )
         x += 3 * PITCH
 
@@ -245,28 +241,19 @@ def do_lined_sheet(x: int, y: int, dots: bool) -> None:
     """
     for _ in range(int(126 / PITCH)):
         print(
-            """<rect
-            style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+            f"""<rect
+            style="fill:{COLOR};fill-opacity:1;stroke:{COLOR};stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
             width="89.0"
-            height="%f"
-            x="%f"
-            y="%f" />"""
-            % (COLOR, COLOR, LINE_THICKNESS, x, y)
+            height="{LINE_THICKNESS:f}"
+            x="{x:f}"
+            y="{y:f}" />"""
         )
         if dots:
             for c in range(int(90 / PITCH)):
                 print(
-                    """<ellipse
-                style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-                cx="%f" cy="%f" rx="%f" ry="%f" />"""
-                    % (
-                        DOT_COLOR,
-                        DOT_COLOR,
-                        x + (2.5) + c * PITCH + (0.2 * DOT_RADIUS),
-                        y + DOT_Y_OFFSET,
-                        DOT_RADIUS,
-                        DOT_RADIUS,
-                    )
+                    f"""<ellipse
+                style="fill:{DOT_COLOR};fill-opacity:1;stroke:{DOT_COLOR};stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+                cx="{x + (2.5) + c * PITCH + (0.2 * DOT_RADIUS):f}" cy="{y+DOT_Y_OFFSET:f}" rx="{DOT_RADIUS:f}" ry="{DOT_RADIUS:f}" />"""
                 )
         y += PITCH
 
@@ -282,42 +269,38 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
     y = org_y + 14
     title = "Yearly Calendars"
     print(
-        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                    x="%f"
-                    y="%f"
-                >%s</text>
+        f"""<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                    x="{x:f}"
+                    y="{y:f}"
+                >{title}</text>
                 """
-        % (x, y, title)
     )
 
     x = org_x + 16
     y = org_y + 14
     title = str(year)
     print(
-        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                    x="%f"
-                    y="%f"
-                >%s</text>
+        f"""<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                    x="{x:f}"
+                    y="{y + (5 * PITCH):f}"
+                >{title}</text>
                 """
-        % (x, y + (5 * PITCH), title)
     )
 
     print(
-        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                    x="%f"
-                    y="%f"
-                >%s</text>
+        f"""<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                    x="{x:f}"
+                    y="{y + (14 * PITCH):f}"
+                >{str(year + 1)}</text>
                 """
-        % (x, y + (14 * PITCH), str(year + 1))
     )
 
     # upper date to day grid lines
     for cno in range(11, 19):
         print(  # 120 -> 6*12 = 72
-            """
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="105" width="0.25" x="%f" y="%f"/>
+            f"""
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="105" width="0.25" x="{org_x + (PITCH * cno) + 1.4:f}" y="{org_y + 16:f}"/>
  """
-            % (org_x + (PITCH * cno) + 1.4, org_y + 16)
         )
 
     days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
@@ -334,12 +317,11 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
             x -= 0.8
         y = row * PITCH + YOFF + org_y
         print(
-            """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                    x="%f"
-                    y="%f"
-                >%s</text>
+            f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                    x="{x:f}"
+                    y="{y:f}"
+                >{str(i)}</text>
                 """
-            % (x, y, str(i))
         )
 
     # upper DAY Matrix
@@ -351,12 +333,11 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
             x = col * PITCH + (11 * PITCH) + org_x + 2
             y = row * PITCH + YOFF + (5 * PITCH) + org_y
             print(
-                """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                        x="%f"
-                        y="%f"
-                    >%s</text>
+                f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                        x="{x:f}"
+                        y="{y:f}"
+                    >{daytxt}</text>
                     """
-                % (x, y, daytxt)
             )
     # lower DAY Matrix
     for i in range(7):
@@ -367,12 +348,11 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
             x = col * PITCH + (11 * PITCH) + org_x + 2
             y = row * PITCH + YOFF + (14 * PITCH) + org_y
             print(
-                """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                        x="%f"
-                        y="%f"
-                    >%s</text>
+                f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                        x="{x:f}"
+                        y="{y:f}"
+                    >{daytxt}</text>
                     """
-                % (x, y, daytxt)
             )
 
     ## Put first year months
@@ -389,12 +369,11 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
         x = org_x + 4
         y = index * PITCH + YOFF + (5 * PITCH) + org_y
         print(
-            """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                    x="%f"
-                    y="%f"
-                >%s</text>
+            f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                    x="{x:f}"
+                    y="{y:f}"
+                >{ls}</text>
                 """
-            % (x, y, ls)
         )
 
     ## Put second year months
@@ -411,12 +390,11 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
         x = org_x + 4
         y = index * PITCH + YOFF + (14 * PITCH) + org_y
         print(
-            """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                    x="%f"
-                    y="%f"
-                >%s</text>
+            f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                    x="{x:f}"
+                    y="{y:f}"
+                >{ls}</text>
                 """
-            % (x, y, ls)
         )
 
     if not frontpage:
@@ -442,13 +420,12 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
             width = 89 - 1.5
             xoff = 0
         print(
-            """<rect
-        style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
-        width="%f"
-        height="%f"
-        x="%f"
-        y="%f" />"""
-            % (color, color, width, line_thickness, x + xoff, y)
+            f"""<rect
+        style="fill:{color};fill-opacity:1;stroke:{color};stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
+        width="{width:f}"
+        height="{line_thickness:f}"
+        x="{x+xoff:f}"
+        y="{y:f}" />"""
         )
 
         y += PITCH
@@ -464,12 +441,11 @@ def do_day_title(
     if day is not None:
         title += " " + str(day)
     print(
-        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                    x="%f"
-                    y="%f"
-                >%s</text>
+        f"""<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                    x="{x:f}"
+                    y="{y:f}"
+                >{title}</text>
                 """
-        % (x, y, title)
     )
 
 
@@ -480,12 +456,11 @@ def do_month_year_title(org_x: int, org_y: int, month: str, year: str) -> None:
     title = month + " " + year
 
     print(
-        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                    x="%f"
-                    y="%f"
-                >%s</text>
+        f"""<text style="font-size:6px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                    x="{x:f}"
+                    y="{y:f}"
+                >{title}</text>
                 """
-        % (x, y, title)
     )
 
 
@@ -499,12 +474,11 @@ def do_year_stamp(org_x: int, org_y: int, left: bool, year: int) -> None:
         x = org_x + 4
     y = org_y + 140
     print(
-        """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                    x="%f"
-                    y="%f"
-                >%s</text>
+        f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                    x="{x:f}"
+                    y="{y:f}"
+                >{year}</text>
                 """
-        % (x, y, year)
     )
 
 
@@ -522,12 +496,11 @@ def do_week_stamp(
     week_of_quarter = week_info["week_of_quarter"]
 
     print(
-        """<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-                    x="%f"
-                    y="%f"
-                >W%s Q%s/W%s</text>
+        f"""<text style="font-size:3px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+                    x="{x:f}"
+                    y="{y:f}"
+                >W{week_of_year} Q{quarter}/W{week_of_quarter}</text>
                 """
-        % (x, y, week_of_year, quarter, week_of_quarter)
     )
 
 
@@ -551,56 +524,44 @@ def do_numbers(org_x: int, org_y: int) -> None:
         fs = (16 * PITCH) / 6
 
         print(
-            """<g>
-              <text style="font-size:%fpx;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
-              transform="scale(%f,1)"
-              x="%f" y="%f">%i</text>
+            f"""<g>
+              <text style="font-size:{fs:f}px;font-family:sans-serif;fill:#808080;fill-opacity:1;stroke:none"
+              transform="scale({xform:f},1)"
+              x="{x / xform:f}" y="{liney:f}">{val}</text>
               </g>
               """
-            % (fs, xform, x / xform, liney, val)
         )
 
         half_hours_scale = 0.35
         half_hours_scale = 0.6
 
         print(
-            """<g>
+            f"""<g>
               <text
                 xml:space="preserve"
                 style="font-size:4px;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke:#1242ff;stroke-opacity:1;stroke-width:0.2;stroke-dasharray:none"
                 
-                x="%f"
-                y="%f"
-                transform="scale(%f, 1)"
+                x="{(x + 2) / half_hours_scale + half_hours_scale * PITCH:f}"
+                y="{liney - (PITCH + 0.5):f}"
+                transform="scale({half_hours_scale:f}, 1)"
               >0</text></g>
               """
-            % (
-                (x + 2) / half_hours_scale + half_hours_scale * PITCH,
-                liney - (PITCH + 0.5),
-                half_hours_scale,
-            )
         )
 
         toff = (1.5 * PITCH) / 6
 
         print(
-            """
+            f"""
               <g>
               <text
                 xml:space="preserve"
                 style="font-size:4px;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke:#1242ff;stroke-opacity:1;stroke-width:0.2;stroke-dasharray:none"
-                x="%f"
-                y="%f"
-                transform="scale(%f, 1)"
+                x="{(x + 2) / half_hours_scale + half_hours_scale * PITCH:f}"
+                y="{liney - toff:f}"
+                transform="scale({half_hours_scale:f}, 1)"
               >3</text></g>
               """
-            % (
-                (x + 2) / half_hours_scale + half_hours_scale * PITCH,
-                liney - toff,
-                half_hours_scale,
-            )
         )
-        # """ % ((x+2) / half_hours_scale + half_hours_scale * pitch, liney- toff, half_hours_scale))
 
 
 def weekday_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) -> None:
@@ -608,46 +569,32 @@ def weekday_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) 
     Draw the todos on the weekday daily sheets
     """
     print(
-        """
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="%f" y="%f"/>
+        f"""
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="{org_x + 42 - 0.12:f}" y="{org_y + 16:f}"/>
  """
-        % (org_x + 42 - 0.12, org_y + 16)
     )
     print(
-        """
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="%f" y="%f"/>
+        f"""
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="{org_x + (42 + PITCH) - 0.12:f}" y="{org_y + 16:f}"/>
  """
-        % (org_x + (42 + PITCH) - 0.12, org_y + 16)
     )
 
     for ind, t in enumerate(todos):
         print(
-            """<g><text xml:space="preserve"
-                style="font-size:%spx;font-family:sans-serif;fill:#444444;fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
-                x="%f"
-                y="%f"
-              >%s</text></g>"""
-            % (
-                PITCH * 0.6,
-                org_x + 42 + (1.25 * PITCH),
-                org_y + 15 + ((ind + 1) * PITCH),
-                t,
-            )
+            f"""<g><text xml:space="preserve"
+                style="font-size:{PITCH * 0.6}px;font-family:sans-serif;fill:#444444;fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
+                x="{org_x + 42 + (1.25 * PITCH):f}"
+                y="{org_y + 15 + ((ind + 1) * PITCH):f}"
+              >{t}</text></g>"""
         )
 
     for ind, t in enumerate(holidays):
         print(
-            """<g><text xml:space="preserve"
-                style="font-size:%spx;font-family:sans-serif;fill:#444444;fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
-                x="%f"
-                y="%f"
-              >%s</text></g>"""
-            % (
-                PITCH * 0.6,
-                org_x + 6,
-                org_y + 15 + ((ind + 1) * PITCH),
-                t,
-            )
+            f"""<g><text xml:space="preserve"
+                style="font-size:{PITCH * 0.6}px;font-family:sans-serif;fill:#444444;fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
+                x="{org_x + 6:f}"
+                y="{org_y + 15 + ((ind + 1) * PITCH):f}"
+              >{t}</text></g>"""
         )
 
 
@@ -660,59 +607,43 @@ def weekend_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) 
     height = nlm3 * PITCH
     org_x -= 2.5
     print(
-        """
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="%f" width="0.25" x="%f" y="%f"/>
+        f"""
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="{height:f}" width="0.25" x="{0.6 + org_x + 6 - 0.12:f}" y="{org_y + 16 + (2 * PITCH):f}"/>
  """
-        % (height, 0.6 + org_x + 6 - 0.12, org_y + 16 + (2 * PITCH))
     )
     print(
-        """
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="%f" width="0.25" x="%f" y="%f"/>
+        f"""
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="{height:f}" width="0.25" x="{0.6 + org_x + (6 + PITCH) - 0.12:f}" y="{org_y + 16 + (2 * PITCH):f}"/>
  """
-        % (height, 0.6 + org_x + (6 + PITCH) - 0.12, org_y + 16 + (2 * PITCH))
     )
 
     print(
-        """
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="%f" width="0.25" x="%f" y="%f"/>
+        f"""
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="{height:f}" width="0.25" x="{0.6 + org_x + 6 + (9 * PITCH) - 0.12:f}" y="{org_y + 16 + (2 * PITCH):f}"/>
  """
-        % (height, 0.6 + org_x + 6 + (9 * PITCH) - 0.12, org_y + 16 + (2 * PITCH))
     )
     print(
-        """
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="%f" width="0.25" x="%f" y="%f"/>
+        f"""
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="{height:f}" width="0.25" x="{0.6 + org_x + (6 + (10 * PITCH)) - 0.12:f}" y="{org_y + 16 + (2 * PITCH):f}"/>
  """
-        % (height, 0.6 + org_x + (6 + (10 * PITCH)) - 0.12, org_y + 16 + (2 * PITCH))
     )
 
     for ind, t in enumerate(todos):
         print(
-            """<g><text xml:space="preserve"
-                style="font-size:%spx;font-family:sans-serif;fill:#444444;fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
-                x="%f"
-                y="%f"
-              >%s</text></g>"""
-            % (
-                PITCH * 0.6,
-                org_x + 6 + (1.25 * PITCH),
-                org_y + 15 + (2 * PITCH) + ((ind + 1) * PITCH),
-                t,
-            )
+            f"""<g><text xml:space="preserve"
+                style="font-size:{PITCH * 0.6}px;font-family:sans-serif;fill:#444444;fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
+                x="{org_x + 6 + (1.25 * PITCH):f}"
+                y="{org_y + 15 + (2 * PITCH) + ((ind + 1) * PITCH):f}"
+              >{t}</text></g>"""
         )
 
     for ind, t in enumerate(holidays):
         print(
-            """<g><text xml:space="preserve"
-                style="font-size:%spx;font-family:sans-serif;fill:#444444;fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
-                x="%f"
-                y="%f"
-              >%s</text></g>"""
-            % (
-                PITCH * 0.6,
-                org_x + 6,
-                org_y + 15 + ((ind + 1) * PITCH),
-                t,
-            )
+            f"""<g><text xml:space="preserve"
+                style="font-size:{PITCH*0.6:f}px;font-family:sans-serif;fill:#444444;fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
+                x="{org_x + 6:f}"
+                y="{org_y + 15 + ((ind + 1) * PITCH):f}"
+              >{t}</text></g>"""
         )
 
 
@@ -1091,7 +1022,7 @@ def make_date_page(
     side = "right"
     if not left:
         side = "left"
-    sys.stdout = create_output_file("daily%d-%s.svg" % (p, side))
+    sys.stdout = create_output_file(f"daily{p}-{side}.svg")
     thisp = px[:4]
     a4_page_header()
     for tp in thisp:
