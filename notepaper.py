@@ -3,7 +3,7 @@ Generate SVG output for organizer pages
 """
 
 import sys
-from typing import Any, Dict, List, TextIO, Tuple, Optional
+from typing import Any, Dict, List, TextIO, Tuple, Optional, IO
 from collections import defaultdict
 import datetime
 
@@ -47,6 +47,11 @@ COLOR = "#b0b0b0"
 DOT_COLOR = "#909090"
 DOT_RADIUS = 0.2
 DOT_Y_OFFSET = 0.05
+
+
+def create_output_file(name) -> IO:
+    """Create an output file in a way that makes pylint happy"""
+    return open(name, "w", encoding="utf-8")
 
 
 def make_monthly_sheet(org_x: int, org_y: int) -> None:
@@ -116,8 +121,8 @@ def make_weekday_sheet(
     weekday: str,
     month: str,
     date: datetime.date,
-    todos: List[str] = [],
-    holidays: List[str] = [],
+    todos: List[str],
+    holidays: List[str],
 ) -> None:
     """
     Create a dated daily weekday sheet with todos, etc.
@@ -146,8 +151,8 @@ def make_weekend_sheet(
     weekend: str,
     month: str,
     date: datetime.date,
-    todos: List[str] = [],
-    holidays: List[str] = [],
+    todos: List[str],
+    holidays: List[str],
 ) -> None:
     """
     Create a dated daily weekend sheet -- no times listed, just a big bunch of todos
@@ -990,7 +995,7 @@ def _normalize_tasks(tasks: list[str] | str) -> list[str]:
 
 def _is_matching_month(month_pattern: str, date: datetime.date) -> bool:
     """Check if date's month matches the pattern"""
-    return month_pattern == "*" or month_pattern == MONTHS[date.month]
+    return month_pattern in ("*", MONTHS[date.month])
 
 
 def _is_matching_day(target_day: int, date: datetime.date) -> bool:
@@ -1086,7 +1091,7 @@ def make_date_page(
     side = "right"
     if not left:
         side = "left"
-    sys.stdout = open("daily%d-%s.svg" % (p, side), "w")
+    sys.stdout = create_output_file("daily%d-%s.svg" % (p, side))
     thisp = px[:4]
     a4_page_header()
     for tp in thisp:
@@ -1148,8 +1153,8 @@ def main():
     holidays_file = "todo_holidays/holidays.yaml"
     if len(sys.argv) == 5:
         todos_file, holidays_file = sys.argv[-2:]
-    todos = parse_preserving_duplicates(open(todos_file))
-    holidays = parse_preserving_duplicates(open(holidays_file))
+    todos = parse_preserving_duplicates(open(todos_file, encoding="utf-8"))
+    holidays = parse_preserving_duplicates(open(holidays_file, encoding="utf-8"))
     cur = datetime.date.fromisoformat(sys.argv[1])
     orig_year = cur.year
     numdays = int(sys.argv[2])
@@ -1205,28 +1210,28 @@ def main():
         p1 = p1[4:]
         p2 = p2[4:]
 
-    sys.stdout = open("monthly1.svg", "w")
+    sys.stdout = create_output_file("monthly1.svg")
     make_monthly_pages()
-    sys.stdout = open("monthly2.svg", "w")
+    sys.stdout = create_output_file("monthly2.svg")
     make_monthly_pages()
 
-    sys.stdout = open("monthly_dated1.svg", "w")
+    sys.stdout = create_output_file("monthly_dated1.svg")
     make_dated_monthly_pages_p1(orig_year)
-    sys.stdout = open("monthly_dated2.svg", "w")
+    sys.stdout = create_output_file("monthly_dated2.svg")
     make_dated_monthly_pages_p2(orig_year)
-    sys.stdout = open("monthly_dated3.svg", "w")
+    sys.stdout = create_output_file("monthly_dated3.svg")
     make_dated_monthly_pages_p3(orig_year)
-    sys.stdout = open("monthly_dated4.svg", "w")
+    sys.stdout = create_output_file("monthly_dated4.svg")
     make_dated_monthly_pages_p4(orig_year)
 
-    sys.stdout = open("blank1.svg", "w")
+    sys.stdout = create_output_file("blank1.svg")
     make_blank_pages(False, year=year)
-    sys.stdout = open("blank2.svg", "w")
+    sys.stdout = create_output_file("blank2.svg")
     make_blank_pages(True, year=year)
 
-    sys.stdout = open("header_r.svg", "w")
+    sys.stdout = create_output_file("header_r.svg")
     make_front_page(year=year, left=True)
-    sys.stdout = open("header_l.svg", "w")
+    sys.stdout = create_output_file("header_l.svg")
 
     make_front_page(year=year, left=False)
 
