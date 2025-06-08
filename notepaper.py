@@ -1,8 +1,13 @@
+"""
+Generate SVG output for organizer pages
+"""
+
 import sys
-import yaml
 from typing import Any, Dict, List, TextIO, Tuple, Optional
 from collections import defaultdict
 import datetime
+
+import yaml
 from dateutil.relativedelta import relativedelta, MO, TU, WE, TH, FR, SA, SU
 
 
@@ -45,6 +50,9 @@ DOT_Y_OFFSET = 0.05
 
 
 def make_monthly_sheet(org_x: int, org_y: int) -> None:
+    """
+    Create undated monthly calendar sheet
+    """
     org_x += 2
     x = org_x + 4
     y = org_y + 16
@@ -52,6 +60,9 @@ def make_monthly_sheet(org_x: int, org_y: int) -> None:
 
 
 def make_dated_monthly_sheet(org_x: int, org_y: int, m: datetime.date) -> None:
+    """
+    Create a dated monthly calendar sheet
+    """
     org_x += 2
     x = org_x + 4
     y = org_y + 16
@@ -82,6 +93,10 @@ def make_dated_monthly_sheet(org_x: int, org_y: int, m: datetime.date) -> None:
 
 
 def make_header_sheet(org_x: int, org_y: int, year: int, left: bool = False) -> None:
+    """
+    Create a header sheet where one side is just a regular lined sheet and the backside
+    is a annual calendar thing
+    """
     org_x += 2
     x = org_x + 4
     y = org_y + 16
@@ -104,6 +119,9 @@ def make_weekday_sheet(
     todos: List[str] = [],
     holidays: List[str] = [],
 ) -> None:
+    """
+    Create a dated daily weekday sheet with todos, etc.
+    """
     org_x = rorg_x
     org_x += 2
     x = org_x + 4
@@ -116,7 +134,7 @@ def make_weekday_sheet(
     weekday_todo(org_x, org_y, todos, holidays)
 
     do_year_stamp(org_x, org_y, left, year)
-    do_week_stamp(org_x, org_y, left, date)
+    do_week_stamp(org_x, org_y, date)
 
 
 def make_weekend_sheet(
@@ -131,6 +149,9 @@ def make_weekend_sheet(
     todos: List[str] = [],
     holidays: List[str] = [],
 ) -> None:
+    """
+    Create a dated daily weekend sheet -- no times listed, just a big bunch of todos
+    """
     org_x = rorg_x
     org_x += 2
     x = org_x + 4
@@ -142,7 +163,7 @@ def make_weekend_sheet(
     weekend_todo(org_x, org_y, todos, holidays)
 
     do_year_stamp(org_x, org_y, left, year)
-    do_week_stamp(org_x, org_y, left, date, is_weekend=True)
+    do_week_stamp(org_x, org_y, date, is_weekend=True)
 
 
 def make_lined_sheet(
@@ -151,6 +172,9 @@ def make_lined_sheet(
     left: bool,
     year: int,
 ) -> None:
+    """
+    Create a plain lined sheet
+    """
     org_x = rorg_x
     org_x += 2
     x = org_x + 4
@@ -162,6 +186,9 @@ def make_lined_sheet(
 
 
 def do_monthly_sheet(x: int, y: int) -> None:
+    """
+    Draw the grid and days for monthly sheets
+    """
     y -= PITCH
     oy = y
 
@@ -208,7 +235,10 @@ def do_monthly_sheet(x: int, y: int) -> None:
 
 
 def do_lined_sheet(x: int, y: int, dots: bool) -> None:
-    for i in range(int(126 / PITCH)):
+    """
+    Create the dotted lines for a lined sheet
+    """
+    for _ in range(int(126 / PITCH)):
         print(
             """<rect
             style="fill:%s;fill-opacity:1;stroke:%s;stroke-width:0.0688316;stroke-dasharray:none;stroke-opacity:1"
@@ -237,6 +267,9 @@ def do_lined_sheet(x: int, y: int, dots: bool) -> None:
 
 
 def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
+    """
+    Draw the yearly calendars for the front sheet
+    """
     color = "#b0b0b0"
     line_thickness = 0.1
 
@@ -419,6 +452,7 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
 def do_day_title(
     org_x: int, org_y: int, weekday: str, month: str, day: Optional[int]
 ) -> None:
+    """Draw the day/date title for daily sheets"""
     x = org_x + 16
     y = org_y + 14
     title = weekday + ", " + month
@@ -435,6 +469,7 @@ def do_day_title(
 
 
 def do_month_year_title(org_x: int, org_y: int, month: str, year: str) -> None:
+    """Draw the month/year for monthly sheets"""
     x = org_x + 32
     y = org_y + 9
     title = month + " " + year
@@ -450,6 +485,9 @@ def do_month_year_title(org_x: int, org_y: int, month: str, year: str) -> None:
 
 
 def do_year_stamp(org_x: int, org_y: int, left: bool, year: int) -> None:
+    """
+    Draw the year stamp that appears at the bottom of the pages on the inside edge
+    """
     if left:
         x = org_x + 86
     else:
@@ -466,8 +504,9 @@ def do_year_stamp(org_x: int, org_y: int, left: bool, year: int) -> None:
 
 
 def do_week_stamp(
-    org_x: int, org_y: int, left: bool, date: datetime.date, is_weekend: bool = False
+    org_x: int, org_y: int, date: datetime.date, is_weekend: bool = False
 ) -> None:
+    """Draw the week/quarter stamp that appears at the bottom of daily sheets"""
     x = org_x + 37
     if is_weekend:
         x += 7
@@ -488,6 +527,7 @@ def do_week_stamp(
 
 
 def do_numbers(org_x: int, org_y: int) -> None:
+    """Draw the time markers on weekday daily sheets"""
     y = org_y
 
     # for left
@@ -559,6 +599,9 @@ def do_numbers(org_x: int, org_y: int) -> None:
 
 
 def weekday_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) -> None:
+    """
+    Draw the todos on the weekday daily sheets
+    """
     print(
         """
 <rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="120" width="0.25" x="%f" y="%f"/>
@@ -604,6 +647,9 @@ def weekday_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) 
 
 
 def weekend_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) -> None:
+    """
+    Draw todos on weekend daily sheets
+    """
     num_lines = int((126 / PITCH))
     nlm3 = num_lines - 3
     height = nlm3 * PITCH
@@ -666,6 +712,7 @@ def weekend_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) 
 
 
 def a4_page_trailer() -> None:
+    """Output the trailer for the full A4 page"""
     print(
         """  </g>
 </svg>"""
@@ -673,6 +720,7 @@ def a4_page_trailer() -> None:
 
 
 def a4_page_header() -> None:
+    """Output the header for the full A4 page"""
     print(
         """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
@@ -761,6 +809,7 @@ def a4_page_header() -> None:
 
 
 def make_monthly_pages() -> None:
+    """Draw a full side of an A4 page of monthly sheets"""
     a4_page_header()
     make_monthly_sheet(0, 0)
     make_monthly_sheet(105, 0)
@@ -770,6 +819,8 @@ def make_monthly_pages() -> None:
 
 
 def make_dated_monthly_pages_p1(year: int) -> None:
+    """Draw one full side of an A4 page of dated monthly sheets 1/4"""
+
     a4_page_header()
     make_dated_monthly_sheet(0, 0, datetime.date(year, 1, 1))
     make_dated_monthly_sheet(105, 0, datetime.date(year, 3, 1))
@@ -779,6 +830,8 @@ def make_dated_monthly_pages_p1(year: int) -> None:
 
 
 def make_dated_monthly_pages_p2(year: int) -> None:
+    """Draw one full side of an A4 page of dated monthly sheets 2/4"""
+
     a4_page_header()
     make_dated_monthly_sheet(0, 0, datetime.date(year, 4, 1))
     make_dated_monthly_sheet(105, 0, datetime.date(year, 2, 1))
@@ -788,6 +841,8 @@ def make_dated_monthly_pages_p2(year: int) -> None:
 
 
 def make_dated_monthly_pages_p3(year: int) -> None:
+    """Draw one full side of an A4 page of dated monthly sheets 3/4"""
+
     a4_page_header()
     make_dated_monthly_sheet(0, 0, datetime.date(year, 9, 1))
     make_dated_monthly_sheet(105, 0, datetime.date(year, 11, 1))
@@ -798,6 +853,7 @@ def make_dated_monthly_pages_p3(year: int) -> None:
 
 
 def make_dated_monthly_pages_p4(year: int) -> None:
+    """Draw one full side of an A4 page of dated monthly sheets 4/4"""
     a4_page_header()
     make_dated_monthly_sheet(0, 0, datetime.date(year, 12, 1))
     make_dated_monthly_sheet(105, 0, datetime.date(year, 10, 1))
@@ -807,6 +863,7 @@ def make_dated_monthly_pages_p4(year: int) -> None:
 
 
 def make_blank_pages(left: bool, year: int) -> None:
+    """draw a full side of A4 sheet for lined blank pages"""
     a4_page_header()
     make_lined_sheet(0, 0, left=left, year=year)
     make_lined_sheet(105, 0, left=left, year=year)
@@ -816,6 +873,7 @@ def make_blank_pages(left: bool, year: int) -> None:
 
 
 def get_week_info(date):
+    """get the components for what goes into the week/quarter stamp at the bottom of pages"""
     # Get the week number of the year
     week_of_year = date.isocalendar()[1]
 
@@ -836,6 +894,7 @@ def get_week_info(date):
 
 
 def add_todos(t: List[str], v: List[str]) -> List[str]:
+    """Add todos from v to t and return a new t"""
     t = t[:]
     for i in v:
         if "" in t:
@@ -888,7 +947,7 @@ def get_recurring_todos(
 
     if unit == "week" and days_since_start % (7 * interval) == 0:
         return _normalize_tasks(tasks)
-    elif unit == "day" and days_since_start % interval == 0:
+    if unit == "day" and days_since_start % interval == 0:
         return _normalize_tasks(tasks)
 
     return []
@@ -973,14 +1032,14 @@ def _is_matching_weekday(day_type: str, occurrence: str, date: datetime.date) ->
     target = int(occurrence)
     if target > 0:
         return this_occurrence == target
-    else:
-        # Calculate how many times this weekday occurs in the month
-        last_of_month = (first_of_month + relativedelta(months=1, days=-1)).day
-        total_occurrences = (last_of_month - first_occurrence_date + 7) // 7
 
-        # Convert negative occurrence (-1 means last, -2 means second-to-last, etc.)
-        target_from_end = total_occurrences + target + 1
-        return this_occurrence == target_from_end
+    # Calculate how many times this weekday occurs in the month
+    last_of_month = (first_of_month + relativedelta(months=1, days=-1)).day
+    total_occurrences = (last_of_month - first_occurrence_date + 7) // 7
+
+    # Convert negative occurrence (-1 means last, -2 means second-to-last, etc.)
+    target_from_end = total_occurrences + target + 1
+    return this_occurrence == target_from_end
 
 
 def is_recurring_interval(pattern: str) -> bool:
@@ -1000,6 +1059,7 @@ def should_add_recurring_todo(pattern: str, d_obj: datetime.date) -> bool:
 
 
 def make_front_page(year: int, left: bool = False) -> None:
+    """Make an A4 sheet of one header page, with the other 3 pages being plain lined pages"""
     a4_page_header()
     x, y = RIGHT_PAGES[0]
     if left:
@@ -1019,7 +1079,10 @@ def make_date_page(
     left: bool,
     p: int,
     px: List[Tuple[Tuple[int, int], str, int, str, int, datetime.date]],
+    todos: dict,
+    holidays: dict,
 ) -> None:
+    """Draw a daily page"""
     side = "right"
     if not left:
         side = "left"
@@ -1050,10 +1113,14 @@ def make_date_page(
 
 
 def parse_preserving_duplicates(src: TextIO) -> Dict:
+    """Parse yaml, but handle duplicate keys by having the values be lists instead of whatever they would be"""
+
     # We deliberately define a fresh class inside the function,
     # because add_constructor is a class method and we don't want to
     # mutate pyyaml classes.
     class PreserveDuplicatesLoader(yaml.loader.Loader):
+        """Loader that preserves duplicate key values"""
+
         pass
 
     def map_constructor(loader: Any, node: Any, deep: Any = False) -> Any:
@@ -1075,7 +1142,8 @@ def parse_preserving_duplicates(src: TextIO) -> Dict:
     return yaml.load(src, PreserveDuplicatesLoader)
 
 
-if __name__ == "__main__":
+def main():
+    """The kickoff"""
     todos_file = "todo_holidays/todos.yaml"
     holidays_file = "todo_holidays/holidays.yaml"
     if len(sys.argv) == 5:
@@ -1094,7 +1162,7 @@ if __name__ == "__main__":
     minipageno = 0
     p1 = []
     p2 = []
-    for i in range(numsplits):
+    for _ in range(numsplits):
         p1.append(
             (
                 RIGHT_PAGES[minipageno],
@@ -1131,8 +1199,8 @@ if __name__ == "__main__":
         num_sheets += 1
 
     for p in range(num_sheets):
-        make_date_page(left=False, p=p, px=p1[:4])
-        make_date_page(left=True, p=p, px=p2[:4])
+        make_date_page(left=False, p=p, px=p1[:4], todos=todos, holidays=holidays)
+        make_date_page(left=True, p=p, px=p2[:4], todos=todos, holidays=holidays)
 
         p1 = p1[4:]
         p2 = p2[4:]
@@ -1161,3 +1229,7 @@ if __name__ == "__main__":
     sys.stdout = open("header_l.svg", "w")
 
     make_front_page(year=year, left=False)
+
+
+if __name__ == "__main__":
+    main()
