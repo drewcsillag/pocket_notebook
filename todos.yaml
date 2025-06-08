@@ -1,0 +1,92 @@
+yearly: 
+
+### Every day in february
+  February,*,*: Read
+
+#### DAILY
+  # Because I keep forgetting to...
+  "*,*": floss
+
+#### WEEKLY
+  #Meds done this way because it predates the "*,*" notation
+  Monday,*: Meds
+
+  Tuesday,*: Meds
+
+  Wednesday,*: Meds
+
+  Thursday,*: Meds
+
+  Friday,*: Meds
+
+  Saturday,*: Meds
+  Saturday,*: Book Sunday Yoga
+
+  Sunday,*: Meds
+
+### MONTHLY
+  Saturday,-1: Print org pages
+
+  Saturday,2: Check Oil in cars
+
+  ########################
+  # Every 2 months
+  ########################
+
+  #every 2 mos 1st sat (even months)
+  February,Saturday,1: Pull/add monthly calendar
+  April,Saturday,1:    Pull/add monthly calendar
+  June,Saturday,1:     Pull/add monthly calendar
+  August,Saturday,1:   Pull/add monthly calendar
+  October,Saturday,1:  Pull/add monthly calendar
+  December,Saturday,1: Pull/add monthly calendar
+
+  # -----
+  # Every 2 mos 4th sat (odd months)
+  January,Saturday,4:   Upgrade WP plugins
+  March,Saturday,4:     Upgrade WP plugins
+  May,Saturday,4:       Upgrade WP plugins
+  July,Saturday,4:      Upgrade WP plugins
+  September,Saturday,4: Upgrade WP plugins
+  November,Saturday,4:  Upgrade WP plugins
+
+  # Every 2 mos 4th sat (even months)
+  February,Saturday,4:  Check Change A/C filters
+  April,Saturday,4:     Check Change A/C filters
+  June,Saturday,4:      Check Change A/C filters
+  August,Saturday,4:    Check Change A/C filters
+  October,Saturday,4:   Check Change A/C filters
+  December,Saturday,4:  Check Change A/C filters
+  
+  ########################
+  # Quarterly
+  ########################
+  #quarterly day 3rd Sat
+  March,Saturday,3:     Inspect Generator
+  June,Saturday,3:      Inspect Generator
+  September,Saturday,3: Inspect Generator
+  December,Saturday,3:  Inspect Generator
+
+  ########################
+  # Every 4 months
+  ########################
+  April,Saturday,3:    Exercise shutoffs 
+  August,Saturday,3:   Exercise shutoffs
+  December,Saturday,3: Exercise shutoffs
+
+  ########################
+  # Every 6 months
+  ########################
+  
+  March,Day,1:     "Buy&amp;Replace Fridge Filter"
+  September,Day,1: "Buy&amp;Replace Fridge Filter"
+  ########################
+  # Annual
+  ########################
+
+  February,Saturday,1: Get Credit Reports
+
+  June,Day,1: (2028) replace helmet
+
+  April,Sunday,-1: Order Mother's Day gift
+

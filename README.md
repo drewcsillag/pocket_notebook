@@ -41,6 +41,8 @@ Another variant of `DATESPEC` is for things that recur from an anchor date. In w
 * INTERVAL_UNIT - supports `week` and `day` as values. Monthly as a unit isn't supported because I just make multiple entries for them.
 * INTERVAL_QUANTITY - for example: if you want something to recur every two weeks (fortnightly)  starting on Feb 2, 2025, you would specify it as `2025-02-08,week,2`
 
+There are example `holidays.yaml` and `todos.yaml` files included.
+
 # How to run it
 Once you have holidays and todos yamls created, you run
 ```
