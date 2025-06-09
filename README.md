@@ -1,4 +1,4 @@
-For a few years, I've been carrying a Lihit Labs A6 notebook as a pocket mini-organizer. At first I hand lined the pages. But being a tech guy, I started generating the pages and refining them. This is the code that generates the pages.
+For a few years, I've been carrying a Lihit Labs A6 notebook, similar to [this one](https://www.jetpens.com/Lihit-Lab-Pastello-Twist-Ring-Notebook-A6-Lined-Light-Green/pd/35245) as a pocket mini-organizer. At first I hand lined the pages. But the paper that comes with them isn't great for fountain pens. And being a tech guy, I started generating the pages and refining them using paper that I chose. This is the code that generates the pages.
 
 WARNING: this code is in no way a paragon of good software engineering. It started off as a hack and has grown/congealed into what it is. I could use mustache templates, I could commonize a bunch of stuff. I could put in constants for the magic values that are sprinkled througout. At some point I might bother cleaning all this up. But hey! I've got unit tests though for the date logic around holidays and todos. But most importantly, it's fit for purpose, for me. If it works for you, fantastic! Let me know, and that might inspire me to clean all this up.
 
@@ -22,7 +22,7 @@ First, strap-in, it's not been made easy, but it also shouldn't be terribly hard
 * do a pip install of what's in requirements.txt
 * You'll need inkscape installed
 * You'll need pdfunite installed (part of poppler-utils)
-* If you're not on a mac, you'll need to fix makepdfs.sh to alter the path to inkscape
+* If you're not on a mac, you'll need to fix makepdfs.sh to alter the path to inkscape, at least. There may be other Mac-isms.
   
 That should get the stuff working. Now you'll want to create a `todo_holidays` subdirectory with two files: `holidays.yaml` and `todos.yaml`. The format for both is the same. The difference is that with holidays, it's assumed there's only one or two per given day, whereby with todos, the assumption is that there will be less than 24 per day. With holidays showing up at the top left in the lined area of the pages, and todos showing up next to the checkboxes.
 
