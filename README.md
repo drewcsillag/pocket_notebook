@@ -9,8 +9,10 @@ There are a few different page types:
 * Monthly calendar pages
 * A "title page" with a way to figure out what day a given date falls on for the current and subsequent year.
 
-![daily page](sample-daily-page.png) ![lined page](sample-lined-page.png)
-![monthly page](sample-monthly-page.png) ![yearly page](sample-yearly-page.png)
+<img src="sample-daily-page.png" height="300px" width="auto">
+<img src="sample-lined-page.png" height="300px" width="auto">
+<img src="sample-monthly-page.png" height="300px" width="auto">
+<img src="sample-yearly-page.png" height="300px" width="auto">
 
 You can see a sample pdf [here](orgpages-sample.pdf)
 # If you want to use this yourself
