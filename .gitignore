@@ -1,4 +1,8 @@
-*.pdf
+blank*.pdf
+daily*.pdf
+header*.pdf
+monthly*.pdf
+orgpages.pdf
 *.svg
 bin
 include

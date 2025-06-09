@@ -5,10 +5,14 @@ WARNING: this code is in no way a paragon of good software engineering. It start
 There are a few different page types:
 * daily calendar pages, with checkboxes on the right for todos, and timed
   items on the left for meetings and such from 9am-5pm
-* dotte-lined pages (inspired by what Kokuyo has) for whatever. Line spacing is 5mm
+* dotted-lined pages (inspired by what Kokuyo has) for whatever. Line spacing is 5mm
 * Monthly calendar pages
 * A "title page" with a way to figure out what day a given date falls on for the current and subsequent year.
 
+![daily page](sample-daily-page.png) ![lined page](sample-lined-page.png)
+![monthly page](sample-monthly-page.png) ![yearly page](sample-yearly-page.png)
+
+You can see a sample pdf [here](orgpages-sample.pdf)
 # If you want to use this yourself
 First, strap-in, it's not been made easy, but it also shouldn't be terribly hard
 
