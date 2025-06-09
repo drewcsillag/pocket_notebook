@@ -27,7 +27,9 @@ def parse_preserving_duplicates(src: TextIO) -> Dict:
     # We deliberately define a fresh class inside the function,
     # because add_constructor is a class method and we don't want to
     # mutate pyyaml classes.
-    class PreserveDuplicatesLoader(yaml.loader.Loader): # pylint: disable=too-many-ancestors
+    class PreserveDuplicatesLoader(
+        yaml.loader.Loader
+    ):  # pylint: disable=too-many-ancestors
         """Loader that preserves duplicate key values"""
 
     def map_constructor(loader: Any, node: Any, deep: Any = False) -> Any:
