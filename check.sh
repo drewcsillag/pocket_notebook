@@ -8,4 +8,5 @@ do
   diff -u $i exemplar/$i
 
 done
+pylint *.py
 bash clean.sh

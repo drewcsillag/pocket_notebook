@@ -18,10 +18,10 @@ from constants import (
     DOT_COLOR,
     DOT_Y_OFFSET,
     DOT_RADIUS,
-    DAYS,
     RIGHT_PAGES,
     LEFT_PAGES,
 )
+from todo_date_math import get_day_todos, get_week_info
 
 
 def make_monthly_sheet(org_x: int, org_y: int) -> None:
@@ -83,7 +83,7 @@ def make_header_sheet(org_x: int, org_y: int, year: int, left: bool = False) -> 
         do_frontpage(org_x, org_y, year, left)
 
 
-def make_weekday_sheet(
+def make_weekday_sheet(  # pylint: disable=too-many-positional-arguments,too-many-arguments
     rorg_x: int,
     org_y: int,
     left: bool,
@@ -113,7 +113,7 @@ def make_weekday_sheet(
     do_week_stamp(org_x, org_y, date)
 
 
-def make_weekend_sheet(
+def make_weekend_sheet(  # pylint: disable=too-many-positional-arguments,too-many-arguments
     rorg_x: int,
     org_y: int,
     left: bool,
@@ -238,6 +238,7 @@ def do_lined_sheet(x: int, y: int, dots: bool) -> None:
 
 
 def frontpage_main_labels(org_x, org_y, year):
+    "put the main labels on the whole setup"
     x: float = org_x + 25
     y = org_y + 14
     title = "Yearly Calendars"
@@ -273,6 +274,7 @@ def frontpage_main_labels(org_x, org_y, year):
 
 
 def frontpage_grid_labels(days, org_x, yoff, org_y):
+    "fill in the grid with the proper days of the week"
     # date grid
     for i in range(1, 32):
         col = (i - 1) % 7
@@ -325,30 +327,8 @@ def frontpage_grid_labels(days, org_x, yoff, org_y):
             )
 
 
-def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
-    """
-    Draw the yearly calendars for the front sheet
-    """
-    color = "#b0b0b0"
-    line_thickness = 0.1
-
-    frontpage_main_labels(org_x, org_y, year)
-
-    # upper date to day grid lines
-    for cno in range(11, 19):
-        print(  # 120 -> 6*12 = 72
-            """
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="105" """
-            f"""width="0.25" x="{org_x + (PITCH * cno) + 1.4:f}" y="{org_y + 16:f}"/>
- """
-        )
-
-    days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
-
-    yoff = 20
-
-    frontpage_grid_labels(days, org_x, yoff, org_y)
-
+def frontpage_month_labels(org_x, org_y, yoff, year):
+    "put the months on the appropriate lines"
     ## Put first year months
     mos_first_year: List[List[str]] = [[], [], [], [], [], [], []]
     for i in range(1, 13):
@@ -392,6 +372,33 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
                 >{ls}</text>
                 """
         )
+
+
+def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
+    """
+    Draw the yearly calendars for the front sheet
+    """
+    color = "#b0b0b0"
+    line_thickness = 0.1
+
+    frontpage_main_labels(org_x, org_y, year)
+
+    # upper date to day grid lines
+    for cno in range(11, 19):
+        print(  # 120 -> 6*12 = 72
+            """
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="105" """
+            f"""width="0.25" x="{org_x + (PITCH * cno) + 1.4:f}" y="{org_y + 16:f}"/>
+ """
+        )
+
+    days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
+
+    yoff = 20
+
+    frontpage_grid_labels(days, org_x, yoff, org_y)
+
+    frontpage_month_labels(org_x, org_y, yoff, year)
 
     if not frontpage:
         org_x += 4
@@ -766,193 +773,6 @@ def make_blank_pages(left: bool, year: int) -> None:
     a4_page_trailer()
 
 
-def get_week_info(date):
-    """get the components for what goes into the week/quarter stamp at the bottom of pages"""
-    # Get the week number of the year
-    week_of_year = date.isocalendar()[1]
-
-    # Determine the quarter
-    quarter = (date.month - 1) // 3 + 1
-
-    # Get the first day of the quarter
-    first_day_of_quarter = datetime.datetime(date.year, (quarter - 1) * 3 + 1, 1).date()
-
-    # Get the week number within the quarter
-    week_of_quarter = (date - first_day_of_quarter).days // 7 + 1
-
-    return {
-        "week_of_year": week_of_year,
-        "quarter": quarter,
-        "week_of_quarter": week_of_quarter,
-    }
-
-
-def add_todos(t: List[str], v: List[str]) -> List[str]:
-    """Add todos from v to t and return a new t"""
-    t = t[:]
-    for i in v:
-        if "" in t:
-            ind = t.index("")
-            t[ind] = i
-        else:
-            t.append(i)
-    return t
-
-
-def get_day_todos(todos: dict, date: datetime.date) -> list[str]:
-    """Get todos for a specific date from yearly todo configurations.
-
-    Args:
-        todos: Dictionary of todo configurations
-        date: Date to get todos for
-
-    Returns:
-        List of todo strings for the given date
-    """
-    result = []
-
-    if "yearly" not in todos:
-        return result
-
-    for pattern_dict in todos["yearly"]:
-        for pattern, tasks in pattern_dict.items():
-            if not tasks:  # Skip empty tasks
-                continue
-
-            if pattern[0].isdigit():
-                result.extend(get_recurring_todos(pattern, tasks, date))
-            else:
-                result.extend(get_pattern_todos(pattern, tasks, date))
-
-    return result
-
-
-def get_recurring_todos(
-    pattern: str, tasks: list[str] | str, date: datetime.date
-) -> list[str]:
-    """Handle recurring interval patterns like '2024-01-01,week,2'"""
-    start_date_str, unit, interval = pattern.split(",")
-    start_date = datetime.datetime.strptime(start_date_str, "%Y-%m-%d").date()
-    interval = int(interval)
-
-    days_since_start = (date - start_date).days
-    if days_since_start < 0:
-        return []
-
-    if unit == "week" and days_since_start % (7 * interval) == 0:
-        return _normalize_tasks(tasks)
-    if unit == "day" and days_since_start % interval == 0:
-        return _normalize_tasks(tasks)
-
-    return []
-
-
-def get_pattern_todos(
-    pattern: str, tasks: list[str] | str, date: datetime.date
-) -> list[str]:
-    """Handle patterns like 'January,Monday,1' or 'Monday,1'"""
-    parts = pattern.split(",")
-
-    # Handle abbreviated patterns (e.g. "Monday,1")
-    if len(parts) == 2:
-        parts = ["*", parts[0], parts[1]]  # Prepend "*" for any month
-
-    month_pattern, day_type, occurrence = parts
-
-    # Check if month matches
-    if not _is_matching_month(month_pattern, date):
-        return []
-
-    if day_type == "Day":
-        if _is_matching_day(int(occurrence), date):
-            return _normalize_tasks(tasks)
-    elif day_type in DAYS:
-        if _is_matching_weekday(day_type, occurrence, date):
-            return _normalize_tasks(tasks)
-    elif day_type == "*" and occurrence == "*":
-        return _normalize_tasks(tasks)
-
-    return []
-
-
-def _normalize_tasks(tasks: list[str] | str) -> list[str]:
-    """Convert tasks to list format and filter empty strings"""
-    if isinstance(tasks, list):
-        return [t for t in tasks if t]
-    return [tasks] if tasks else []
-
-
-def _is_matching_month(month_pattern: str, date: datetime.date) -> bool:
-    """Check if date's month matches the pattern"""
-    return month_pattern in ("*", MONTHS[date.month])
-
-
-def _is_matching_day(target_day: int, date: datetime.date) -> bool:
-    """Check if date matches the target day of month"""
-    if target_day < 0:  # Handle negative day numbers (counting from end)
-        next_month = date + relativedelta(months=1, day=1)
-        last_day = (next_month - ONE_DAY).day
-        return date.day == (last_day + target_day + 1)
-    return date.day == target_day
-
-
-def _is_matching_weekday(day_type: str, occurrence: str, date: datetime.date) -> bool:
-    """Check if a date matches a weekday pattern like 'Monday,2' (2nd Monday)
-    or 'Friday,-1' (last Friday).
-
-    Args:
-        day_type: Name of weekday (e.g., "Monday", "Tuesday")
-        occurrence: Which occurrence to match ("*" for any, or number like "2" or "-1")
-        date: The date to check
-    """
-    # First check if it's the right day of the week
-    if date.strftime("%A") != day_type:
-        return False
-
-    # "*" means match any occurrence of this weekday
-    if occurrence == "*":
-        return True
-
-    # Find the date of the first occurrence of this weekday in the month
-    first_of_month = date.replace(day=1)
-    days_to_first = (DAYS.index(day_type) - first_of_month.weekday()) % 7
-    first_occurrence_date = days_to_first + 1
-
-    # Find which occurrence number this date represents (1st, 2nd, 3rd, etc.)
-    if date.day < first_occurrence_date:
-        return False
-    this_occurrence = ((date.day - first_occurrence_date) // 7) + 1
-
-    # For negative occurrences (like -1 for last), we need total occurrences in month
-    target = int(occurrence)
-    if target > 0:
-        return this_occurrence == target
-
-    # Calculate how many times this weekday occurs in the month
-    last_of_month = (first_of_month + relativedelta(months=1, days=-1)).day
-    total_occurrences = (last_of_month - first_occurrence_date + 7) // 7
-
-    # Convert negative occurrence (-1 means last, -2 means second-to-last, etc.)
-    target_from_end = total_occurrences + target + 1
-    return this_occurrence == target_from_end
-
-
-def is_recurring_interval(pattern: str) -> bool:
-    """Check if pattern is a recurring interval (e.g. '2025-01-01,week,3')"""
-    return pattern.split(",")[0][0] in "0123456789"
-
-
-def should_add_recurring_todo(pattern: str, d_obj: datetime.date) -> bool:
-    """Check if recurring todo should be added for given date"""
-    date, unit, interval = pattern.split(",")
-    start_date = datetime.datetime.strptime(date, "%Y-%m-%d")
-
-    numdays = {"week": 7, "day": 1}[unit]
-
-    datediff_days = (d_obj - start_date.date()).days
-    return datediff_days % (int(interval) * numdays) == 0
-
-
 def make_front_page(year: int, left: bool = False) -> None:
     """Make an A4 sheet of one header page, with the other 3 pages being plain lined pages"""
     a4_page_header()
@@ -970,7 +790,7 @@ def make_front_page(year: int, left: bool = False) -> None:
     a4_page_trailer()
 
 
-def make_date_page(
+def make_date_page(  # pylint: disable=too-many-locals
     left: bool,
     p: int,
     px: List[Tuple[Tuple[int, int], str, int, str, int, datetime.date]],

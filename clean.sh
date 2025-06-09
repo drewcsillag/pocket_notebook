@@ -1,1 +1,1 @@
-rm *.svg *.pdf
+rm -f *.svg *.pdf
