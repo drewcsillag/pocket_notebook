@@ -3,7 +3,7 @@
 import unittest
 import datetime
 
-from svg_gen import get_day_todos, get_week_info, add_todos
+from todo_date_math import get_day_todos, get_week_info, add_todos
 from constants import ONE_DAY
 
 
