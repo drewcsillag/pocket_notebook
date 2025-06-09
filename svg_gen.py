@@ -237,13 +237,7 @@ def do_lined_sheet(x: int, y: int, dots: bool) -> None:
         y += PITCH
 
 
-def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
-    """
-    Draw the yearly calendars for the front sheet
-    """
-    color = "#b0b0b0"
-    line_thickness = 0.1
-
+def frontpage_main_labels(org_x, org_y, year):
     x: float = org_x + 25
     y = org_y + 14
     title = "Yearly Calendars"
@@ -277,19 +271,8 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
                 """
     )
 
-    # upper date to day grid lines
-    for cno in range(11, 19):
-        print(  # 120 -> 6*12 = 72
-            """
-<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="105" """
-            f"""width="0.25" x="{org_x + (PITCH * cno) + 1.4:f}" y="{org_y + 16:f}"/>
- """
-        )
 
-    days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
-
-    yoff = 20
-
+def frontpage_grid_labels(days, org_x, yoff, org_y):
     # date grid
     for i in range(1, 32):
         col = (i - 1) % 7
@@ -340,6 +323,31 @@ def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
                     >{daytxt}</text>
                     """
             )
+
+
+def do_frontpage(org_x: int, org_y: int, year: int, frontpage: bool) -> None:
+    """
+    Draw the yearly calendars for the front sheet
+    """
+    color = "#b0b0b0"
+    line_thickness = 0.1
+
+    frontpage_main_labels(org_x, org_y, year)
+
+    # upper date to day grid lines
+    for cno in range(11, 19):
+        print(  # 120 -> 6*12 = 72
+            """
+<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" height="105" """
+            f"""width="0.25" x="{org_x + (PITCH * cno) + 1.4:f}" y="{org_y + 16:f}"/>
+ """
+        )
+
+    days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
+
+    yoff = 20
+
+    frontpage_grid_labels(days, org_x, yoff, org_y)
 
     ## Put first year months
     mos_first_year: List[List[str]] = [[], [], [], [], [], [], []]
