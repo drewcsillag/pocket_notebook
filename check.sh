@@ -1,4 +1,5 @@
 bash clean.sh
+source bin/activate
 black notepaper*.py svg_gen.py constants.py utils.py
 ruff check notepaper*.py svg_gen.py constants.py utils.py
 python -m unittest notepaper_test

@@ -1,4 +1,5 @@
 set -e
+source ./bin/activate
 python notepaper.py "$@"
 for i in *.svg
 do
