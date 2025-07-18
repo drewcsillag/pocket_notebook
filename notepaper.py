@@ -1,3 +1,10 @@
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "python-dateutil",
+#     "pyyaml",
+# ]
+# ///
 """Driver program for page generation"""
 
 import sys

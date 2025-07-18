@@ -1,6 +1,5 @@
 set -e
-source ./bin/activate
-python notepaper.py "$@"
+uv run notepaper.py "$@"
 for i in *.svg
 do
     rootname=$(echo $i | sed 's/\.svg//')
