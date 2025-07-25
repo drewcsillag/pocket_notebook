@@ -18,8 +18,7 @@ You can see a sample pdf [here](orgpages-sample.pdf)
 # If you want to use this yourself
 First, strap-in, it's not been made easy, but it also shouldn't be terribly hard
 
-* You'll want (currently) Python 3.13
-* do a pip install of what's in requirements.txt
+* You'll want to install [uv](https://github.com/astral-sh/uv) as it's used to manage the Python bits
 * You'll need inkscape installed
 * You'll need pdfunite installed (part of poppler-utils)
 * If you're not on a mac, you'll need to fix makepdfs.sh to alter the path to inkscape, at least. There may be other Mac-isms.
