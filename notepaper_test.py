@@ -26,7 +26,7 @@ class TestAddingTodos(unittest.TestCase):  # pylint: disable=too-many-public-met
 
     def test_yearly_first_monday(self) -> None:
         "test that we can select the first Monday of a month"
-        todos = {"yearly": [{"March,Monday,1": "t"}]}
+        todos = {"March,Monday,1": "t"}
 
         # monday in other month
         self.assertEqual([], get_day_todos(todos, datetime.date(2024, 1, 1)))
@@ -37,7 +37,7 @@ class TestAddingTodos(unittest.TestCase):  # pylint: disable=too-many-public-met
 
     def test_yearly_last_weekday(self) -> None:
         "test that we can find the last Monday of a month"
-        todos = {"yearly": [{"March,Monday,-1": "t"}]}
+        todos = {"March,Monday,-1": "t"}
 
         self.assertEqual([], get_day_todos(todos, datetime.date(2024, 1, 29)))
         self.assertEqual([], get_day_todos(todos, datetime.date(2024, 3, 24)))
@@ -47,7 +47,7 @@ class TestAddingTodos(unittest.TestCase):  # pylint: disable=too-many-public-met
 
     def test_yearly_any_monday(self) -> None:
         "TEest that we can find any Monday in march 2024"
-        todos = {"yearly": [{"March,Monday,*": "t"}]}
+        todos = {"March,Monday,*": "t"}
 
         self.assertEqual([], get_day_todos(todos, datetime.date(2024, 1, 29)))
         self.assertEqual([], get_day_todos(todos, datetime.date(2024, 3, 24)))
@@ -57,7 +57,7 @@ class TestAddingTodos(unittest.TestCase):  # pylint: disable=too-many-public-met
 
     def test_yearly_specific_date(self) -> None:
         "test that we can find March 15th"
-        todos = {"yearly": [{"March,Day,15": "t"}]}
+        todos = {"March,Day,15": "t"}
 
         self.assertEqual([], get_day_todos(todos, datetime.date(2024, 1, 15)))
         self.assertEqual([], get_day_todos(todos, datetime.date(2024, 3, 14)))
@@ -66,7 +66,7 @@ class TestAddingTodos(unittest.TestCase):  # pylint: disable=too-many-public-met
 
     def test_alternate_monthly_any_monday(self) -> None:
         "test that we can find any Monday"
-        todos = {"yearly": [{"*,Monday,*": "t"}]}
+        todos = {"*,Monday,*": "t"}
 
         self.assertEqual(["t"], get_day_todos(todos, datetime.date(2024, 1, 29)))
         self.assertEqual([], get_day_todos(todos, datetime.date(2024, 3, 24)))
@@ -76,14 +76,14 @@ class TestAddingTodos(unittest.TestCase):  # pylint: disable=too-many-public-met
 
     def test_alternate_monthly_last_monday(self) -> None:
         "test that we can find the last monday of any Month"
-        todos = {"yearly": [{"*,Monday,-1": "t"}]}
+        todos = {"*,Monday,-1": "t"}
         self.assertEqual([], get_day_todos(todos, datetime.date(2024, 1, 22)))
         self.assertEqual(["t"], get_day_todos(todos, datetime.date(2024, 1, 29)))
         self.assertEqual([], get_day_todos(todos, datetime.date(2024, 1, 30)))
 
     def test_alternate_monthly_first_monday(self) -> None:
         "test that we can find first monday of any month"
-        todos = {"yearly": [{"*,Monday,1": "t"}]}
+        todos = {"*,Monday,1": "t"}
         self.assertEqual(["t"], get_day_todos(todos, datetime.date(2024, 1, 1)))
         self.assertEqual([], get_day_todos(todos, datetime.date(2023, 12, 31)))
         self.assertEqual([], get_day_todos(todos, datetime.date(2024, 1, 2)))
@@ -91,7 +91,7 @@ class TestAddingTodos(unittest.TestCase):  # pylint: disable=too-many-public-met
 
     def test_abbreviate_month_first_monday(self) -> None:
         "test that we can use the abbreviated form to find the first monday of any month"
-        todos = {"yearly": [{"Monday,1": "t"}]}
+        todos = {"Monday,1": "t"}
         self.assertEqual(["t"], get_day_todos(todos, datetime.date(2024, 1, 1)))
         self.assertEqual([], get_day_todos(todos, datetime.date(2023, 12, 31)))
         self.assertEqual([], get_day_todos(todos, datetime.date(2024, 1, 2)))
@@ -99,7 +99,7 @@ class TestAddingTodos(unittest.TestCase):  # pylint: disable=too-many-public-met
 
     def test_every_day_in_month(self) -> None:
         "test that we can select every day in February"
-        todos = {"yearly": [{"February,*,*": "t"}]}
+        todos = {"February,*,*": "t"}
         self.assertEqual([], get_day_todos(todos, datetime.date(2024, 1, 8)))
         self.assertEqual([], get_day_todos(todos, datetime.date(2024, 3, 8)))
         self.assertEqual(["t"], get_day_todos(todos, datetime.date(2024, 2, 8)))
@@ -107,11 +107,7 @@ class TestAddingTodos(unittest.TestCase):  # pylint: disable=too-many-public-met
 
     def test_mixing(self) -> None:
         "test a bugfix where if we have two items with a similar selector that we find both"
-        todos = {
-            "yearly": [
-                {"*,Saturday,*": ["Chess"], "March,Saturday,*": ["Check MCTP F28R32"]}
-            ]
-        }
+        todos = {"*,Saturday,*": ["Chess"], "March,Saturday,*": ["Check MCTP F28R32"]}
         self.assertEqual(
             ["Chess", "Check MCTP F28R32"],
             get_day_todos(todos, datetime.date(2024, 3, 2)),
@@ -121,23 +117,19 @@ class TestAddingTodos(unittest.TestCase):  # pylint: disable=too-many-public-met
         """I don't remember why this was necessary, but probably was because of an
         aliasing/sharing bug"""
         todos = {
-            "yearly": [
-                {
-                    "February,Saturday,4": ["u"],  # ac
-                    "Saturday,4": ["w"],  # endo
-                }
-            ]
+            "February,Saturday,4": ["u"],  # ac
+            "Saturday,4": ["w"],  # endo
         }
         cur = datetime.date(2025, 2, 1)
         for _ in range(28):
             get_day_todos(todos, cur)
             cur += ONE_DAY
-        self.assertEqual(["u"], todos["yearly"][0]["February,Saturday,4"])
+        self.assertEqual(["u"], todos["February,Saturday,4"])
 
     def test_interval(self) -> None:
         "Test for recurring items that are based on a date interval"
         # Every two weeks starting on 2025-01-01
-        todos = {"yearly": [{"2024-01-01,week,2": "t"}]}
+        todos = {"2024-01-01,week,2": "t"}
         self.assertEqual(["t"], get_day_todos(todos, datetime.date(2024, 1, 1)))
         self.assertEqual([], get_day_todos(todos, datetime.date(2024, 1, 8)))
         self.assertEqual(["t"], get_day_todos(todos, datetime.date(2024, 1, 15)))
@@ -146,7 +138,7 @@ class TestAddingTodos(unittest.TestCase):  # pylint: disable=too-many-public-met
 
     def test_get_day_todos_recurring_weekly(self) -> None:
         "test specific cases of fortnightly meeting"
-        todos = {"yearly": [{"2024-01-01,week,2": ["Biweekly meeting"]}]}
+        todos = {"2024-01-01,week,2": ["Biweekly meeting"]}
 
         # Should occur on start date
         self.assertEqual(
@@ -161,7 +153,7 @@ class TestAddingTodos(unittest.TestCase):  # pylint: disable=too-many-public-met
 
     def test_get_day_todos_recurring_daily(self) -> None:
         "test that a recurrence based on days works"
-        todos = {"yearly": [{"2024-01-01,day,3": ["Every 3 days"]}]}
+        todos = {"2024-01-01,day,3": ["Every 3 days"]}
 
         self.assertEqual(
             ["Every 3 days"], get_day_todos(todos, datetime.date(2024, 1, 1))
@@ -173,7 +165,7 @@ class TestAddingTodos(unittest.TestCase):  # pylint: disable=too-many-public-met
 
     def test_get_todos_last_day_of_month(self) -> None:
         "test selecting the last day of the month for all months"
-        todos = {"yearly": [{"Day,-1": ["Last day of month"]}]}
+        todos = {"Day,-1": ["Last day of month"]}
         self.assertEqual(
             ["Last day of month"], get_day_todos(todos, datetime.date(2024, 1, 31))
         )
@@ -181,12 +173,12 @@ class TestAddingTodos(unittest.TestCase):  # pylint: disable=too-many-public-met
 
     def test_saturday_of_month(self) -> None:
         "test picking saturdays of any month"
-        todos = {"yearly": [{"Saturday,2": ["Second Saturday of month"]}]}
+        todos = {"Saturday,2": ["Second Saturday of month"]}
         self.assertEqual(
             ["Second Saturday of month"],
             get_day_todos(todos, datetime.date(2024, 2, 10)),
         )
-        todos = {"yearly": [{"Saturday,3": ["Third Saturday of month"]}]}
+        todos = {"Saturday,3": ["Third Saturday of month"]}
         self.assertEqual(
             ["Third Saturday of month"],
             get_day_todos(todos, datetime.date(2024, 2, 17)),
@@ -194,14 +186,14 @@ class TestAddingTodos(unittest.TestCase):  # pylint: disable=too-many-public-met
 
     def test_get_day_todos_empty_slots(self) -> None:
         "test handling empty messages"
-        todos = {"yearly": [{"March,Monday,1": ["First", "", "Third"]}]}
+        todos = {"March,Monday,1": ["First", "", "Third"]}
 
         result = get_day_todos(todos, datetime.date(2024, 3, 4))
         self.assertEqual(["First", "Third"], result)
 
     def test_get_day_todos_month_weekday_star(self) -> None:
         "test handling * in the last item where month and dow are spec'd"
-        todos = {"yearly": [{"March,Saturday,*": ["Weekend in March"]}]}
+        todos = {"March,Saturday,*": ["Weekend in March"]}
 
         # Should not occur in February
         self.assertEqual(

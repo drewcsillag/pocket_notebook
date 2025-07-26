@@ -50,18 +50,17 @@ def get_day_todos(todos: dict, date: datetime.date) -> list[str]:
     """
     result = []
 
-    if "yearly" not in todos:
+    if not todos:
         return result
 
-    for pattern_dict in todos["yearly"]:
-        for pattern, tasks in pattern_dict.items():
-            if not tasks:  # Skip empty tasks
-                continue
+    for pattern, tasks in todos.items():
+        if not tasks:  # Skip empty tasks
+            continue
 
-            if pattern[0].isdigit():
-                result.extend(get_recurring_todos(pattern, tasks, date))
-            else:
-                result.extend(get_pattern_todos(pattern, tasks, date))
+        if pattern[0].isdigit():
+            result.extend(get_recurring_todos(pattern, tasks, date))
+        else:
+            result.extend(get_pattern_todos(pattern, tasks, date))
 
     return result
 
