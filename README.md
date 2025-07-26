@@ -27,8 +27,7 @@ That should get the stuff working. Now you'll want to create a `todo_holidays` s
 
 The format of the yaml files is:
 ```
-yearly:  # for legacy historical reasons, and I've not gotten around to fixing it
-    DATESPEC: your text for the thing
+DATESPEC: your text for the thing
 ```
 
 The software isn't smart about the text. That is, it won't truncate it if it's
@@ -46,7 +45,8 @@ Another variant of `DATESPEC` is for things that recur from an anchor date. In w
 * INTERVAL_UNIT - supports `week` and `day` as values. Monthly as a unit isn't supported because I just make multiple entries for them.
 * INTERVAL_QUANTITY - for example: if you want something to recur every two weeks (fortnightly)  starting on Feb 2, 2025, you would specify it as `2025-02-08,week,2`
 
-There are example `holidays.yaml` and `todos.yaml` files included.
+There are example `holidays.yaml` and `todos.yaml` files included. There may be duplicate keys which is normally handled differently
+with yaml, but here, if you have the same key more than once, both will show up on the calendar.
 
 # How to run it
 Once you have holidays and todos yamls created, you run
