@@ -54,7 +54,7 @@ def make_dated_monthly_sheet(org_x: int, org_y: int, m: datetime.date) -> None:
         text_y = (y - PITCH) + (vertical_slot * 18) - 1
         text_x = x + (3 * PITCH * horizontal_slot) - 7
         print(
-            """<text style="font-size:4px;font-family:sans-serif;fill:#808080;"""
+            """<text style="font-size:4px;font-family:sans-serif;fill:#404040;"""
             """fill-opacity:1;stroke:none"
                 """
             f"""x="{text_x:f}"
@@ -188,7 +188,7 @@ def do_monthly_sheet(x: int, y: int) -> None:
         if i < 7:
             dow = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][6 - i]
             print(
-                """<text style="font-size:6px;font-family:sans-serif;fill:#808080;"""
+                """<text style="font-size:6px;font-family:sans-serif;fill:#404040;"""
                 f"""fill-opacity:1;stroke:none"
                 x="{x+4:f}"
                 y="{y+17:f}"
@@ -243,7 +243,7 @@ def frontpage_main_labels(org_x, org_y, year):
     y = org_y + 14
     title = "Yearly Calendars"
     print(
-        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;"""
+        """<text style="font-size:6px;font-family:sans-serif;fill:#404040;"""
         f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
@@ -255,7 +255,7 @@ def frontpage_main_labels(org_x, org_y, year):
     y = org_y + 14
     title = str(year)
     print(
-        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;"""
+        """<text style="font-size:6px;font-family:sans-serif;fill:#404040;"""
         f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y + (5 * PITCH):f}"
@@ -264,7 +264,7 @@ def frontpage_main_labels(org_x, org_y, year):
     )
 
     print(
-        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;"""
+        """<text style="font-size:6px;font-family:sans-serif;fill:#404040;"""
         f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y + (14 * PITCH):f}"
@@ -285,7 +285,7 @@ def frontpage_grid_labels(days, org_x, yoff, org_y):
             x -= 0.8
         y = row * PITCH + yoff + org_y
         print(
-            """<text style="font-size:3px;font-family:sans-serif;fill:#808080;"""
+            """<text style="font-size:3px;font-family:sans-serif;fill:#404040;"""
             f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
@@ -302,7 +302,7 @@ def frontpage_grid_labels(days, org_x, yoff, org_y):
             x = col * PITCH + (11 * PITCH) + org_x + 2
             y = row * PITCH + yoff + (5 * PITCH) + org_y
             print(
-                """<text style="font-size:3px;font-family:sans-serif;fill:#808080;"""
+                """<text style="font-size:3px;font-family:sans-serif;fill:#404040;"""
                 f"""fill-opacity:1;stroke:none"
                         x="{x:f}"
                         y="{y:f}"
@@ -318,7 +318,7 @@ def frontpage_grid_labels(days, org_x, yoff, org_y):
             x = col * PITCH + (11 * PITCH) + org_x + 2
             y = row * PITCH + yoff + (14 * PITCH) + org_y
             print(
-                """<text style="font-size:3px;font-family:sans-serif;fill:#808080;"""
+                """<text style="font-size:3px;font-family:sans-serif;fill:#404040;"""
                 f"""fill-opacity:1;stroke:none"
                         x="{x:f}"
                         y="{y:f}"
@@ -343,7 +343,7 @@ def frontpage_month_labels(org_x, org_y, yoff, year):
         x = org_x + 4
         y = index * PITCH + yoff + (5 * PITCH) + org_y
         print(
-            """<text style="font-size:3px;font-family:sans-serif;fill:#808080;"""
+            """<text style="font-size:3px;font-family:sans-serif;fill:#404040;"""
             f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
@@ -365,7 +365,7 @@ def frontpage_month_labels(org_x, org_y, yoff, year):
         x = org_x + 4
         y = index * PITCH + yoff + (14 * PITCH) + org_y
         print(
-            """<text style="font-size:3px;font-family:sans-serif;fill:#808080;"""
+            """<text style="font-size:3px;font-family:sans-serif;fill:#404040;"""
             f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
@@ -439,13 +439,15 @@ def do_day_title(
     org_x: int, org_y: int, weekday: str, month: str, day: Optional[int]
 ) -> None:
     """Draw the day/date title for daily sheets"""
-    x = org_x + 16
+    x = org_x + 9  # + 16
+    # x = org_x + 16
+
     y = org_y + 14
     title = weekday + ", " + month
     if day is not None:
         title += " " + str(day)
     print(
-        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;"""
+        """<text style="font-size:6px;font-family:sans-serif;fill:#404040;"""
         f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
@@ -461,7 +463,7 @@ def do_month_year_title(org_x: int, org_y: int, month: str, year: str) -> None:
     title = month + " " + year
 
     print(
-        """<text style="font-size:6px;font-family:sans-serif;fill:#808080;"""
+        """<text style="font-size:6px;font-family:sans-serif;fill:#404040;"""
         f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
@@ -480,7 +482,7 @@ def do_year_stamp(org_x: int, org_y: int, left: bool, year: int) -> None:
         x = org_x + 4
     y = org_y + 140
     print(
-        """<text style="font-size:3px;font-family:sans-serif;fill:#808080;"""
+        """<text style="font-size:3px;font-family:sans-serif;fill:#404040;"""
         f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
@@ -503,7 +505,7 @@ def do_week_stamp(
     week_of_quarter = week_info["week_of_quarter"]
 
     print(
-        """<text style="font-size:3px;font-family:sans-serif;fill:#808080;"""
+        """<text style="font-size:3px;font-family:sans-serif;fill:#404040;"""
         f"""fill-opacity:1;stroke:none"
                     x="{x:f}"
                     y="{y:f}"
@@ -533,7 +535,7 @@ def do_numbers(org_x: int, org_y: int) -> None:
 
         print(
             f"""<g>
-              <text style="font-size:{fs:f}px;font-family:sans-serif;fill:#808080;"""
+              <text style="font-size:{fs:f}px;font-family:sans-serif;fill:#404040;"""
             f"""fill-opacity:1;stroke:none"
               transform="scale({xform:f},1)"
               x="{x / xform:f}" y="{liney:f}">{val}</text>
