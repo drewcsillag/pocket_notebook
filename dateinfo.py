@@ -1,3 +1,10 @@
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "python-dateutil",
+#     "pyyaml",
+# ]
+# ///
 """test to load ing todos and holidays and do what's what"""
 import sys
 import datetime
