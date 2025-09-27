@@ -663,7 +663,8 @@ def weekend_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) 
               >{t}</text></g>"""
         )
 
-    for ind, t in enumerate(holidays):
+    # Draw up to 2 holidays in the normal position
+    for ind, t in enumerate(holidays[:2]):
         print(
             f"""<g><text xml:space="preserve"
                 style="font-size:{PITCH*0.6:f}px;font-family:sans-serif;fill:#444444;"""
@@ -672,6 +673,31 @@ def weekend_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) 
                 y="{org_y + 15 + ((ind + 1) * PITCH):f}"
               >{t}</text></g>"""
         )
+
+    # If there are more than 2 holidays, center the 3rd and 4th horizontally
+    if len(holidays) > 2:
+        # Center X coordinate (roughly middle of the page, adjust as needed)
+        #center_x = org_x + 6 + (5 * PITCH)
+        center_x = 0.6 + org_x + (6 + (9 * PITCH)) - 0.12
+        # 3rd holiday: vertically aligned with 1st
+        print(
+            f"""<g><text xml:space="preserve"
+                style="font-size:{PITCH*0.6:f}px;font-family:sans-serif;fill:#444444;"""
+            f"""fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
+                x="{center_x:f}"
+                y="{org_y + 15 + (1 * PITCH):f}"
+              >{holidays[2]}</text></g>"""
+        )
+        # 4th holiday: vertically aligned with 2nd
+        if len(holidays) > 3:
+            print(
+                f"""<g><text xml:space="preserve"
+                    style="font-size:{PITCH*0.6:f}px;font-family:sans-serif;fill:#444444;"""
+                f"""fill-opacity:1;stroke-opacity:0;stroke-width:0;stroke-dasharray:none"
+                    x="{center_x:f}"
+                    y="{org_y + 15 + (2 * PITCH):f}"
+                  >{holidays[3]}</text></g>"""
+            )
 
 
 def a4_page_trailer() -> None:
