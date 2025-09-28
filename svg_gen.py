@@ -877,7 +877,9 @@ def make_trailer_sheet(x, y, left, year):
     # when dots are enabled: cx = lined_x + 2.5 + c*PITCH + (0.2 * DOT_RADIUS)
     # for the second dot c == 1
     num_lines = int(126 / PITCH)
-    height = num_lines * PITCH
+    # vertical line should end at the last horizontal line drawn by do_lined_sheet
+    # last line y offset is (num_lines - 1) * PITCH; include LINE_THICKNESS to reach that line
+    height = (num_lines - 1) * PITCH + LINE_THICKNESS
     v_x = lined_x + 2.5 + (1 * PITCH) + (0.2 * DOT_RADIUS)
     # draw a thin vertical rect centered on v_x
     print(
@@ -886,14 +888,14 @@ def make_trailer_sheet(x, y, left, year):
         f"""width="{LINE_THICKNESS:f}" x="{v_x - (LINE_THICKNESS/2):f}" y="{lined_y:f}"/>"""
     )
 
-    # title text in the same style as daily pages
+    # title text in the same style as daily pages, but centered on the lined area
     title = "Future Dates" if left else "Accounting"
-    tx = org_x + 9
+    center_x = lined_x + (89.0 / 2.0)
     ty = org_y + 14
     print(
         """<text style="font-size:6px;font-family:sans-serif;fill:#404040;"""
-        f"""fill-opacity:1;stroke:none"
-                    x="{tx:f}"
+        f"""fill-opacity:1;stroke:none" text-anchor="middle"
+                    x="{center_x:f}"
                     y="{ty:f}"
                 >{title}</text>
                 """
