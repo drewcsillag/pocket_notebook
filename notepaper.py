@@ -20,6 +20,7 @@ from svg_gen import (
     make_dated_monthly_pages_p2,
     make_dated_monthly_pages_p3,
     make_dated_monthly_pages_p4,
+    make_back_page,
     make_blank_pages,
     make_front_page,
 )
@@ -119,9 +120,12 @@ def main():
     sys.stdout = create_output_file("header_r.svg")
     make_front_page(year=year, left=True)
     sys.stdout = create_output_file("header_l.svg")
-
     make_front_page(year=year, left=False)
 
+    sys.stdout = create_output_file("endpage_r.svg")
+    make_back_page(year=year, left=True)
+    sys.stdout = create_output_file("endpage_l.svg")
+    make_back_page(year=year, left=False)
 
 if __name__ == "__main__":
     main()

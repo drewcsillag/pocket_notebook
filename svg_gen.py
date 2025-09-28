@@ -853,3 +853,70 @@ def make_date_page(  # pylint: disable=too-many-locals
             x, y = RIGHT_PAGES[i]
         make_lined_sheet(x, y, left=left, year=year)
     a4_page_trailer()
+
+def make_trailer_sheet(x, y, left, year):
+    """
+    Make a trailer sheet: a lined sheet without the dots, a vertical line
+    where the second dot would have been, and a title. If `left` is True
+    the title is "Future Dates", otherwise (right page) the title is
+    "Accounting". The title uses the same text style as the daily pages.
+    """
+    # follow same origin adjustments as other sheet creators
+    org_x = x
+    org_x += 2
+    org_y = y
+
+    # coordinates used by do_lined_sheet
+    lined_x = org_x + 4
+    lined_y = org_y + 16
+
+    # draw the lined sheet without dots (like daily pages)
+    do_lined_sheet(lined_x, lined_y, dots=False)
+
+    # draw a vertical line where the second dot would have been
+    # when dots are enabled: cx = lined_x + 2.5 + c*PITCH + (0.2 * DOT_RADIUS)
+    # for the second dot c == 1
+    num_lines = int(126 / PITCH)
+    height = num_lines * PITCH
+    v_x = lined_x + 2.5 + (1 * PITCH) + (0.2 * DOT_RADIUS)
+    # draw a thin vertical rect centered on v_x
+    print(
+        f"""<rect style="fill:#b0b0b0;fill-opacity:1;stroke-width:0.0688316" """
+        f"""height="{height:f}" """
+        f"""width="{LINE_THICKNESS:f}" x="{v_x - (LINE_THICKNESS/2):f}" y="{lined_y:f}"/>"""
+    )
+
+    # title text in the same style as daily pages
+    title = "Future Dates" if left else "Accounting"
+    tx = org_x + 9
+    ty = org_y + 14
+    print(
+        """<text style="font-size:6px;font-family:sans-serif;fill:#404040;"""
+        f"""fill-opacity:1;stroke:none"
+                    x="{tx:f}"
+                    y="{ty:f}"
+                >{title}</text>
+                """
+    )
+
+    # year stamp at the usual location
+    do_year_stamp(org_x, org_y, left, year)
+
+
+
+
+def make_back_page(year, left):
+    """Make an A4 sheet of one trailer page, with the other 3 pages being plain lined pages"""
+    a4_page_header()
+    x, y = RIGHT_PAGES[3]
+    if left:
+        x, y = LEFT_PAGES[3]
+    make_trailer_sheet(x, y, left=left, year=year)
+
+    for i in range(3):
+        x, y = RIGHT_PAGES[i]
+        if left:
+            x, y = LEFT_PAGES[i]
+        make_lined_sheet(x, y, left=left, year=year)
+
+    a4_page_trailer()
