@@ -24,54 +24,6 @@ from svg_gen import (
     make_front_page,
 )
 
-
-def main():
-    """The kickoff"""
-    todos_file = "todo_holidays/todos.yaml"
-    holidays_file = "todo_holidays/holidays.yaml"
-    if len(sys.argv) == 5:
-        todos_file, holidays_file = sys.argv[-2:]
-    with open(todos_file, encoding="utf-8") as file:
-        todos = parse_preserving_duplicates(file)
-    with open(holidays_file, encoding="utf-8") as file:
-        holidays = parse_preserving_duplicates(file)
-    cur = datetime.date.fromisoformat(sys.argv[1])
-    orig_year = cur.year
-    numdays = int(sys.argv[2])
-    numsplits = numdays / 2
-    if numsplits != int(numsplits):
-        print("must specify an even number of days {numsplits} {numsplits:i}")
-        sys.exit(1)
-    numsplits = int(numsplits)
-
-    year = generate_dated_pages(todos, holidays, cur, numsplits)
-
-    sys.stdout = create_output_file("monthly1.svg")
-    make_monthly_pages()
-    sys.stdout = create_output_file("monthly2.svg")
-    make_monthly_pages()
-
-    sys.stdout = create_output_file("monthly_dated1.svg")
-    make_dated_monthly_pages_p1(orig_year)
-    sys.stdout = create_output_file("monthly_dated2.svg")
-    make_dated_monthly_pages_p2(orig_year)
-    sys.stdout = create_output_file("monthly_dated3.svg")
-    make_dated_monthly_pages_p3(orig_year)
-    sys.stdout = create_output_file("monthly_dated4.svg")
-    make_dated_monthly_pages_p4(orig_year)
-
-    sys.stdout = create_output_file("blank1.svg")
-    make_blank_pages(False, year=year)
-    sys.stdout = create_output_file("blank2.svg")
-    make_blank_pages(True, year=year)
-
-    sys.stdout = create_output_file("header_r.svg")
-    make_front_page(year=year, left=True)
-    sys.stdout = create_output_file("header_l.svg")
-
-    make_front_page(year=year, left=False)
-
-
 def generate_dated_pages(
     todos: dict, holidays: dict, cur: datetime.date, numsplits: int
 ):
@@ -122,6 +74,53 @@ def generate_dated_pages(
         p1 = p1[4:]
         p2 = p2[4:]
     return year
+
+
+def main():
+    """The kickoff"""
+    todos_file = "todo_holidays/todos.yaml"
+    holidays_file = "todo_holidays/holidays.yaml"
+    if len(sys.argv) == 5:
+        todos_file, holidays_file = sys.argv[-2:]
+    with open(todos_file, encoding="utf-8") as file:
+        todos = parse_preserving_duplicates(file)
+    with open(holidays_file, encoding="utf-8") as file:
+        holidays = parse_preserving_duplicates(file)
+    cur = datetime.date.fromisoformat(sys.argv[1])
+    orig_year = cur.year
+    numdays = int(sys.argv[2])
+    numsplits = numdays / 2
+    if numsplits != int(numsplits):
+        print("must specify an even number of days {numsplits} {numsplits:i}")
+        sys.exit(1)
+    numsplits = int(numsplits)
+
+    year = generate_dated_pages(todos, holidays, cur, numsplits)
+
+    sys.stdout = create_output_file("monthly1.svg")
+    make_monthly_pages()
+    sys.stdout = create_output_file("monthly2.svg")
+    make_monthly_pages()
+
+    sys.stdout = create_output_file("monthly_dated1.svg")
+    make_dated_monthly_pages_p1(orig_year)
+    sys.stdout = create_output_file("monthly_dated2.svg")
+    make_dated_monthly_pages_p2(orig_year)
+    sys.stdout = create_output_file("monthly_dated3.svg")
+    make_dated_monthly_pages_p3(orig_year)
+    sys.stdout = create_output_file("monthly_dated4.svg")
+    make_dated_monthly_pages_p4(orig_year)
+
+    sys.stdout = create_output_file("blank1.svg")
+    make_blank_pages(False, year=year)
+    sys.stdout = create_output_file("blank2.svg")
+    make_blank_pages(True, year=year)
+
+    sys.stdout = create_output_file("header_r.svg")
+    make_front_page(year=year, left=True)
+    sys.stdout = create_output_file("header_l.svg")
+
+    make_front_page(year=year, left=False)
 
 
 if __name__ == "__main__":
