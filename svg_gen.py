@@ -678,7 +678,7 @@ def weekend_todo(org_x: int, org_y: int, todos: List[str], holidays: List[str]) 
     # If there are more than 2 holidays, center the 3rd and 4th horizontally
     if len(holidays) > 2:
         # Center X coordinate (roughly middle of the page, adjust as needed)
-        #center_x = org_x + 6 + (5 * PITCH)
+        # center_x = org_x + 6 + (5 * PITCH)
         center_x = 0.6 + org_x + (6 + (9 * PITCH)) - 0.12
         # 3rd holiday: vertically aligned with 1st
         print(
@@ -855,6 +855,7 @@ def make_date_page(  # pylint: disable=too-many-locals
         make_lined_sheet(x, y, left=left, year=year)
     a4_page_trailer()
 
+
 def make_trailer_sheet(x, y, left, year):
     """
     Make a trailer sheet: a lined sheet without the dots, a vertical line
@@ -904,8 +905,6 @@ def make_trailer_sheet(x, y, left, year):
 
     # year stamp at the usual location
     do_year_stamp(org_x, org_y, left, year)
-
-
 
 
 def make_back_page(year, left):

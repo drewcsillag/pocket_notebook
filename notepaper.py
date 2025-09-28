@@ -25,6 +25,7 @@ from svg_gen import (
     make_front_page,
 )
 
+
 def generate_dated_pages(
     todos: dict, holidays: dict, cur: datetime.date, numsplits: int
 ):
@@ -126,6 +127,7 @@ def main():
     make_back_page(year=year, left=True)
     sys.stdout = create_output_file("endpage_l.svg")
     make_back_page(year=year, left=False)
+
 
 if __name__ == "__main__":
     main()
