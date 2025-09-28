@@ -239,13 +239,14 @@ def do_lined_sheet(x: int, y: int, dots: bool) -> None:
 
 def frontpage_main_labels(org_x, org_y, year):
     "put the main labels on the whole setup"
-    x: float = org_x + 25
+    # center the main heading over the standard lined area (89.0 width)
+    center_x = org_x + 4 + (89.0 / 2.0)
     y = org_y + 14
     title = "Yearly Calendars"
     print(
         """<text style="font-size:6px;font-family:sans-serif;fill:#404040;"""
-        f"""fill-opacity:1;stroke:none"
-                    x="{x:f}"
+        f"""fill-opacity:1;stroke:none" text-anchor="middle"
+                    x="{center_x:f}"
                     y="{y:f}"
                 >{title}</text>
                 """
@@ -439,17 +440,16 @@ def do_day_title(
     org_x: int, org_y: int, weekday: str, month: str, day: Optional[int]
 ) -> None:
     """Draw the day/date title for daily sheets"""
-    x = org_x + 9  # + 16
-    # x = org_x + 16
-
+    # center the day title over the standard lined area (starts at org_x+4)
+    center_x = org_x + 4 + (89.0 / 2.0)
     y = org_y + 14
     title = weekday + ", " + month
     if day is not None:
         title += " " + str(day)
     print(
         """<text style="font-size:6px;font-family:sans-serif;fill:#404040;"""
-        f"""fill-opacity:1;stroke:none"
-                    x="{x:f}"
+        f"""fill-opacity:1;stroke:none" text-anchor="middle"
+                    x="{center_x:f}"
                     y="{y:f}"
                 >{title}</text>
                 """
@@ -458,14 +458,15 @@ def do_day_title(
 
 def do_month_year_title(org_x: int, org_y: int, month: str, year: str) -> None:
     """Draw the month/year for monthly sheets"""
-    x = org_x + 32
+    # center the month/year over the monthly sheet area (lined area starts at org_x+4 width 89)
+    center_x = org_x + 4 + (89.0 / 2.0)
     y = org_y + 9
     title = month + " " + year
 
     print(
         """<text style="font-size:6px;font-family:sans-serif;fill:#404040;"""
-        f"""fill-opacity:1;stroke:none"
-                    x="{x:f}"
+        f"""fill-opacity:1;stroke:none" text-anchor="middle"
+                    x="{center_x:f}"
                     y="{y:f}"
                 >{title}</text>
                 """
